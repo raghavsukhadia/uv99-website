@@ -1,0 +1,2799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script>
+/* Mount-point base URL. When this page is reverse-proxied under /QR on the
+   main UV99 site, pin all relative asset URLs (assets/...) to that prefix so
+   CSS, JS and images resolve correctly with or without a trailing slash.
+   Served standalone on uv99-qr.vercel.app this is a no-op. Must stay the first
+   node in <head> so the <base> exists before any <link>/<style>/<img> is parsed. */
+(function () {
+  var underQR = /^\/QR(?=\/|$)/.test(location.pathname);
+  var base = document.createElement("base");
+  base.href = (underQR ? "/QR" : "") + "/";
+  document.head.insertBefore(base, document.head.firstChild);
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>UV99 Glazing | The Rays Stop Here</title>
+<meta name="description" content="UV99 Glazing — advanced UV-defense glazing that blocks up to 99% of harmful UV-A and UV-B rays. UV99 and UV PRO series.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0B0710;
+    --void-2:#150C1E;
+    --violet:#9B2BAE;
+    --violet-deep:#3E0F49;
+    --violet-glow:#E14FFF;
+    --paper:#F8F4FA;
+    --paper-2:#F0E9F3;
+    --ink:#160F1C;
+    --ink-soft:#6E6479;
+    --line:rgba(155,43,174,0.16);
+    --line-strong:rgba(155,43,174,0.32);
+    --uv:#FF3D5A;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Unbounded',sans-serif;font-weight:700;letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  img,svg{max-width:100%;display:block;}
+  :focus-visible{outline:2px solid var(--violet-glow);outline-offset:3px;}
+  .wrap{max-width:520px;margin:0 auto;padding:0 22px;}
+  @media (min-width:640px){ .wrap{max-width:640px;} }
+
+  /* Scroll reveal */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){ .reveal{opacity:1;transform:none;transition:none;} }
+
+  .btn{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:13.5px;
+    padding:14px 16px;border-radius:3px;
+    transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn-primary{background:var(--violet);color:#fff;border:1px solid var(--violet);}
+  .btn-primary:hover{background:var(--violet-glow);box-shadow:0 10px 26px -8px rgba(225,79,255,0.55);}
+  .btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--violet);}
+  .btn:active{transform:scale(0.97);}
+
+  /* ================= HERO ================= */
+  .hero{
+    position:relative;
+    min-height:min(100svh, 760px);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute;inset:0;z-index:0;
+    background:url('assets/hero2.png') center center/cover no-repeat;
+  }
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background:
+      linear-gradient(180deg, rgba(11,7,16,0.42) 0%, rgba(11,7,16,0.12) 28%, rgba(11,7,16,0.08) 52%, rgba(11,7,16,0.22) 82%, rgba(11,7,16,0.5) 100%),
+      radial-gradient(ellipse 600px 400px at 50% 20%, rgba(155,43,174,0.18), transparent 70%);
+  }
+
+  .hero-top{
+    position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:flex-end;
+    padding:calc(18px + var(--safe-top)) 22px 0;
+  }
+  .wordmark{
+    position:fixed;top:calc(12px + var(--safe-top));left:16px;z-index:120;
+    display:flex;align-items:center;font-family:'Unbounded',sans-serif;font-weight:800;font-size:19px;letter-spacing:-0.02em;color:#fff;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+    transition:transform .3s ease, opacity .3s ease;
+  }
+  /* hidden while scrolling down the page; restored on scroll up */
+  .wordmark.is-hidden{
+    transform:translateY(-160%);opacity:0;pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){ .wordmark{ transition:none; } }
+  .wordmark img{height:44px;width:auto;display:block;}
+  .logo-img{height:28px;width:auto;}
+  .pill{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    border:1px solid rgba(255,255,255,0.24);background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    padding:6px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;
+  }
+  .pill::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--violet-glow);box-shadow:0 0 8px 1px var(--violet-glow);}
+
+  .hero-content{
+    position:relative;z-index:2;
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    text-align:center;padding:40px 22px 4px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--violet-glow);margin-bottom:16px;
+  }
+  .hero h1{
+    font-size:clamp(34px,10vw,52px);
+    line-height:1.05;
+    margin-bottom:18px;
+    text-shadow:0 2px 30px rgba(0,0,0,0.5);
+  }
+  .hero h1 .accent{color:var(--violet-glow);}
+  .hero-sub{
+    color:rgba(255,255,255,0.72);font-size:15px;max-width:400px;
+    margin:0 auto 32px;line-height:1.6;
+    text-shadow:0 1px 10px rgba(0,0,0,0.4);
+  }
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+  .btn{
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:14px;
+    padding:14px 28px;border-radius:10px;border:none;cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{
+    background:var(--violet);color:#fff;
+    box-shadow:0 4px 20px rgba(155,43,174,0.4);
+  }
+  .btn-primary:hover{box-shadow:0 6px 28px rgba(155,43,174,0.55);}
+  .btn-outline{
+    background:rgba(255,255,255,0.08);color:#fff;
+    border:1px solid rgba(255,255,255,0.22);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  }
+  .btn-outline:hover{background:rgba(255,255,255,0.14);}
+
+  .scroll-cue{
+    position:relative;z-index:2;
+    display:inline-flex;flex-direction:column;align-items:center;gap:6px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;
+    text-transform:uppercase;color:rgba(255,255,255,0.4);
+    padding-bottom:26px;
+  }
+  .scroll-cue .line{width:1px;height:22px;background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent);animation:cue 1.8s ease-in-out infinite;}
+  @keyframes cue{ 0%{transform:scaleY(0.3);transform-origin:top;} 50%{transform:scaleY(1);transform-origin:top;} 100%{transform:scaleY(0.3);transform-origin:bottom;} }
+  @media (prefers-reduced-motion: reduce){ .scroll-cue .line{animation:none;} }
+
+  /* Hero tagline — sits over the bottom of the hero image, above the button */
+  .hero-tag{
+    position:relative;z-index:3;order:1;
+    align-self:center;
+    margin:auto 0 22px;             /* free space above -> pins tagline to image bottom */
+    padding:0 20px;
+    text-align:center;
+    font-family:'Unbounded',sans-serif;font-weight:700;
+    font-size:clamp(20px,3.4vw,34px);letter-spacing:-0.01em;line-height:1.15;
+    color:#fff;
+    text-shadow:0 2px 18px rgba(0,0,0,0.55),0 1px 3px rgba(0,0,0,0.5);
+  }
+  .hero-tag span{color:var(--violet-glow);}
+
+  /* Watch-video button — full-width purple bar under the hero image */
+  .hero-watch{
+    position:relative;z-index:3;order:2;
+    align-self:stretch;
+    margin-top:6px;
+    box-sizing:border-box;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:16px;letter-spacing:0.01em;
+    color:#fff;background:var(--violet);
+    border:none;border-radius:0;
+    padding:20px 24px;
+    box-shadow:0 12px 30px -14px rgba(155,43,174,0.65);
+    transition:background .18s ease, transform .12s ease;
+  }
+  .hero-watch:hover{background:#8a2699;}
+  .hero-watch:active{transform:scale(0.99);}
+  .hero-watch__ic{font-size:12px;line-height:1;}
+
+  @media (max-width:640px){
+    /* Mobile: show the full comparison image uncropped, copy on a panel below */
+    .hero{min-height:0;}
+    .hero-bg{
+      position:relative;inset:auto;width:100%;
+      aspect-ratio:864 / 1821;
+      background-image:url('assets/mobileviewhero.png');
+      background-position:center top;
+      background-size:cover;
+      background-color:#fff;
+      /* soften the top edge so the photo blends into a white top */
+      -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 7%, #000 100%);
+              mask-image:linear-gradient(180deg, transparent 0%, #000 7%, #000 100%);
+    }
+    .hero-bg::after{
+      background:linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 12%, rgba(255,255,255,0.2) 24%, transparent 38%, transparent 44%, rgba(11,7,16,0.12) 72%, rgba(11,7,16,0.55) 100%);
+    }
+    .hero-top{position:absolute;top:0;left:0;right:0;}
+    /* white top strip now sits behind the pill — give it dark ink so it stays readable */
+    .hero-top .pill{
+      color:#0B0710;
+      border-color:rgba(11,7,16,0.18);
+      background:rgba(11,7,16,0.05);
+    }
+    .hero-content{
+      position:relative;flex:none;z-index:2;
+      background:var(--void);
+      justify-content:flex-start;
+      padding:26px 20px 34px;
+    }
+    .hero-content .eyebrow{font-size:10px;margin-bottom:10px;}
+    .hero h1{font-size:28px;margin-bottom:10px;}
+    .hero-sub{font-size:13px;margin-bottom:18px;max-width:320px;}
+    .hero-cta{
+      display:flex;flex-direction:column;gap:8px;
+      width:100%;max-width:220px;margin:0 auto;
+    }
+    .hero-cta .btn{width:100%;padding:10px 16px;font-size:12px;border-radius:8px;}
+    .scroll-cue{display:none;}
+
+    /* Full-width "Watch Videos" bar, flush to the hero image's lower edge
+       (no photo strip left beneath it), sitting below the headline. */
+    .hero-watch{
+      position:absolute;left:0;right:0;bottom:0;
+      width:100%;margin:0;
+      font-size:14px;
+      padding:20px 20px;      /* comfortable vertical padding */
+    }
+    .hero-tag{
+      position:absolute;left:0;right:0;bottom:66px;   /* just above the button bar */
+      margin:0;
+      font-size:clamp(19px,6vw,26px);
+    }
+    .hero-watch:active{transform:scale(0.98);}
+  }
+
+  /* ================= SECTION SHELL ================= */
+  .section{padding:64px 0;}
+  .section-tight{padding:44px 0;}
+  /* Videos section follows the hero directly — trim the top gap under the
+     "Watch Videos" bar so the purple edge meets the content cleanly. */
+  #videos{padding-top:28px;}
+  @media (max-width:640px){ #videos{padding-top:10px;} }
+  .eyebrow-dark{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--violet);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow-dark::before{content:"";width:16px;height:1px;background:var(--violet);}
+  .section h2{font-size:26px;line-height:1.15;margin-bottom:12px;}
+  .section p.lead{color:var(--ink-soft);font-size:14.5px;max-width:420px;}
+  .divider{height:1px;background:var(--line);border:none;}
+
+  /* ================= PROBLEM (illustration) ================= */
+  .problem-visual{
+    margin:28px 0 4px;
+    border:1px solid var(--line-strong);
+    border-radius:14px;
+    padding:24px;
+    background:linear-gradient(160deg, #fff, var(--paper-2));
+    overflow:hidden;
+  }
+  .fade-strip{display:flex;align-items:flex-end;gap:6px;height:70px;margin-bottom:14px;}
+  .fade-strip .bar{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg, var(--uv), #ffb199);}
+  .fade-strip .bar:nth-child(1){height:20%;opacity:0.35;}
+  .fade-strip .bar:nth-child(2){height:38%;opacity:0.5;}
+  .fade-strip .bar:nth-child(3){height:58%;opacity:0.65;}
+  .fade-strip .bar:nth-child(4){height:78%;opacity:0.8;}
+  .fade-strip .bar:nth-child(5){height:100%;opacity:1;}
+  .problem-visual .caption{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+
+  .problem-copy{margin-top:18px;color:var(--ink-soft);font-size:14px;}
+  .problem-copy strong{color:var(--ink);}
+
+  /* ================= PRODUCT VIDEO ================= */
+  .video-wrapper{
+    position:relative;
+    width:100%;
+    aspect-ratio:16 / 9;          /* final player size reserved before the iframe loads */
+    margin-top:24px;
+    border-radius:16px;
+    overflow:hidden;
+    overflow-anchor:none;          /* this dynamic wrapper must never become a scroll anchor */
+    background:var(--void);
+    box-shadow:0 8px 36px rgba(155,43,174,0.18), 0 0 0 1px var(--line);
+  }
+  .video-wrapper iframe{
+    position:absolute;inset:0;
+    width:100%;height:100%;display:block;
+    border:none;
+  }
+  .video-points{
+    list-style:none;margin:22px 0 4px;padding:0;
+    display:grid;gap:12px;
+    grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+    align-items:stretch;
+  }
+  .video-points .vp-lead{
+    grid-column:1 / -1;
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:15px;
+    color:var(--violet);letter-spacing:0.005em;
+    padding:0 2px 2px;border-bottom:none;margin-bottom:0;
+    background:none;border:none;box-shadow:none;
+  }
+  /* each point is its own card / box, laid out in columns */
+  .video-points li{
+    display:block;
+    font-size:13px;line-height:1.5;color:rgba(255,255,255,0.85);
+    font-weight:600;
+    min-width:0;
+    padding:15px 16px;
+    background:linear-gradient(180deg, #9B2BAE, #7A1E8C);
+    border:1px solid rgba(225,79,255,0.35);
+    border-radius:12px;
+    box-shadow:0 8px 24px -14px rgba(155,43,174,0.6);
+  }
+  /* staggered fade-up for each column card when the section scrolls into view */
+  .video-points li:not(.vp-lead){
+    opacity:0;transform:translateY(16px);
+    transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.in .video-points li:not(.vp-lead){ opacity:1;transform:translateY(0); }
+  .reveal.in .video-points li:nth-of-type(2){ transition-delay:.06s; }
+  .reveal.in .video-points li:nth-of-type(3){ transition-delay:.12s; }
+  .reveal.in .video-points li:nth-of-type(4){ transition-delay:.18s; }
+  .reveal.in .video-points li:nth-of-type(5){ transition-delay:.24s; }
+  .reveal.in .video-points li:nth-of-type(6){ transition-delay:.30s; }
+  @media (prefers-reduced-motion: reduce){
+    .video-points li:not(.vp-lead){ opacity:1;transform:none;transition:none; }
+  }
+  .video-points li .vp-ic{ display:none; }
+  .video-points li > span:last-child{ min-width:0; display:block; }
+  .video-points li strong{
+    display:block;color:#fff;font-weight:800;font-size:13.5px;margin-bottom:4px;
+  }
+  .video-points .vp-sub{
+    display:flex;flex-direction:column;gap:4px;margin-top:4px;
+  }
+  .video-points .vp-lead--tier{
+    display:block;color:var(--ink-soft);font-weight:600;
+  }
+  .video-points .vp-lead--tier strong{
+    display:block;font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:19px;line-height:1.2;margin-bottom:6px;
+    letter-spacing:-0.01em;
+    background:linear-gradient(90deg,#B8860B 0%,#E8B923 35%,#FFE9A8 50%,#E8B923 65%,#B8860B 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:#E8B923;
+    text-shadow:0 0 12px rgba(232,185,35,0.55),0 0 26px rgba(232,185,35,0.3);
+  }
+  .video-points .vp-lead--tier > span{
+    font-size:13.5px;line-height:1.55;
+  }
+  .video-points--tiers{ grid-template-columns:1fr; }
+  .video-points--tiers li{ padding:18px 0; border-left:none; border-bottom:1px solid var(--line); }
+  .video-points--tiers li:nth-of-type(2n+1):not(.vp-lead){ border-left:none; }
+  .video-points--tiers li:last-of-type{ border-bottom:none; }
+  .video-points .vp-group{
+    display:grid;grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:14px 22px;margin-top:8px;
+  }
+  .video-points .vp-var{ display:block; }
+  .video-points .vp-var__name{
+    display:block;font-weight:800;color:var(--ink);font-size:13px;
+    letter-spacing:0.02em;margin-bottom:4px;
+  }
+  .video-points .vp-var .vp-sub{ margin-top:0; }
+  @media (max-width:640px){
+    .video-points .vp-group{ grid-template-columns:1fr; }
+  }
+  .video-points .vp-chips{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;
+  }
+  .video-points .vp-chip{
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:0.04em;text-transform:uppercase;
+    padding:5px 10px;border-radius:999px;
+    background:rgba(155,43,174,0.12);color:var(--violet);
+  }
+  .video-points .vp-sub > span{
+    display:flex;align-items:center;gap:7px;
+    font-weight:600;color:var(--ink-soft);
+  }
+  .video-points .vp-sub > span::before{
+    content:"\2192";color:var(--violet);font-weight:800;
+  }
+  @media (max-width:520px){
+    .video-points{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+    .video-points li{ padding:13px 13px; }
+  }
+  @media (max-width:380px){
+    .video-points{ grid-template-columns:1fr; }
+  }
+
+  /* ================= HOW IT WORKS (real sequence → numbers OK) ================= */
+  .steps{margin-top:30px;position:relative;}
+  .steps::before{
+    content:"";position:absolute;left:19px;top:8px;bottom:8px;width:1px;
+    background:repeating-linear-gradient(180deg, var(--violet) 0 4px, transparent 4px 9px);
+  }
+  .step{display:flex;gap:18px;padding-bottom:30px;position:relative;}
+  .step:last-child{padding-bottom:0;}
+  .step-num{
+    flex-shrink:0;width:40px;height:40px;border-radius:50%;
+    background:var(--void);color:var(--violet-glow);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;
+    position:relative;z-index:1;
+  }
+  .step-body h3{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:600;margin-bottom:6px;margin-top:6px;}
+  .step-body p{font-size:13.5px;color:var(--ink-soft);}
+
+  /* ================= FEATURES ================= */
+  .feature-strip{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-top:28px;
+  }
+  .feature-pill{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px 18px;
+    background:linear-gradient(160deg, #fff 60%, var(--paper-2));
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+  .feature-pill::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg, var(--violet), var(--violet-glow));
+    opacity:0;transition:opacity .25s ease;
+  }
+  .feature-pill:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 32px rgba(155,43,174,0.12);
+    border-color:var(--violet);
+  }
+  .feature-pill:hover::before{opacity:1;}
+  .feature-pill .fi{
+    flex-shrink:0;
+    width:40px;height:40px;border-radius:10px;
+    background:var(--void);color:var(--violet-glow);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+    box-shadow:0 4px 12px rgba(11,7,16,0.15);
+  }
+  .feature-pill .fp-body{flex:1;}
+  .feature-pill h3{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;margin-bottom:5px;}
+  .feature-pill p{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+
+  /* ---- Features: staggered scroll-in choreography ---- */
+  .feature-strip .feature-pill{
+    opacity:0;
+    transform:translateY(28px) scale(.97);
+    transition:opacity .7s cubic-bezier(.16,1,.3,1),
+               transform .7s cubic-bezier(.16,1,.3,1),
+               box-shadow .25s ease,
+               border-color .25s ease;
+  }
+  .feature-strip.in .feature-pill{opacity:1;transform:none;}
+  .feature-strip.in .feature-pill:nth-child(1){transition-delay:.05s;}
+  .feature-strip.in .feature-pill:nth-child(2){transition-delay:.14s;}
+  .feature-strip.in .feature-pill:nth-child(3){transition-delay:.23s;}
+  .feature-strip.in .feature-pill:nth-child(4){transition-delay:.32s;}
+  .feature-strip.in .feature-pill:nth-child(5){transition-delay:.41s;}
+  /* keep hover lift snappy despite the long entrance transition */
+  .feature-pill:hover{
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+
+  /* icon: pop on entrance, react on hover */
+  .feature-pill .fi{transition:transform .3s cubic-bezier(.2,1.4,.35,1), box-shadow .3s ease;}
+  .feature-strip.in .feature-pill .fi{animation:fiPop .6s cubic-bezier(.2,1.4,.35,1) backwards;}
+  .feature-strip.in .feature-pill:nth-child(1) .fi{animation-delay:.18s;}
+  .feature-strip.in .feature-pill:nth-child(2) .fi{animation-delay:.27s;}
+  .feature-strip.in .feature-pill:nth-child(3) .fi{animation-delay:.36s;}
+  .feature-strip.in .feature-pill:nth-child(4) .fi{animation-delay:.45s;}
+  .feature-strip.in .feature-pill:nth-child(5) .fi{animation-delay:.54s;}
+  .feature-strip.in .feature-pill:hover .fi{
+    transform:scale(1.14) rotate(-6deg);
+    animation:fiGlow 1.8s ease-in-out infinite;
+  }
+  @keyframes fiPop{
+    0%{opacity:0;transform:scale(.35) rotate(-14deg);}
+    100%{opacity:1;transform:scale(1) rotate(0);}
+  }
+  @keyframes fiGlow{
+    0%,100%{box-shadow:0 4px 12px rgba(11,7,16,0.15);}
+    50%{box-shadow:0 6px 20px rgba(155,43,174,0.45);}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .feature-strip .feature-pill{opacity:1;transform:none;transition:none;}
+    .feature-strip.in .feature-pill .fi{animation:none;}
+    .feature-strip.in .feature-pill:hover .fi{animation:none;transform:none;}
+  }
+
+  /* ================= RANGE (tabs) ================= */
+  .tabs{display:flex;gap:8px;margin-top:26px;margin-bottom:22px;}
+  .tab{
+    flex:1;text-align:center;
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;font-weight:600;
+    padding:12px 10px;border-radius:3px;
+    border:1px solid var(--line-strong);
+    background:#fff;color:var(--ink-soft);
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .tab.active{
+    background:linear-gradient(180deg, var(--violet-glow), var(--violet));
+    color:#fff;border-color:var(--violet);
+    box-shadow:0 10px 26px -14px rgba(225,79,255,0.6);
+  }
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .panel p.desc{color:var(--ink-soft);font-size:13.5px;margin-bottom:18px;}
+
+  .variant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+  @media (max-width:380px){ .variant-grid{grid-template-columns:1fr;} }
+  .variant{
+    border:1px solid var(--line-strong);border-radius:10px;padding:16px;background:#fff;
+  }
+  .variant h4{font-family:'Unbounded',sans-serif;font-weight:600;font-size:14px;margin-bottom:14px;}
+
+  /* Spectrum spec bar — the signature element, reused */
+  .specbar-row{margin-bottom:14px;}
+  .specbar-row:last-child{margin-bottom:0;}
+  .specbar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .specbar-name{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.05em;}
+  .specbar-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13.5px;}
+  .specbar-track{
+    height:6px;border-radius:3px;
+    background:repeating-linear-gradient(90deg, var(--paper-2) 0 3px, #fff 3px 6px);
+    border:1px solid var(--line);
+    overflow:hidden;
+    position:relative;
+  }
+  .specbar-fill{
+    height:100%;border-radius:2px;
+    background:linear-gradient(90deg, var(--violet-deep), var(--violet));
+    transform-origin:left;
+    animation:fillbar 1s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  .specbar-fill.uv{background:linear-gradient(90deg, #7a0f22, var(--uv));}
+  @keyframes fillbar{ from{transform:scaleX(0);} to{transform:scaleX(1);} }
+  @media (prefers-reduced-motion: reduce){ .specbar-fill{animation:none;} }
+
+  .qc-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);text-align:center;margin-top:16px;}
+
+  /* ================= COMPARE — premium full-width ================= */
+  .cmp{
+    position:relative;
+    overflow:hidden;
+    padding:64px 0;
+    background:
+      radial-gradient(58% 55% at 12% 0%, rgba(155,43,174,0.07), transparent 60%),
+      radial-gradient(52% 50% at 100% 100%, rgba(225,79,255,0.06), transparent 60%),
+      var(--paper);
+  }
+  /* subtle technical grid texture */
+  .cmp::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(155,43,174,0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155,43,174,0.055) 1px, transparent 1px);
+    background-size:66px 66px;
+    -webkit-mask:radial-gradient(78% 78% at 50% 42%, #000, transparent 80%);
+            mask:radial-gradient(78% 78% at 50% 42%, #000, transparent 80%);
+    opacity:.55;
+  }
+  .cmp-inner{
+    position:relative;z-index:1;
+    max-width:520px;margin:0 auto;padding:0 22px;
+    display:flex;flex-direction:column;align-items:stretch;
+  }
+  @media (min-width:640px){ .cmp-inner{max-width:640px;} }
+
+  /* Header — matches .eyebrow-dark / .section h2 */
+  .cmp-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--violet);
+    display:flex;align-items:center;gap:8px;
+    margin-bottom:12px;
+  }
+  .cmp-eyebrow::before{
+    content:"";width:16px;height:1px;background:var(--violet);
+  }
+  .cmp-title{
+    font-family:'Unbounded',sans-serif;font-weight:700;
+    font-size:26px;line-height:1.15;letter-spacing:-0.01em;
+    text-align:left;color:var(--ink);
+    margin-bottom:28px;
+  }
+  .cmp-title .glass{
+    background:linear-gradient(115deg,var(--violet),var(--violet-glow));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  /* Cards row — single column, same width as every other section */
+  .cmp-row{
+    position:relative;width:100%;
+    display:flex;flex-direction:column;align-items:stretch;
+    gap:32px;
+  }
+  .cmp-card{
+    position:relative;width:100%;
+    border-radius:18px;
+    padding:24px 22px;
+    display:flex;flex-direction:column;
+  }
+
+  /* UV99 card */
+  .cmp-card.pro{
+    color:#fff;
+    background:
+      radial-gradient(120% 85% at 22% 0%, rgba(225,79,255,0.26), transparent 55%),
+      linear-gradient(165deg, #1c1029 0%, #0b0710 72%);
+    border:1px solid rgba(225,79,255,0.36);
+    box-shadow:
+      0 24px 60px -30px rgba(155,43,174,0.55),
+      0 0 48px -16px rgba(225,79,255,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .cmp-card.pro::after{
+    content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+    background:radial-gradient(72% 40% at 50% -6%, rgba(225,79,255,0.34), transparent 72%);
+  }
+
+  /* Ordinary glass card — deliberately weaker */
+  .cmp-card.base{
+    color:var(--ink-soft);
+    background:linear-gradient(165deg,#fbf8fc,#efe7f3);
+    border:1.5px dashed rgba(155,43,174,0.42);
+    box-shadow:0 18px 40px -30px rgba(22,15,28,0.28);
+  }
+
+  .cmp-chip{
+    align-self:flex-start;position:relative;z-index:2;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;font-weight:600;
+    letter-spacing:0.16em;text-transform:uppercase;
+    padding:6px 12px;border-radius:30px;
+    margin-bottom:18px;
+  }
+  .cmp-card.pro .cmp-chip{
+    background:rgba(225,79,255,0.14);color:var(--violet-glow);
+    border:1px solid rgba(225,79,255,0.4);
+    box-shadow:0 0 24px -6px rgba(225,79,255,0.55);
+  }
+  .cmp-card.base .cmp-chip{
+    background:#fff;color:var(--ink-soft);border:1px solid var(--line-strong);
+  }
+
+  .cmp-stat{
+    position:relative;z-index:2;
+    font-family:'Unbounded',sans-serif;font-weight:800;line-height:0.92;
+    margin-bottom:10px;
+  }
+  .cmp-card.pro .cmp-stat{
+    font-size:48px;
+    color:var(--violet-glow);
+    text-shadow:0 0 44px rgba(225,79,255,0.45);
+  }
+  .cmp-card.base .cmp-stat{
+    font-size:36px;
+    color:var(--ink);opacity:0.42;
+  }
+  .cmp-statcap{
+    position:relative;z-index:2;
+    font-size:13.5px;line-height:1.5;
+    margin-bottom:22px;
+  }
+  .cmp-card.pro .cmp-statcap{color:rgba(255,255,255,0.72);}
+  .cmp-card.base .cmp-statcap{color:var(--ink-soft);opacity:0.72;}
+
+  .cmp-list{
+    list-style:none;display:flex;flex-direction:column;
+    gap:13px;
+    position:relative;z-index:2;margin-top:auto;
+  }
+  .cmp-list li{
+    font-size:13px;line-height:1.45;
+    display:flex;gap:12px;align-items:flex-start;
+  }
+  .cmp-list li .ic{
+    flex-shrink:0;width:20px;height:20px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;margin-top:1px;
+  }
+  .cmp-card.pro li{color:rgba(255,255,255,0.92);}
+  .cmp-card.pro li .ic{
+    background:rgba(225,79,255,0.16);color:var(--violet-glow);
+    border:1px solid rgba(225,79,255,0.42);
+    box-shadow:0 0 18px -3px rgba(225,79,255,0.6);
+  }
+  .cmp-card.base li{color:var(--ink-soft);}
+  .cmp-card.base li .ic{
+    background:rgba(110,100,121,0.14);color:var(--ink-soft);
+    border:1px solid rgba(110,100,121,0.26);
+  }
+
+  /* VS badge — sits in flow, centered on the seam between the two cards */
+  .cmp-vs{
+    order:1;align-self:center;
+    margin:-4px 0;z-index:6;
+    width:46px;height:46px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Unbounded',sans-serif;font-weight:800;
+    font-size:13px;letter-spacing:0.02em;color:var(--violet);
+    background:var(--paper);
+    border:1px solid rgba(155,43,174,0.3);
+    box-shadow:
+      0 8px 22px -8px rgba(11,7,16,0.22),
+      0 0 34px -8px rgba(225,79,255,0.5),
+      inset 0 0 0 5px rgba(255,255,255,0.72);
+  }
+  .cmp-card.base{order:2;}
+
+  /* Summary / key takeaway */
+  .cmp-summary{
+    width:100%;
+    margin-top:30px;
+    display:flex;flex-direction:column;
+    border-radius:16px;overflow:hidden;
+    border:1px solid var(--line-strong);
+    background:linear-gradient(120deg,#fff,var(--paper-2));
+    box-shadow:0 20px 50px -34px rgba(155,43,174,0.42);
+  }
+  .cmp-summary > div{
+    padding:20px 22px;
+    display:flex;flex-direction:column;justify-content:center;gap:6px;
+    text-align:center;
+  }
+  .cmp-summary > div + div{border-top:1px solid var(--line);}
+  .cmp-sum-big{
+    font-family:'Unbounded',sans-serif;font-weight:800;
+    font-size:20px;line-height:1.1;color:var(--ink);
+  }
+  .cmp-sum-big .amp{color:var(--violet);}
+  .cmp-sum-sub{
+    font-size:12.5px;color:var(--ink-soft);line-height:1.5;
+  }
+  .cmp-summary .lead-cell{
+    background:linear-gradient(165deg,#1c1029,#0b0710);color:#fff;
+  }
+  .cmp-summary .lead-cell .cmp-sum-big{
+    color:var(--violet-glow);text-shadow:0 0 32px rgba(225,79,255,0.4);
+  }
+  .cmp-summary .lead-cell .cmp-sum-sub{color:rgba(255,255,255,0.7);}
+
+  /* ---- Scroll-reveal choreography ---- */
+  .cmp .r{
+    opacity:0;transform:translateY(26px);
+    transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+  }
+  .cmp.in .r{opacity:1;transform:none;}
+  .cmp .r.d1{transition-delay:.12s;}
+  .cmp-card.pro{
+    opacity:0;transform:translateY(24px);
+    transition:opacity .8s cubic-bezier(.16,1,.3,1) .2s, transform .8s cubic-bezier(.16,1,.3,1) .2s;
+  }
+  .cmp.in .cmp-card.pro{opacity:1;transform:none;}
+  .cmp-card.base{
+    opacity:0;transform:translateY(24px);
+    transition:opacity .8s cubic-bezier(.16,1,.3,1) .32s, transform .8s cubic-bezier(.16,1,.3,1) .32s;
+  }
+  .cmp.in .cmp-card.base{opacity:1;transform:none;}
+  .cmp-vs{
+    opacity:0;transform:scale(.4);
+    transition:opacity .5s ease .6s, transform .7s cubic-bezier(.2,1.35,.35,1) .6s;
+  }
+  .cmp.in .cmp-vs{opacity:1;transform:scale(1);}
+  .cmp-summary{
+    opacity:0;transform:translateY(28px);
+    transition:opacity .8s cubic-bezier(.16,1,.3,1) .5s, transform .8s cubic-bezier(.16,1,.3,1) .5s;
+  }
+  .cmp.in .cmp-summary{opacity:1;transform:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    .cmp .r,.cmp-card.pro,.cmp-card.base,.cmp-vs,.cmp-summary{
+      opacity:1;transform:none;transition:none;
+    }
+    .cmp.in .cmp-vs{transform:scale(1);}
+  }
+
+  /* ================= WARRANTY ================= */
+  .warranty-band{
+    position:relative;overflow:hidden;isolation:isolate;
+    background:var(--void);color:#fff;padding:52px 0;text-align:center;
+    background-image:radial-gradient(ellipse 500px 300px at 50% 0%, rgba(155,43,174,0.35), transparent 70%);
+  }
+  .warranty-band::before{
+    content:"";position:absolute;inset:-45% -15%;z-index:0;pointer-events:none;
+    background:conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(225,79,255,0.10) 40deg, transparent 110deg, transparent 220deg, rgba(155,43,174,0.08) 260deg, transparent 330deg);
+    opacity:0;transition:opacity .8s ease;
+  }
+  .warranty-band.in::before{opacity:1;animation:wSpin 22s linear infinite;}
+  @keyframes wSpin{to{transform:rotate(1turn);}}
+
+  .warranty-fx{
+    position:absolute;left:50%;top:40%;width:0;height:0;z-index:0;pointer-events:none;
+  }
+  .warranty-fx i{
+    position:absolute;left:50%;top:50%;width:140px;height:140px;margin:-70px 0 0 -70px;
+    border-radius:50%;border:1px solid rgba(225,79,255,0.45);opacity:0;
+  }
+  .warranty-band.in .warranty-fx i{animation:wRing 3.6s ease-out infinite;}
+  .warranty-band.in .warranty-fx i:nth-child(2){animation-delay:1.2s;}
+  .warranty-band.in .warranty-fx i:nth-child(3){animation-delay:2.4s;}
+  @keyframes wRing{
+    0%{transform:scale(.3);opacity:0;}
+    12%{opacity:.55;}
+    70%{opacity:0;}
+    100%{transform:scale(2.6);opacity:0;}
+  }
+
+  .warranty-band .wrap{position:relative;z-index:1;}
+  .wnum{line-height:1;}
+  .wnum-fig{
+    display:inline-block;
+    font-family:'Unbounded',sans-serif;font-size:58px;font-weight:800;line-height:1;
+    color:var(--violet-glow);text-shadow:0 0 24px rgba(225,79,255,0.5);
+  }
+  .warranty-band.in .wnum-fig{
+    animation:wPop .8s cubic-bezier(.2,1.5,.35,1) both, wGlow 2.6s ease-in-out .8s infinite alternate;
+  }
+  @keyframes wPop{from{transform:scale(.4);opacity:0;filter:blur(6px);}to{transform:scale(1);opacity:1;filter:blur(0);}}
+  @keyframes wGlow{
+    from{text-shadow:0 0 16px rgba(225,79,255,0.3);}
+    to{text-shadow:0 0 40px rgba(225,79,255,0.75), 0 0 80px rgba(225,79,255,0.22);}
+  }
+  .wnum-label{
+    display:block;margin-top:10px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    letter-spacing:0.14em;text-transform:uppercase;color:#fff;
+  }
+  .wnum-label span{display:inline-block;opacity:0;transform:translateY(9px);}
+  .warranty-band.in .wnum-label span{
+    animation:wLetter .5s cubic-bezier(.16,1,.3,1) forwards;
+    animation-delay:calc(var(--i,0)*0.03s + 0.45s);
+  }
+  @keyframes wLetter{to{opacity:1;transform:translateY(0);}}
+  .warranty-band p{
+    font-size:13px;color:rgba(255,255,255,0.65);margin:16px auto 0;max-width:320px;
+    opacity:0;transform:translateY(12px);
+  }
+  .warranty-band.in p{animation:wLetter .7s ease forwards .85s;}
+
+  /* ================= CONTACT ================= */
+  .contact-block{position:relative;overflow:hidden;isolation:isolate;padding:60px 0 0;text-align:center;}
+  .contact-fx{
+    position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
+    background:repeating-linear-gradient(118deg, transparent 0 24px, rgba(155,43,174,0.055) 24px 25px);
+    -webkit-mask:linear-gradient(180deg,transparent,#000 28%,#000 62%,transparent);
+            mask:linear-gradient(180deg,transparent,#000 28%,#000 62%,transparent);
+    transition:opacity .8s ease;
+  }
+  .contact-block.in .contact-fx{opacity:1;animation:rayShift 9s linear infinite;}
+  @keyframes rayShift{to{background-position:130px 0;}}
+  .contact-cut{
+    position:absolute;left:0;right:0;top:46%;height:1px;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,var(--violet-glow),transparent);
+    transform:scaleX(0);opacity:.55;
+  }
+  .contact-block.in .contact-cut{animation:cutIn 1s cubic-bezier(.16,1,.3,1) forwards .15s;}
+  @keyframes cutIn{to{transform:scaleX(1);}}
+
+  .contact-block .wrap{position:relative;z-index:1;}
+  .contact-block .kicker{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--violet);
+    letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;
+    opacity:0;transform:translateY(14px);
+  }
+  .contact-block.in .kicker{animation:cRise .6s ease forwards .15s;}
+  .contact-block h2{font-size:28px;margin-bottom:16px;}
+  .rays-head .l{display:block;}
+  .rays-head .w{
+    display:inline-block;overflow:hidden;vertical-align:bottom;
+    padding-bottom:.14em;margin-bottom:-.14em;
+  }
+  .rays-head .w > span{display:inline-block;transform:translateY(110%);}
+  .contact-block.in .rays-head .w > span{
+    animation:wordUp .7s cubic-bezier(.16,1,.3,1) forwards;
+    animation-delay:var(--d,.24s);
+  }
+  @keyframes wordUp{to{transform:translateY(0);}}
+  .rays-head .accent > span{color:var(--violet-glow);}
+  .contact-block.in .rays-head .accent > span{
+    animation:wordUp .7s cubic-bezier(.16,1,.3,1) forwards, raysGlow 2.4s ease-in-out 1.3s infinite alternate;
+    animation-delay:var(--d,.48s), 1.3s;
+  }
+  @keyframes raysGlow{from{text-shadow:0 0 0 transparent;}to{text-shadow:0 0 22px rgba(225,79,255,0.55);}}
+  .contact-block p{
+    color:var(--ink-soft);font-size:14px;max-width:340px;margin:0 auto 26px;
+    opacity:0;transform:translateY(14px);
+  }
+  .contact-block.in p{animation:cRise .6s ease forwards .6s;}
+  @keyframes cRise{to{opacity:1;transform:translateY(0);}}
+  .handle-btn{
+    position:relative;overflow:hidden;
+    display:inline-flex;align-items:center;gap:10px;
+    border:1px solid var(--line-strong);border-radius:30px;
+    padding:12px 22px;font-family:'Unbounded',sans-serif;font-weight:600;font-size:14px;
+    opacity:0;transform:translateY(14px);
+    transition:border-color .2s ease, background .2s ease, box-shadow .25s ease;
+  }
+  .contact-block.in .handle-btn{animation:cRise .6s ease forwards .78s;}
+  .handle-btn::after{
+    content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(155,43,174,0.18),transparent);
+    transform:skewX(-20deg);
+  }
+  .contact-block.in .handle-btn::after{animation:sheen 3.6s ease-in-out 2s infinite;}
+  @keyframes sheen{0%{left:-60%;}55%,100%{left:135%;}}
+  .handle-btn:hover{border-color:var(--violet);background:var(--paper-2);box-shadow:0 8px 24px -10px rgba(155,43,174,0.4);}
+  .handle-btn .ar{display:inline-block;transition:transform .2s ease;}
+  .handle-btn:hover .ar{transform:translateX(4px);}
+  .contact-block.in .handle-btn .ar{animation:arNudge 2.4s ease-in-out 1.6s infinite;}
+  @keyframes arNudge{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
+
+  @media (prefers-reduced-motion: reduce){
+    .warranty-band::before,.warranty-fx{display:none;}
+    .warranty-band.in .wnum-fig,
+    .warranty-band.in .wnum-label span,
+    .warranty-band.in p,
+    .contact-block.in .contact-fx,
+    .contact-block.in .contact-cut,
+    .contact-block.in .kicker,
+    .contact-block.in p,
+    .contact-block.in .handle-btn,
+    .contact-block.in .handle-btn::after,
+    .contact-block.in .handle-btn .ar,
+    .contact-block.in .rays-head .w > span,
+    .contact-block.in .rays-head .accent > span{animation:none;}
+    .wnum-fig,.wnum-label span,.warranty-band p,
+    .contact-block .kicker,.contact-block p,.handle-btn{opacity:1;transform:none;}
+    .rays-head .w > span{transform:none;}
+    .contact-cut{transform:scaleX(1);}
+  }
+
+  footer{padding:34px 0 calc(40px + var(--safe-bottom));text-align:center;}
+  footer p{color:var(--ink-soft);font-size:11px;}
+
+  /* ================= HEAT-REJECTION SIMULATOR ================= */
+  .hs{
+    position:relative;
+    color:var(--ink);
+    padding:64px 0 74px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 720px 440px at 15% -6%, rgba(155,43,174,0.08), transparent 60%),
+      radial-gradient(ellipse 640px 460px at 98% 18%, rgba(79,227,255,0.06), transparent 60%),
+      var(--paper);
+  }
+  .hs-wrap{max-width:1120px;margin:0 auto;padding:0 26px;}
+  .hs-head .eyebrow-dark{color:var(--violet);}
+  .hs-head .eyebrow-dark::before{background:var(--violet);}
+  .hs-head h2{
+    font-size:clamp(24px,4.4vw,40px);line-height:1.08;letter-spacing:-0.02em;
+    color:var(--ink);margin-bottom:12px;text-transform:uppercase;
+  }
+  .hs-head p{color:var(--ink-soft);font-size:14.5px;max-width:540px;}
+
+  /* segmented control — standalone + three series tabs + revealed variants */
+  .hs-seg{display:flex;flex-direction:column;gap:10px;margin:26px 0 22px;}
+  .hs-seg__series{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .hs-seg__variants{
+    display:flex;flex-wrap:wrap;gap:8px;
+    overflow:hidden;max-height:0;opacity:0;
+    transition:max-height .26s ease, opacity .22s ease, margin-top .26s ease;
+  }
+  .hs-seg__variants.is-open{max-height:200px;opacity:1;}
+  .hs-seg__btn{
+    -webkit-appearance:none;appearance:none;
+    flex:1 1 150px;min-width:150px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
+    letter-spacing:0.06em;text-transform:uppercase;
+    padding:13px 16px;border-radius:4px;cursor:pointer;
+    background:#fff;
+    border:1px solid var(--line-strong);
+    color:var(--ink-soft);
+    transition:background .25s ease,border-color .25s ease,color .25s ease,box-shadow .25s ease;
+  }
+  .hs-seg__solo{width:100%;flex:0 0 auto;padding:11px 16px;font-weight:700;color:var(--ink);letter-spacing:0.1em;}
+  .hs-seg__series .hs-seg__btn{min-width:0;}
+  .hs-seg__btn:hover{color:var(--ink);border-color:var(--violet);}
+  .hs-seg__btn:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .hs-seg__btn.is-active{
+    background:linear-gradient(180deg, rgba(225,79,255,0.12), rgba(155,43,174,0.05));
+    border-color:var(--violet-glow);color:var(--ink);
+    box-shadow:0 0 0 1px rgba(225,79,255,0.28), 0 12px 30px -16px rgba(225,79,255,0.5);
+  }
+
+  /* layout grid */
+  .hs-grid{
+    display:grid;
+    grid-template-columns:minmax(0,2fr) minmax(0,0.92fr);
+    gap:20px;align-items:stretch;
+  }
+  .hs-stage-card{
+    position:relative;border-radius:20px;overflow:hidden;padding:10px;
+    background:linear-gradient(160deg,#fff,var(--paper-2));
+    border:1px solid var(--line);
+    box-shadow:0 24px 50px -34px rgba(155,43,174,0.28);
+  }
+  .hs-stage{
+    position:relative;display:block;width:100%;
+    aspect-ratio:1690/931;border-radius:12px;overflow:hidden;
+    pointer-events:none;background:#0A0610;
+  }
+  /* No per-state filter, tint or blend is applied to the photo. setState()
+     swaps only the src: "Without Film" => 123.png, any selected film =>
+     new car.orig.png. The masked windshield overlay (.hs-film-layer) still
+     carries the per-film tint. */
+  .hs-photo{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;
+  }
+  .hs-fx{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+  /* stats panel */
+  .hs-panel{
+    display:flex;flex-direction:column;gap:15px;
+    border-radius:20px;padding:24px;
+    background:linear-gradient(180deg,#fff,var(--paper-2));
+    border:1px solid var(--line);
+    box-shadow:0 24px 50px -34px rgba(155,43,174,0.25);
+  }
+  .hs-cabin-label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;
+  }
+  .hs-cabin-temp{
+    font-family:'Unbounded',sans-serif;font-weight:800;line-height:1;
+    font-size:clamp(48px,8vw,76px);color:var(--ink);
+    display:flex;align-items:flex-start;gap:3px;
+    transition:color .9s ease, text-shadow .9s ease;
+  }
+  .hs-cabin-temp .deg{font-size:0.4em;margin-top:0.55em;color:var(--ink-soft);}
+  .hs[data-state="none"] .hs-cabin-temp{color:#D63A12;text-shadow:0 0 26px rgba(214,58,18,0.22);}
+  .hs[data-state="uv50"] .hs-cabin-temp{color:#7A3FD6;text-shadow:0 0 26px rgba(122,63,214,0.2);}
+  .hs[data-state="uv70"] .hs-cabin-temp{color:#1E7C9C;text-shadow:0 0 26px rgba(30,124,156,0.2);}
+  .hs[data-state="pro50"] .hs-cabin-temp{color:#186F8C;text-shadow:0 0 26px rgba(24,111,140,0.22);}
+  .hs[data-state="pro70"] .hs-cabin-temp{color:#136185;text-shadow:0 0 28px rgba(19,97,133,0.24);}
+  .hs[data-state="uvp1"] .hs-cabin-temp{color:#0E5273;text-shadow:0 0 28px rgba(14,82,115,0.26);}
+
+  .hs-mood{
+    align-self:flex-start;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;
+    letter-spacing:0.1em;text-transform:uppercase;
+    padding:6px 12px;border-radius:20px;border:1px solid transparent;
+    transition:background .6s ease,color .6s ease,border-color .6s ease;
+  }
+  .hs-mood[data-state="none"]{background:rgba(214,58,18,0.12);color:#C13A16;border-color:rgba(214,58,18,0.35);}
+  .hs-mood[data-state="uv50"]{background:rgba(122,63,214,0.12);color:#6B34C0;border-color:rgba(122,63,214,0.32);}
+  .hs-mood[data-state="uv70"]{background:rgba(30,124,156,0.12);color:#1E7C9C;border-color:rgba(30,124,156,0.32);}
+  .hs-mood[data-state="pro50"]{background:rgba(24,111,140,0.12);color:#186F8C;border-color:rgba(24,111,140,0.34);}
+  .hs-mood[data-state="pro70"]{background:rgba(19,97,133,0.12);color:#136185;border-color:rgba(19,97,133,0.36);}
+  .hs-mood[data-state="uvp1"]{background:rgba(14,82,115,0.12);color:#0E5273;border-color:rgba(14,82,115,0.38);}
+
+  .hs-divider{height:1px;background:var(--line);margin:1px 0;}
+  .hs-stat__top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .hs-stat__name{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;}
+  .hs-stat__badge{
+    font-style:normal;font-size:9px;font-weight:700;letter-spacing:0.05em;
+    margin-left:6px;padding:2px 6px;border-radius:20px;
+    background:rgba(30,134,168,0.14);color:#1E86A8;vertical-align:middle;
+  }
+  .hs-stat__val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:var(--ink);}
+  .hs-bar{height:6px;border-radius:3px;background:rgba(155,43,174,0.10);overflow:hidden;}
+  .hs-bar__fill{
+    height:100%;transform-origin:left;transform:scaleX(0);
+    background:linear-gradient(90deg,var(--violet),var(--violet-glow));
+    transition:transform .9s cubic-bezier(.16,1,.3,1);
+  }
+  .hs-bar__fill.is-cyan{background:linear-gradient(90deg,#1E86A8,#3FBFDD);}
+  .hs-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);line-height:1.5;margin-top:2px;}
+  .hs-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+  /* ---- photo overlay: interactive scene states ---- */
+  .hs-glow{transform-box:fill-box;transform-origin:center;animation:hs-sun-pulse 4s ease-in-out infinite;}
+  @keyframes hs-sun-pulse{0%,100%{opacity:.45;transform:scale(1);}50%{opacity:.85;transform:scale(1.08);}}
+
+  /* ---- windshield film overlay ----
+     Exactly ONE layer. It lives inside the .hs-fx SVG so it shares the
+     photo's coordinate space (viewBox 0 0 1690 931 + the same
+     preserveAspectRatio as object-fit:cover) and stays glued to the
+     glass at any size. Switching films only rewrites the CSS variables
+     below — nothing is added, stacked or blended onto the car body. */
+  .hs-film-layer{ pointer-events:none; }
+  /* settled film (what you see between switches) */
+  .hs-film-cur{
+    fill:var(--cur-tint, #3a2550);
+    fill-opacity:var(--cur-op, 0);
+    transition:fill .35s ease;
+  }
+  /* incoming film — contributes ONLY during an active wipe, so it can
+     never stack on the settled film once the sweep has finished */
+  .hs-film-next{
+    fill:var(--next-tint, #3a2550);
+    fill-opacity:0;
+  }
+  .hs-film-layer.is-wiping .hs-film-next{
+    fill-opacity:var(--next-op, 0);
+  }
+  .hs-film-edge{
+    fill:none;
+    stroke:var(--film-edge, #c86bff);          /* subtle violet UV accent, edge only */
+    stroke-width:2.4;
+    stroke-opacity:var(--film-edge-op, 0);
+    transition:stroke-opacity .35s ease, stroke .35s ease;
+  }
+  /* soft leading glint that rides the coating front */
+  .hs-film-seam{ opacity:0; }
+
+  /* --- window-only film wipe --------------------------------------
+     The clip bands sit still between switches (old film fully shown,
+     new film parked off to the left). Adding .is-wiping to the layer
+     replays a ~430ms sweep: the old band slides off to the right while
+     the new band slides in from the left, staying complementary. */
+  .hs-wipe-cur__r { transform:translateX(0);        will-change:transform; }
+  .hs-wipe-next__r{ transform:translateX(-1690px);  will-change:transform; }
+
+  .hs-film-layer.is-wiping .hs-wipe-cur__r{
+    animation:hs-wipe-cur var(--wipe-dur,430ms) cubic-bezier(.45,0,.15,1) forwards;
+  }
+  .hs-film-layer.is-wiping .hs-wipe-next__r{
+    animation:hs-wipe-next var(--wipe-dur,430ms) cubic-bezier(.45,0,.15,1) forwards;
+  }
+  .hs-film-layer.is-wiping .hs-film-seam{
+    animation:hs-wipe-seam var(--wipe-dur,430ms) cubic-bezier(.45,0,.15,1) forwards;
+  }
+  @keyframes hs-wipe-cur { from{ transform:translateX(0); }        to{ transform:translateX(1690px); } }
+  @keyframes hs-wipe-next{ from{ transform:translateX(-1690px); }  to{ transform:translateX(0); } }
+  @keyframes hs-wipe-seam{
+    0%  { transform:translateX(-30px); opacity:0; }
+    14% { opacity:.16; }
+    86% { opacity:.16; }
+    100%{ transform:translateX(1690px); opacity:0; }
+  }
+
+  .hs-shimmer{opacity:0;transition:opacity .9s ease;transform-box:fill-box;transform-origin:center;}
+  .hs-stage[data-state="none"] .hs-shimmer{opacity:.85;animation:hs-wave 3s ease-in-out infinite;}
+  .hs-stage[data-state="uv50"] .hs-shimmer{opacity:.32;animation:hs-wave 3.4s ease-in-out infinite;}
+  .hs-stage[data-state="uv70"] .hs-shimmer{opacity:.06;}
+  .hs-stage[data-state="pro50"] .hs-shimmer{opacity:.03;}
+  .hs-stage[data-state="pro70"] .hs-shimmer{opacity:0;}
+  .hs-stage[data-state="uvp1"] .hs-shimmer{opacity:0;}
+  @keyframes hs-wave{0%,100%{transform:translateX(0) scaleY(1);}50%{transform:translateX(10px) scaleY(1.16);}}
+
+  .hs-particle{fill:#FF5A1E;animation:hs-float 3.2s ease-in-out infinite;animation-delay:var(--pd,0s);}
+  .hs-stage[data-state="uv50"] .hs-particle{fill:#B98CFF;}
+  .hs-stage[data-state="uv70"] .hs-particle{fill:#7FE9FF;}
+  .hs-stage[data-state="pro50"] .hs-particle{fill:#8FD8FF;}
+  .hs-stage[data-state="pro70"] .hs-particle{fill:#B7F2FF;}
+  .hs-stage[data-state="uvp1"] .hs-particle{fill:#CFF6FF;}
+  @keyframes hs-float{0%{transform:translate(0,0);opacity:0;}20%{opacity:.9;}100%{transform:translate(var(--px,0),-84px);opacity:0;}}
+
+  .hs-ray{transform:translate(var(--x,0),var(--y,0));}
+  .hs-ray__beam{opacity:0;will-change:transform,opacity;}
+  .hs-ray.is-pass .hs-ray__beam{fill:url(#hs-ray-grad);animation:hs-beam-pass 2.2s linear infinite;animation-delay:var(--delay,0s);}
+  .hs-ray.is-reflect .hs-ray__beam{fill:url(#hs-ray-violet);animation:hs-beam-reflect 2.4s ease-out infinite;animation-delay:var(--delay,0s);}
+  .hs-ray.is-off .hs-ray__beam{animation:none;opacity:0;}
+  @keyframes hs-beam-pass{
+    0%{transform:translate(-60px,-60px) rotate(52deg);opacity:0;}
+    12%{opacity:.92;}
+    72%{opacity:.6;}
+    100%{transform:translate(470px,600px) rotate(52deg);opacity:0;}
+  }
+  @keyframes hs-beam-reflect{
+    0%{transform:translate(340px,430px) rotate(-30deg);opacity:0;}
+    16%{opacity:.9;}
+    100%{transform:translate(820px,60px) rotate(-30deg);opacity:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hs-glow{animation:none;}
+    .hs-shimmer,.hs-stage[data-state] .hs-shimmer{animation:none !important;}
+    .hs-particle{display:none;}
+    .hs-ray.is-reflect .hs-ray__beam,.hs-ray.is-off .hs-ray__beam{opacity:0;animation:none;}
+    .hs-ray.is-pass .hs-ray__beam{animation:none;opacity:.5;transform:translate(200px,260px) rotate(52deg);}
+    .hs-film-layer.is-wiping .hs-wipe-cur__r,
+    .hs-film-layer.is-wiping .hs-wipe-next__r,
+    .hs-film-layer.is-wiping .hs-film-seam{animation:none;}
+    .hs-bar__fill,.hs-cabin-temp,.hs-film-cur,.hs-film-edge,.hs-seg__variants{transition:none;}
+  }
+
+  @media (max-width:860px){
+    .hs-grid{grid-template-columns:1fr;}
+    .hs-seg__btn{min-width:0;}
+  }
+  @media (max-width:520px){
+    .hs{padding:48px 0 56px;}
+    .hs-wrap{padding:0 18px;}
+    /* three series tabs stay in one compact row; scroll horizontally if too tight */
+    .hs-seg__series{
+      grid-auto-flow:column;grid-auto-columns:minmax(104px,1fr);
+      grid-template-columns:none;overflow-x:auto;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none;
+    }
+    .hs-seg__series::-webkit-scrollbar{display:none;}
+    .hs-seg__variants.is-open{max-height:260px;}
+    .hs-seg__btn{min-width:0;font-size:11px;letter-spacing:0.04em;padding:12px 10px;}
+    .hs-panel{padding:18px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+
+  <div class="hero-top">
+    <a href="https://uv99.in" class="wordmark"><img src="assets/logo.png" alt="UV99"></a>
+    <span class="pill">3-Year Warranty</span>
+  </div>
+
+  <p class="hero-tag">UV Rays Out. <span>Sunshine In.</span></p>
+
+  <a href="#videos" class="hero-watch" aria-label="Watch videos">
+    <span class="hero-watch__ic" aria-hidden="true">▶</span> Watch Videos
+  </a>
+</section>
+
+<!-- ================= PRODUCT VIDEO ================= -->
+<section class="section" id="videos" style="padding-bottom:16px">
+  <div class="wrap reveal">
+    <div class="eyebrow-dark">See It In Action</div>
+    <h2>How UV99<br>protects your ride</h2>
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/SIgob7498Ls?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+
+    <ul class="video-points">
+      <li class="vp-lead">The sun damage most drivers never see.</li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">🔍</span>
+        <span><strong>Visual Exposure Analysis</strong>Maps the UV and heat load reaching your cabin on an average drive.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">☀</span>
+        <span><strong>Cumulative UV</strong>Unprotected glass lets damage build with every trip.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">❄</span>
+        <span><strong>Cabin Heat</strong>Trapped solar heat pushes up temperature and AC load.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">🛡</span>
+        <span><strong>Interior Protection</strong>Slows fading, cracking and hardening of trims and seats.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">✓</span>
+        <span><strong>UV99 Defense</strong>Blocks 99% of UVA &amp; UVB rays before they get in.</span>
+      </li>
+    </ul>
+
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/GVbACM2Zhhw?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+
+    <ul class="video-points">
+      <li class="vp-lead">Rejects 99% of ultraviolet rays.</li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">🛡</span>
+        <span><strong>Interior Protection</strong>Guards dashboard &amp; seats from fading, cracking, deterioration.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">☀</span>
+        <span><strong>Skin Protection</strong>Shields you and passengers from harmful UV on every drive.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">❄</span>
+        <span><strong>Enhanced Comfort</strong>A cooler, more pleasant cabin on every trip.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">◐</span>
+        <span><strong>Glare Reduction</strong>Safer driving in bright, harsh conditions.</span>
+      </li>
+      <li>
+        <span class="vp-ic" aria-hidden="true">◎</span>
+        <span><strong>Optical Clarity</strong>Sharp, distortion-free visibility, day and night.</span>
+      </li>
+    </ul>
+
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/VBQYjBibX_4?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RANGE (interactive tabs) ================= -->
+<section class="section" style="padding-top:8px">
+  <div class="wrap reveal">
+    <div class="eyebrow-dark">The Range</div>
+    <h2>Pick your level<br>of protection</h2>
+    <p class="lead">Same UV defense underneath. Choose how much heat rejection and tone you want on top.</p>
+
+    <div class="tabs" role="tablist">
+      <div class="tab active" role="tab" data-target="panel-uv99">UV99 Series</div>
+      <div class="tab" role="tab" data-target="panel-pro">UV PRO Series</div>
+      <div class="tab" role="tab" data-target="panel-plus1">UV99 +1</div>
+    </div>
+
+    <div class="panel active" id="panel-uv99">
+      <p class="desc">Pure UV protection with a virtually invisible, factory-fitted look.</p>
+      <div class="variant-grid">
+        <div class="variant">
+          <h4>UV99 70</h4>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">VLT</span><span class="specbar-val mono">70%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:70%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">30%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:30%"></div></div>
+          </div>
+        </div>
+        <div class="variant">
+          <h4>UV99 50</h4>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">VLT</span><span class="specbar-val mono">47%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:47%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">35%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:35%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-pro">
+      <p class="desc">Same 99% UV protection, plus advanced infrared heat-rejection for a cooler cabin.</p>
+      <div class="variant-grid">
+        <div class="variant">
+          <h4>UV PRO 70</h4>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">VLT</span><span class="specbar-val mono">70%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:70%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">42%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:42%"></div></div>
+          </div>
+        </div>
+        <div class="variant">
+          <h4>UV PRO 50</h4>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">VLT</span><span class="specbar-val mono">51%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:51%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">50%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:50%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-plus1">
+      <p class="desc">Our maximum spec — near-total UV block with the strongest infrared heat-rejection, layered over UV99 or UV99 PRO.</p>
+      <div class="variant-grid">
+        <div class="variant">
+          <h4>UV99 +1</h4>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">VLT</span><span class="specbar-val mono">70%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:70%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">100%</span></div>
+            <div class="specbar-track"><div class="specbar-fill uv" style="width:100%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">Infrared Rejection</span><span class="specbar-val mono">89%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:89%"></div></div>
+          </div>
+          <div class="specbar-row">
+            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">42%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:42%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="qc-note">All values averaged from routine QC data · may vary batch to batch (± 5%)</p>
+  </div>
+</section>
+
+<style id="uvp-style">
+  /* ===== UV99 — UV-radiation rejection overlay (canvas layer over the photo) ===== */
+  .hs-stage #hs-rays{ display:none; }          /* premium canvas beams replace the old SVG rays */
+  .hs-stage .hs-shimmer{ display:none; }        /* drop the old squiggle heat-shimmer */
+  .hs-stage #hs-particles{ display:none; }      /* single canvas ray only — no floating specks */
+  .uvp-canvas{
+    position:absolute; inset:0; width:100%; height:100%;
+    z-index:4; pointer-events:none; display:block;
+  }
+  .uvp-badge{
+    position:absolute; left:auto; right:6%; top:12%;
+    z-index:5; pointer-events:none;
+    display:flex; flex-direction:column; gap:5px;
+    padding:11px 15px 12px;
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;
+    color:#fff;
+    background:linear-gradient(180deg, rgba(18,10,26,0.52), rgba(11,7,17,0.44));
+    border:1px solid rgba(226,180,255,0.24);
+    border-radius:13px;
+    -webkit-backdrop-filter:blur(11px) saturate(1.3);
+            backdrop-filter:blur(11px) saturate(1.3);
+    box-shadow:0 14px 40px -16px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.06);
+    transition:border-color .3s ease, box-shadow .3s ease;
+  }
+  .uvp-badge__row{ display:flex; align-items:center; gap:7px; }
+  .uvp-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:#E14FFF; box-shadow:0 0 10px 2px rgba(225,79,255,0.9);
+    animation:uvp-pulse 2.4s ease-in-out infinite;
+  }
+  .uvp-badge__title{
+    font-size:10px; font-weight:700; letter-spacing:0.19em; text-transform:uppercase;
+    color:#e7c6ff;
+  }
+  .uvp-badge__big{
+    font-size:clamp(12px,1.5vw,14.5px); font-weight:800; letter-spacing:0.01em; color:#fff;
+  }
+  .uvp-badge__ind{
+    margin-top:1px;
+    font-family:'JetBrains Mono','Manrope',monospace;
+    font-size:9.5px; letter-spacing:0.13em; text-transform:uppercase;
+  }
+  .uvp-ind__txt{
+    color:rgba(255,255,255,0.62); white-space:nowrap;
+    transition:color .2s ease, text-shadow .2s ease;
+  }
+  .uvp-badge.is-hit{
+    border-color:rgba(124,255,196,0.5);
+    box-shadow:0 16px 46px -14px rgba(0,0,0,0.72), 0 0 22px -4px rgba(124,255,196,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .uvp-badge.is-hit .uvp-ind__txt{ color:#7CFFC4; text-shadow:0 0 12px rgba(124,255,196,0.6); }
+  /* no film selected — warm "UV enters the cabin" warning treatment */
+  .uvp-badge.is-open{
+    border-color:rgba(255,120,90,0.42);
+    box-shadow:0 14px 40px -16px rgba(0,0,0,0.72), 0 0 20px -6px rgba(255,120,90,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .uvp-badge.is-open .uvp-dot{ background:#FF6B3D; box-shadow:0 0 10px 2px rgba(255,107,61,0.9); }
+  .uvp-badge.is-open .uvp-badge__title{ color:#ffb9a0; }
+  .uvp-badge.is-open .uvp-ind__txt{ color:rgba(255,205,185,0.9); }
+  @keyframes uvp-pulse{ 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.78);} }
+  @media (max-width:560px){
+    .uvp-badge{ left:auto; right:4%; top:8%; padding:8px 11px 9px; border-radius:11px; gap:3px; }
+    .uvp-badge__title{ font-size:8.5px; letter-spacing:0.15em; }
+    .uvp-badge__ind{ font-size:8px; height:11px; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .uvp-dot{ animation:none; }
+    .uvp-badge,.uvp-badge__ind > span{ transition:none; }
+  }
+</style>
+
+<!-- ================= HEAT-REJECTION SIMULATOR ================= -->
+<section class="hs" id="heatsim" data-state="none" aria-labelledby="hs-heading">
+  <div class="hs-wrap reveal">
+    <div class="hs-head">
+      <div class="eyebrow-dark">Interactive Demo</div>
+      <h2 id="hs-heading">Watch the film reject heat</h2>
+      <p>Select a UV99 film and see how it changes the sunlight hitting the glass, the heat entering the cabin, and how the family inside feels. Figures shown are demonstration values.</p>
+    </div>
+
+    <div class="hs-seg" role="group" aria-label="Window film selection">
+      <!-- standalone: no film -->
+      <button class="hs-seg__btn hs-seg__solo is-active" type="button" id="hs-tab-none"
+              aria-pressed="true" aria-controls="hs-stage-region" data-state="none">Without Film</button>
+
+      <!-- three series tabs; variant buttons are generated from FILM_DATA -->
+      <div class="hs-seg__series" role="tablist" aria-label="Film series">
+        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
+                id="hs-series-uv99" data-series="uv99"
+                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="0">UV99 Series</button>
+        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
+                id="hs-series-pro" data-series="pro"
+                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">UV99 Pro Series</button>
+        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
+                id="hs-series-premium" data-series="premium"
+                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">Premium Series</button>
+      </div>
+
+      <!-- revealed variants for the active series only -->
+      <div class="hs-seg__variants" id="hs-variants" role="group" aria-label="Series variants"></div>
+    </div>
+
+    <div class="hs-grid">
+      <div class="hs-stage-card" id="hs-stage-region" role="region" aria-label="Film effect visualisation" aria-live="polite" tabindex="0">
+        <div class="hs-stage" data-state="none" role="img" aria-label="Cabin heat visualisation">
+          <img class="hs-photo" src="assets/123.png" alt="" width="1689" height="931" loading="lazy" decoding="async">
+          <svg class="hs-fx" viewBox="0 0 1690 931" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <radialGradient id="hs-glow-grad" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#FFC978" stop-opacity="0.5"/><stop offset="100%" stop-color="#FFC978" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="hs-ray-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FFE1A0" stop-opacity="0"/><stop offset="35%" stop-color="#FFC061" stop-opacity="0.95"/><stop offset="100%" stop-color="#FF7A3C" stop-opacity="0.12"/>
+              </linearGradient>
+              <linearGradient id="hs-ray-violet" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#E7A8FF" stop-opacity="0"/><stop offset="40%" stop-color="#C86BFF" stop-opacity="0.9"/><stop offset="100%" stop-color="#7A3CFF" stop-opacity="0.1"/>
+              </linearGradient>
+              <!-- Windshield mask: one 4-sided perspective path, held safely
+                   inside the glass (clears roof, hood, A-pillars, mirror,
+                   doors and painted body). Shared by every film option and,
+                   because it lives in this viewBox, it scales with the photo. -->
+              <path id="hs-windshield"
+                    d="M245,590 Q352,486 552,334 Q780,316 990,362 L1084,546 Q652,622 245,590 Z"/>
+
+              <!-- Everything the film wipe touches is intersected with this
+                   glass shape, so nothing can ever paint on the car body. -->
+              <clipPath id="hs-glass-clip"><use href="#hs-windshield"/></clipPath>
+
+              <!-- Two sweeping bands. The OUTGOING film is clipped by
+                   #hs-wipe-cur (slides off to the right); the INCOMING film
+                   is clipped by #hs-wipe-next (slides in from the left).
+                   They stay perfectly complementary, so the boundary reads
+                   as a single coating front moving across the glass. -->
+              <clipPath id="hs-wipe-cur" clipPathUnits="userSpaceOnUse">
+                <rect class="hs-wipe-cur__r" x="0" y="0" width="1690" height="931"/>
+              </clipPath>
+              <clipPath id="hs-wipe-next" clipPathUnits="userSpaceOnUse">
+                <rect class="hs-wipe-next__r" x="0" y="0" width="1690" height="931"/>
+              </clipPath>
+
+              <linearGradient id="hs-seam-grad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+                <stop offset="0.5" stop-color="#fff" stop-opacity="1"/>
+                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            <!-- sun glow, aligned to the photo's sun -->
+            <circle class="hs-glow" cx="120" cy="90" r="150" fill="url(#hs-glow-grad)"/>
+
+            <!-- Film overlay. Clipped to the glass shape as a whole, then the
+                 two tint layers are each clipped again by a sweeping band so a
+                 switch plays a fast surface wipe: old film off -> seam -> new
+                 film on. Nothing here can reach the car body or its paint. -->
+            <g class="hs-film-layer" clip-path="url(#hs-glass-clip)">
+              <use class="hs-film-cur"  href="#hs-windshield" clip-path="url(#hs-wipe-cur)"/>
+              <use class="hs-film-next" href="#hs-windshield" clip-path="url(#hs-wipe-next)"/>
+              <use class="hs-film-edge" href="#hs-windshield"/>
+              <rect class="hs-film-seam" x="0" y="0" width="42" height="931" fill="url(#hs-seam-grad)"/>
+            </g>
+
+            <!-- heat shimmer along the base of the glass / hood -->
+            <g class="hs-shimmer" fill="none" stroke-linecap="round">
+              <path d="M210,690 q40,-20 80,0 t80,0 t80,0 t80,0 t80,0 t80,0 t80,0 t80,0" stroke="rgba(255,150,90,0.55)" stroke-width="6"/>
+              <path d="M240,660 q40,-20 80,0 t80,0 t80,0 t80,0 t80,0 t80,0 t80,0" stroke="rgba(255,120,70,0.4)" stroke-width="5"/>
+              <path d="M280,632 q40,-18 80,0 t80,0 t80,0 t80,0 t80,0 t80,0" stroke="rgba(255,185,120,0.3)" stroke-width="4"/>
+            </g>
+
+            <!-- heat particles inside the cabin (populated by script) -->
+            <g id="hs-particles"></g>
+
+            <!-- animated sunlight rays (populated by script) -->
+            <g id="hs-rays" transform="translate(110 70)"></g>
+          </svg>
+
+          <!-- ===== UV radiation → window impact → rejection overlay ===== -->
+          <canvas class="uvp-canvas" aria-hidden="true"></canvas>
+          <div class="uvp-badge" aria-hidden="true">
+            <div class="uvp-badge__row">
+              <span class="uvp-dot"></span>
+              <span class="uvp-badge__title">UV99 Protection</span>
+            </div>
+            <div class="uvp-badge__big">99% UV Rejection</div>
+            <div class="uvp-badge__ind"><span class="uvp-ind__txt">UV Rays &rarr; Rejected</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hs-panel">
+        <div class="hs-cabin-read">
+          <div class="hs-cabin-label">Cabin temperature</div>
+          <div class="hs-cabin-temp"><span data-out="cabin">62</span><span class="deg">&deg;C</span></div>
+        </div>
+        <span class="hs-mood" data-out="mood" data-state="none">Extremely hot</span>
+        <div class="hs-divider"></div>
+        <div class="hs-stat">
+          <div class="hs-stat__top"><span class="hs-stat__name">Exterior temperature</span><span class="hs-stat__val"><span data-out="exterior">48</span>&deg;C</span></div>
+        </div>
+        <div class="hs-stat">
+          <div class="hs-stat__top"><span class="hs-stat__name">Heat rejected</span><span class="hs-stat__val"><span data-out="heat">0</span>%</span></div>
+          <div class="hs-bar"><div class="hs-bar__fill" data-bar="heat"></div></div>
+        </div>
+        <div class="hs-stat">
+          <div class="hs-stat__top"><span class="hs-stat__name">UV blocked</span><span class="hs-stat__val"><span data-out="uv">0</span>%</span></div>
+          <div class="hs-bar"><div class="hs-bar__fill" data-bar="uv"></div></div>
+        </div>
+        <div class="hs-stat" data-stat="infrared" hidden>
+          <div class="hs-stat__top"><span class="hs-stat__name">Infrared rejected <em class="hs-stat__badge">UV99 +1</em></span><span class="hs-stat__val"><span data-out="infrared">0</span>%</span></div>
+          <div class="hs-bar"><div class="hs-bar__fill is-cyan" data-bar="infrared"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="hs-live" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ================= WARRANTY ================= -->
+<section class="warranty-band" id="warranty">
+  <div class="warranty-fx" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap reveal">
+    <div class="wnum">
+      <span class="wnum-fig" data-count="3">0</span>
+      <span class="wnum-label">Years Warranty</span>
+    </div>
+    <p>Covers bubbles, adhesive failures, and discoloration — with less than 10% drop in UVR/IRR performance guaranteed.</p>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact-block" id="contact">
+  <div class="contact-fx" aria-hidden="true"></div>
+  <div class="contact-cut" aria-hidden="true"></div>
+  <div class="wrap reveal">
+    <div class="kicker">You Scanned This For A Reason</div>
+    <h2 class="rays-head">
+      <span class="l"><span class="w" style="--d:.24s"><span>Let's</span></span> <span class="w" style="--d:.32s"><span>stop</span></span></span>
+      <span class="l"><span class="w" style="--d:.40s"><span>some</span></span> <span class="w accent" style="--d:.48s"><span>rays.</span></span></span>
+    </h2>
+    <p>DM us your car model or glass size — we'll tell you exactly which series fits and point you to your nearest installer.</p>
+    <a class="handle-btn" href="https://instagram.com/uv99.in" target="_blank" rel="noopener">@uv99.in <span class="ar">→</span></a>
+  </div>
+</section>
+
+<footer>
+  <p>UV99 Glazing — Harmful rays out, protection in</p>
+  <p>&copy; 2026 UV99. All rights reserved.</p>
+</footer>
+
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Split the warranty label into per-letter spans (stagger via --i)
+  const wLabel = document.querySelector('.wnum-label');
+  if(wLabel){
+    const txt = wLabel.textContent.trim();
+    wLabel.textContent = '';
+    [...txt].forEach((ch,i)=>{
+      const s = document.createElement('span');
+      s.textContent = ch === ' ' ? ' ' : ch;
+      s.style.setProperty('--i', i);
+      wLabel.appendChild(s);
+    });
+  }
+
+  // Count-up for the warranty figure
+  function runWarrantyCount(band){
+    const fig = band.querySelector('.wnum-fig');
+    if(!fig) return;
+    const target = parseInt(fig.dataset.count, 10) || 0;
+    if(reduceMotion){ fig.textContent = target; return; }
+    const dur = 950, start = performance.now();
+    (function tick(now){
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      fig.textContent = Math.round(eased * target);
+      if(p < 1) requestAnimationFrame(tick);
+      else fig.textContent = target;
+    })(start);
+  }
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal, .warranty-band, .contact-block');
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          if(e.target.classList.contains('warranty-band')) runWarrantyCount(e.target);
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold:0.12});
+    revealEls.forEach(el=>io.observe(el));
+  } else {
+    revealEls.forEach(el=>el.classList.add('in'));
+    const b = document.querySelector('.warranty-band');
+    if(b) runWarrantyCount(b);
+  }
+
+  // ---- Premium compare section: reveal choreography + stat count-up ----
+  (function(){
+    const cmp = document.querySelector('.cmp');
+    if(!cmp) return;
+
+    function countUp(el){
+      const target = parseFloat(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      if(reduceMotion){ el.textContent = target + suffix; return; }
+      const dur = 1500, start = performance.now();
+      (function tick(now){
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target) + suffix;
+        if(p < 1) requestAnimationFrame(tick);
+        else el.textContent = target + suffix;
+      })(start);
+    }
+
+    function activate(){
+      cmp.classList.add('in');
+      const stats = cmp.querySelectorAll('[data-count]');
+      // hold the count-up until the cards have slid in
+      setTimeout(()=>stats.forEach(countUp), reduceMotion ? 0 : 650);
+    }
+
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ activate(); io.disconnect(); }
+        });
+      }, {threshold:0.22});
+      io.observe(cmp);
+    } else {
+      activate();
+    }
+  })();
+
+  // ---- Range spec bars: fast count-up + bar refill on reveal / tab switch ----
+  (function(){
+    const panels = document.querySelectorAll('#panel-uv99, #panel-pro');
+    if(!panels.length) return;
+
+    function animateVal(el){
+      if(!el.dataset.raw) el.dataset.raw = el.textContent.trim();
+      const m = /([\d.]+)/.exec(el.dataset.raw);
+      if(!m) return;
+      const target = parseFloat(m[1]);
+      const suffix = el.dataset.raw.replace(/[\d.]/g,'') || '%';
+      if(reduceMotion){ el.textContent = target + suffix; return; }
+      const dur = 600, start = performance.now();
+      el.textContent = '0' + suffix;
+      (function tick(now){
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target) + suffix;
+        if(p < 1) requestAnimationFrame(tick);
+        else el.textContent = target + suffix;
+      })(start);
+    }
+
+    function refillBar(el){
+      if(reduceMotion) return;
+      el.style.animation = 'none';
+      void el.offsetWidth;            // force reflow so the keyframes restart
+      el.style.animation = '';
+    }
+
+    function play(panel){
+      panel.querySelectorAll('.specbar-val').forEach(animateVal);
+      panel.querySelectorAll('.specbar-fill').forEach(refillBar);
+    }
+
+    const section = panels[0].closest('.section') || panels[0].parentElement;
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            const active = document.querySelector('.panel.active') || panels[0];
+            play(active);
+            io.disconnect();
+          }
+        });
+      }, {threshold:0.25});
+      io.observe(section);
+    } else {
+      panels.forEach(play);
+    }
+
+    // Re-run when a tab is selected (runs after the existing handler toggles .active)
+    document.querySelectorAll('.tabs .tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        const t = document.getElementById(tab.dataset.target);
+        if(t) play(t);
+      });
+    });
+  })();
+
+  // ---- Heat-rejection simulator ----
+  (function(){
+    var root = document.getElementById('heatsim');
+    if(!root) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---------------------------------------------------------------
+       SINGLE SOURCE OF TRUTH for the selector.
+       The standalone "Without Film" state plus three series, each with
+       its own variants. Series tabs and variant buttons are generated
+       from this object — never hard-code duplicate UI blocks, and never
+       duplicate the car for a product.
+
+       Performance numbers are demonstration values carried over from the
+       original config — do NOT invent statistics (null renders "TODO").
+
+       `film` = the ONLY thing that visually changes between options. It
+       drives the single masked windshield overlay:
+         tint     neutral smoke / cool-blue glass colour
+         op       tint opacity (roughly tracks 1 - VLT, i.e. darker glass)
+         edge     restrained violet UV accent stroked on the glass border
+         edgeOp   edge-accent opacity
+       There is no per-option car image — one immutable base photo is used
+       for every state. -------------------------------------------------- */
+    var FILM_DATA = {
+      none: { key:'none', label:'Without Film',
+              exterior:48, cabin:62, heatRejected:0, uvBlocked:0,
+              cabinState:'Extremely hot', raysIn:9, raysReflected:0, particles:14,
+              film:{ tint:'#233140', op:0, edge:'#b57be6', edgeOp:0 } },
+      series: [
+        { id:'uv99', label:'UV99 Series', variants:[
+          { key:'uv50', label:'UV99 50',
+            exterior:48, cabin:43, heatRejected:55, uvBlocked:99,
+            cabinState:'Comfortable', raysIn:4, raysReflected:6, particles:5,
+            film:{ tint:'#3a2550', op:0.07, edge:'#c86bff', edgeOp:0.22 } },
+          { key:'uv70', label:'UV99 70',
+            exterior:48, cabin:36, heatRejected:70, uvBlocked:99,
+            cabinState:'Noticeably cooler', raysIn:2, raysReflected:9, particles:0,
+            film:{ tint:'#3d2856', op:0.05, edge:'#cf7bff', edgeOp:0.20 } }
+        ]},
+        { id:'pro', label:'UV99 Pro Series', variants:[
+          { key:'pro50', label:'UV99 Pro 50',
+            exterior:48, cabin:34, heatRejected:80, uvBlocked:99,
+            cabinState:'Cool and comfortable', raysIn:2, raysReflected:10, particles:0,
+            film:{ tint:'#33224d', op:0.08, edge:'#b98bff', edgeOp:0.24 } },
+          { key:'pro70', label:'UV99 Pro 70',
+            exterior:48, cabin:32, heatRejected:88, uvBlocked:99,
+            cabinState:'Coolest cabin', raysIn:1, raysReflected:11, particles:0,
+            film:{ tint:'#362552', op:0.055, edge:'#c29bff', edgeOp:0.20 } }
+        ]},
+        { id:'premium', label:'Premium Series', variants:[
+          { key:'uvp1', label:'UV99 +1',
+            exterior:48, cabin:30, heatRejected:93, uvBlocked:99, infrared:89,
+            cabinState:'Peak comfort', raysIn:1, raysReflected:11, particles:0,
+            film:{ tint:'#2e2150', op:0.07, edge:'#c6a0ff', edgeOp:0.24 } }
+        ]}
+      ]
+    };
+
+    /* Flat key -> config lookup, derived from FILM_DATA. */
+    var FILM_CONFIG = { none: FILM_DATA.none };
+    FILM_DATA.series.forEach(function(s){
+      s.variants.forEach(function(v){ FILM_CONFIG[v.key] = v; });
+    });
+    var RAY_POOL = 12;
+    var SVGNS = 'http://www.w3.org/2000/svg';
+
+    var stage    = root.querySelector('.hs-stage');
+    var photoEl  = root.querySelector('.hs-photo');
+    var filmLayer= root.querySelector('.hs-film-layer');
+    var panel    = root.querySelector('#hs-stage-region');
+    var soloBtn    = root.querySelector('.hs-seg__solo');
+    var seriesBtns = Array.prototype.slice.call(root.querySelectorAll('.hs-seg__seriesbtn'));
+    var variantsWrap = root.querySelector('#hs-variants');
+    var rayLayer = root.querySelector('#hs-rays');
+    var partLayer= root.querySelector('#hs-particles');
+    var live     = root.querySelector('.hs-live');
+    var heatBar  = root.querySelector('[data-bar="heat"]');
+    var uvBar    = root.querySelector('[data-bar="uv"]');
+    var irBar    = root.querySelector('[data-bar="infrared"]');
+    var irRow    = root.querySelector('[data-stat="infrared"]');
+    var out = {
+      cabin:    root.querySelector('[data-out="cabin"]'),
+      exterior: root.querySelector('[data-out="exterior"]'),
+      heat:     root.querySelector('[data-out="heat"]'),
+      uv:       root.querySelector('[data-out="uv"]'),
+      infrared: root.querySelector('[data-out="infrared"]'),
+      mood:     root.querySelector('[data-out="mood"]')
+    };
+
+    // Fixed pool of rays built once; switching states only toggles classes,
+    // so rapid clicking can never leave a ray mid-transition in a bad state.
+    var rays = [];
+    for(var i=0;i<RAY_POOL;i++){
+      var g = document.createElementNS(SVGNS,'g');
+      g.setAttribute('class','hs-ray is-off');
+      g.style.setProperty('--x', (-190 + (380/(RAY_POOL-1))*i).toFixed(1) + 'px');
+      g.style.setProperty('--delay', (i*0.17).toFixed(2) + 's');
+      var beam = document.createElementNS(SVGNS,'rect');
+      beam.setAttribute('class','hs-ray__beam');
+      beam.setAttribute('x','-2.4'); beam.setAttribute('y','0');
+      beam.setAttribute('width','4.8'); beam.setAttribute('height','150'); beam.setAttribute('rx','2.4');
+      g.appendChild(beam);
+      rayLayer.appendChild(g);
+      rays.push(g);
+    }
+
+    // Interruptible ease-out count. Cancels any in-flight tween on the same node.
+    function animateNum(el, to){
+      if(!el) return;
+      var from = parseFloat((el.textContent || '0').replace(/[^0-9.\-]/g,'')) || 0;
+      if(el._raf){ cancelAnimationFrame(el._raf); el._raf = 0; }
+      if(reduce || from === to){ el.textContent = String(Math.round(to)); return; }
+      var dur = 900, t0 = performance.now();
+      function step(now){
+        var p = Math.min((now - t0) / dur, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = String(Math.round(from + (to - from) * e));
+        el._raf = p < 1 ? requestAnimationFrame(step) : 0;
+      }
+      el._raf = requestAnimationFrame(step);
+    }
+
+    function renderParticles(n){
+      if(!partLayer) return;
+      while(partLayer.firstChild) partLayer.removeChild(partLayer.firstChild);
+      if(reduce) return;
+      for(var k=0;k<n;k++){
+        var c = document.createElementNS(SVGNS,'circle');
+        c.setAttribute('cx', (392 + Math.random()*250).toFixed(1));
+        c.setAttribute('cy', (292 + Math.random()*52).toFixed(1));
+        c.setAttribute('r', (2.2 + Math.random()*2).toFixed(1));
+        c.setAttribute('class','hs-particle');
+        c.style.setProperty('--pd', (Math.random()*3).toFixed(2) + 's');
+        c.style.setProperty('--px', (Math.random()*16 - 8).toFixed(1) + 'px');
+        partLayer.appendChild(c);
+      }
+    }
+
+    /* ---- premium window-film wipe -----------------------------------
+       Two windshield-shaped fill layers live inside .hs-film-layer,
+       which is clipped to the glass path. On every change the OUTGOING
+       film (.hs-film-cur) is wiped off to the right while the INCOMING
+       film (.hs-film-next) is revealed left->right behind a soft seam.
+       When the sweep ends the settled layer takes the new values and
+       the helper layer parks again, so any A<->B switch plays the same
+       ~430ms surface sweep and nothing ever touches the car body. */
+    var WIPE_MS  = 430;
+    var curFilm  = { tint:'#3a2550', op:0, edge:'#c86bff', edgeOp:0 };
+    var wipeTimer = 0, wiping = false;
+
+    function normFilm(f){
+      f = f || {};
+      return { tint:f.tint || '#3a2550', op:+f.op || 0,
+               edge:f.edge || '#c86bff', edgeOp:+f.edgeOp || 0 };
+    }
+    function setEdge(f){
+      if(!filmLayer) return;
+      filmLayer.style.setProperty('--film-edge', f.edge);
+      filmLayer.style.setProperty('--film-edge-op', String(f.edgeOp));
+    }
+    function paintSettled(f){
+      if(!filmLayer) return;
+      filmLayer.style.setProperty('--cur-tint', f.tint);
+      filmLayer.style.setProperty('--cur-op', String(f.op));
+      setEdge(f);
+      curFilm = f;
+    }
+    function endWipe(f){
+      wiping = false;
+      if(wipeTimer){ clearTimeout(wipeTimer); wipeTimer = 0; }
+      if(filmLayer){
+        filmLayer.classList.remove('is-wiping');
+        filmLayer.style.setProperty('--next-op', '0');
+      }
+      paintSettled(f);
+    }
+    function sameFilm(a, b){
+      return a.tint === b.tint && a.op === b.op &&
+             a.edge === b.edge && a.edgeOp === b.edgeOp;
+    }
+    function applyFilm(raw){
+      if(!filmLayer) return;
+      var f = normFilm(raw);
+
+      // nothing to do
+      if(!wiping && sameFilm(f, curFilm)) return;
+      // bare glass -> bare glass (incl. first load): no wipe worth playing
+      if(f.op === 0 && curFilm.op === 0){ endWipe(f); return; }
+
+      if(reduceMotion){ endWipe(f); return; }
+
+      // a wipe is mid-flight: drop it, keep the current film, start fresh
+      if(wiping) endWipe(curFilm);
+
+      // helper layer carries the incoming film; settled layer holds the old
+      filmLayer.style.setProperty('--next-tint', f.tint);
+      filmLayer.style.setProperty('--next-op', String(f.op));
+      filmLayer.style.setProperty('--wipe-dur', WIPE_MS + 'ms');
+      setEdge(f);                         // violet edge cross-fades during the sweep
+
+      filmLayer.classList.remove('is-wiping');
+      filmLayer.getBoundingClientRect();  // reflow so the animation replays
+      wiping = true;
+      filmLayer.classList.add('is-wiping');
+
+      wipeTimer = setTimeout(function(){ endWipe(f); }, WIPE_MS + 40);
+    }
+
+    function setState(key, moveFocus){
+      var cfg = FILM_CONFIG[key];
+      if(!cfg) return;
+
+      // reflect the active film on the standalone + visible variant buttons
+      if(soloBtn){
+        var soloOn = key === 'none';
+        soloBtn.classList.toggle('is-active', soloOn);
+        soloBtn.setAttribute('aria-pressed', soloOn ? 'true' : 'false');
+      }
+      var pressedVariant = null;
+      Array.prototype.forEach.call(variantsWrap.querySelectorAll('.hs-seg__variant'), function(b){
+        var on = b.dataset.state === key;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if(on) pressedVariant = b;
+      });
+      if(moveFocus){
+        var target = key === 'none' ? soloBtn : pressedVariant;
+        if(target) target.focus({ preventScroll:true });
+      }
+
+      root.setAttribute('data-state', key);
+      stage.setAttribute('data-state', key);
+
+      /* "Without Film" shows 123.png; any selected film shows the calibrated base photo */
+      if(photoEl){
+        var wantSrc = key === 'none' ? 'assets/123.png' : 'assets/new%20car.orig.png';
+        if(photoEl.getAttribute('src') !== wantSrc) photoEl.setAttribute('src', wantSrc);
+      }
+
+      /* ---- windshield film overlay ----
+         The base car photo is never touched. applyFilm() plays a fast
+         window-only wipe (old film off -> seam -> new film on), strictly
+         clipped to the glass path, then commits the new tint. */
+      applyFilm(cfg.film);
+
+      // Never fabricate a number: a null field renders a visible "TODO".
+      function showStat(el, val){
+        if(!el) return;
+        if(val == null){ if(el._raf){ cancelAnimationFrame(el._raf); el._raf = 0; } el.textContent = 'TODO'; }
+        else animateNum(el, val);
+      }
+      showStat(out.cabin, cfg.cabin);
+      showStat(out.heat, cfg.heatRejected);
+      showStat(out.uv, cfg.uvBlocked);
+      if(out.exterior) out.exterior.textContent = cfg.exterior == null ? 'TODO' : String(cfg.exterior);
+      if(heatBar) heatBar.style.transform = 'scaleX(' + ((cfg.heatRejected || 0) / 100) + ')';
+      if(uvBar)   uvBar.style.transform   = 'scaleX(' + ((cfg.uvBlocked || 0) / 100) + ')';
+      // Infrared rejection — a UV99 +1 advantage; row only appears when the film has a value.
+      var irVal = typeof cfg.infrared === 'number' ? cfg.infrared : null;
+      if(irRow) irRow.hidden = irVal == null;
+      if(irVal != null){
+        showStat(out.infrared, irVal);
+        if(irBar) irBar.style.transform = 'scaleX(' + (irVal / 100) + ')';
+      } else if(out.infrared && out.infrared._raf){
+        cancelAnimationFrame(out.infrared._raf); out.infrared._raf = 0;
+      }
+      if(out.mood){ out.mood.textContent = cfg.cabinState || 'TODO'; out.mood.dataset.state = key; }
+
+      for(var r=0;r<rays.length;r++){
+        rays[r].classList.remove('is-pass','is-reflect','is-off');
+        if(r < cfg.raysIn) rays[r].classList.add('is-pass');
+        else if(r < cfg.raysIn + cfg.raysReflected) rays[r].classList.add('is-reflect');
+        else rays[r].classList.add('is-off');
+      }
+
+      renderParticles(cfg.particles);
+
+      stage.setAttribute('aria-label',
+        cfg.label + ' selected. Exterior ' + cfg.exterior + ' degrees Celsius, cabin ' +
+        cfg.cabin + ' degrees Celsius, ' + cfg.cabinState.toLowerCase() +
+        '. Heat rejected ' + cfg.heatRejected + ' percent, UV blocked ' + cfg.uvBlocked + ' percent.');
+      if(live){
+        live.textContent = cfg.label + ' — cabin temperature ' + cfg.cabin + ' degrees Celsius, ' +
+          cfg.cabinState.toLowerCase() + '. Heat rejected ' + cfg.heatRejected +
+          ' percent, UV blocked ' + cfg.uvBlocked + ' percent.';
+      }
+    }
+
+    // ---- selector wiring: standalone button + 3 series tabs + generated variants ----
+    var openSeriesId = null;
+
+    function seriesById(id){
+      for(var i=0;i<FILM_DATA.series.length;i++){
+        if(FILM_DATA.series[i].id === id) return FILM_DATA.series[i];
+      }
+      return null;
+    }
+
+    function syncVariantPressed(){
+      var curKey = root.getAttribute('data-state');
+      Array.prototype.forEach.call(variantsWrap.querySelectorAll('.hs-seg__variant'), function(b){
+        var on = b.dataset.state === curKey;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    function syncSeriesBtns(){
+      seriesBtns.forEach(function(sb){
+        var on = sb.dataset.series === openSeriesId;
+        sb.classList.toggle('is-active', on);
+        sb.setAttribute('aria-selected', on ? 'true' : 'false');
+        sb.setAttribute('aria-expanded', on ? 'true' : 'false');
+      });
+    }
+
+    // Build the variant buttons for one series into the reveal row.
+    function renderVariants(series){
+      variantsWrap.innerHTML = '';
+      series.variants.forEach(function(v){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'hs-seg__btn hs-seg__variant';
+        b.dataset.state = v.key;
+        b.setAttribute('aria-pressed', 'false');
+        b.textContent = v.label;
+        // honour the "never fabricate a statistic" rule: flag intentionally missing fields
+        var missing = ['cabin','heatRejected','uvBlocked'].filter(function(f){ return v[f] == null; });
+        if(missing.length) b.title = 'TODO: missing certified data — ' + missing.join(', ');
+        b.addEventListener('click', function(){ setState(v.key, false); });
+        b.addEventListener('keydown', onVariantKey);
+        variantsWrap.appendChild(b);
+      });
+      syncVariantPressed();
+    }
+
+    function onVariantKey(e){
+      if(e.key === 'Escape'){ closeSeries(true); return; }
+      var vbtns = Array.prototype.slice.call(variantsWrap.querySelectorAll('.hs-seg__variant'));
+      var idx = vbtns.indexOf(e.currentTarget), next = null;
+      if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % vbtns.length;
+      else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + vbtns.length) % vbtns.length;
+      else if(e.key === 'Home') next = 0;
+      else if(e.key === 'End') next = vbtns.length - 1;
+      if(next !== null){ e.preventDefault(); vbtns[next].focus({ preventScroll:true }); }
+    }
+
+    function openSeries(id, moveFocus){
+      var series = seriesById(id);
+      if(!series) return;
+      openSeriesId = id;
+      renderVariants(series);
+      syncSeriesBtns();
+      requestAnimationFrame(function(){ variantsWrap.classList.add('is-open'); });
+      if(moveFocus){
+        var first = variantsWrap.querySelector('.hs-seg__variant');
+        if(first) first.focus({ preventScroll:true });
+      }
+    }
+
+    function closeSeries(returnFocus){
+      var wasId = openSeriesId;
+      openSeriesId = null;
+      variantsWrap.classList.remove('is-open');
+      syncSeriesBtns();
+      var clear = function(){ if(!openSeriesId) variantsWrap.innerHTML = ''; };
+      if(reduce) clear(); else setTimeout(clear, 280);
+      if(returnFocus && wasId){
+        var sb = root.querySelector('.hs-seg__seriesbtn[data-series="' + wasId + '"]');
+        if(sb) sb.focus({ preventScroll:true });
+      }
+    }
+
+    // Standalone "Without Film": close any open series, restore untreated glass.
+    soloBtn.addEventListener('click', function(){
+      closeSeries(false);
+      setState('none', false);
+    });
+
+    // Series tabs: roving-tabindex tablist; click / Enter / Space toggles the reveal.
+    seriesBtns.forEach(function(sb, i){
+      sb.addEventListener('click', function(){
+        if(openSeriesId === sb.dataset.series) closeSeries(true);
+        else openSeries(sb.dataset.series, false);
+      });
+      sb.addEventListener('keydown', function(e){
+        var next = null;
+        if(e.key === 'ArrowRight') next = (i + 1) % seriesBtns.length;
+        else if(e.key === 'ArrowLeft') next = (i - 1 + seriesBtns.length) % seriesBtns.length;
+        else if(e.key === 'Home') next = 0;
+        else if(e.key === 'End') next = seriesBtns.length - 1;
+        else if(e.key === 'ArrowDown' && openSeriesId === sb.dataset.series){
+          var fv = variantsWrap.querySelector('.hs-seg__variant');
+          if(fv){ e.preventDefault(); fv.focus({ preventScroll:true }); }
+          return;
+        }
+        if(next !== null){
+          e.preventDefault();
+          seriesBtns.forEach(function(o){ o.tabIndex = -1; });
+          seriesBtns[next].tabIndex = 0;
+          seriesBtns[next].focus({ preventScroll:true });
+        }
+      });
+    });
+
+    // Default: "Without Film" selected, no series open, no variants shown.
+    setState('none', false);
+  })();
+</script>
+
+<script>
+/* ============================================================
+   UV99 — single UV-ray rejection animation (canvas over the photo)
+   One incoming ray  : straight from the visible sun to one exact
+                       contact point on the windshield exterior.
+   One reflected ray : straight from that same point back into the
+                       sky, mirrored about the glass surface normal
+                       (angle in = angle out) — a clean V, vertex on
+                       the glass. Loops forever ("the sun keeps
+                       attacking the window").
+   No film selected  -> the single ray passes through into the cabin
+                       instead of bouncing.
+   Tuning: window.UVP_CONFIG
+   ============================================================ */
+(function(){
+  var root   = document.getElementById('heatsim');
+  if(!root) return;
+  var stage  = root.querySelector('.hs-stage');
+  var canvas = root.querySelector('.uvp-canvas');
+  var badge  = root.querySelector('.uvp-badge');
+  var badgeTxt = root.querySelector('.uvp-ind__txt');
+  var photo  = root.querySelector('.hs-photo');
+  if(!stage || !canvas) return;
+  var ctx = canvas.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var phase = 0, running = false, lastT = 0;
+
+  // 'pass'  = no film selected: UV travels straight through the glass into the cabin.
+  // 'reject'= a UV99 film is selected: UV is stopped and reflected at the glass.
+  var mode = (stage.getAttribute('data-state') || 'none') === 'none' ? 'pass' : 'reject';
+  function syncMode(){
+    var next = (stage.getAttribute('data-state') || 'none') === 'none' ? 'pass' : 'reject';
+    if(next !== mode){ mode = next; phase = 0; }
+    if(badge){
+      var t = badge.querySelector('.uvp-badge__title');
+      var big = badge.querySelector('.uvp-badge__big');
+      if(mode === 'pass'){
+        badge.classList.add('is-open');
+        if(t) t.textContent = 'No Film';
+        if(big) big.textContent = 'UV Enters the Cabin';
+        if(badgeTxt) badgeTxt.textContent = 'UV Rays → Cabin';
+      } else {
+        badge.classList.remove('is-open');
+        if(t) t.textContent = 'UV99 Protection';
+        if(big) big.textContent = '99% UV Rejection';
+        if(badgeTxt) badgeTxt.textContent = 'UV Rays → Rejected';
+      }
+    }
+    if(reduce) drawStatic();
+  }
+  if('MutationObserver' in window){
+    new MutationObserver(syncMode).observe(stage, { attributes:true, attributeFilter:['data-state'] });
+  }
+
+  var CONFIG = {
+    sun:        [0.085, 0.115],   // beam origin, kept fully inside frame so the sun bloom stays visible
+    edgeA:      0,                // windshield top edge = window[edgeA] -> window[edgeB]
+    edgeB:      1,
+    rayCount:   10,               // rays in the barrage
+    hitSpread:  [0.10, 0.94],     // contact points spread left<->right across the windshield
+    hitDepth:   [0.04, 0.88],     // contact points spread top<->bottom across the windshield (0 = top edge)
+    hitInset:   0.06,             // pull the contact points a touch onto the glass (0 = on the edge)
+    reflectLen: 0.92,             // reflected-ray length as a fraction of the sun->contact distance
+    throughLen: 0.50,             // no-film: how far each ray carries into the cabin (same fraction)
+    cycleMs:    1500,             // per-ray attack; a new ray lands every cycleMs / rayCount
+    rayWidth:   1.9,              // base beam width (px @ baseK 1)
+    window: [[0.315,0.450],[0.545,0.420],[0.560,0.545],[0.470,0.645],[0.242,0.638],[0.222,0.552]]
+  };
+  window.UVP_CONFIG = CONFIG;
+
+  var IMG_AR = 1689 / 931;
+  var W = 0, H = 0, map = null, baseK = 1;
+
+  // geometry (px space); one entry per ray, recomputed on resize
+  var S = null, slots = [];
+
+  function lerp(a,b,t){ return a + (b - a) * t; }
+  function polyPx(){ return CONFIG.window.map(map); }
+
+  function computeGeometry(){
+    if(!map) return;
+    var poly = polyPx();
+    S = map(CONFIG.sun);
+    var P0 = poly[CONFIG.edgeA], P1 = poly[CONFIG.edgeB];
+    var cx = 0, cy = 0;
+    for(var i = 0; i < poly.length; i++){ cx += poly[i][0]; cy += poly[i][1]; }
+    cx /= poly.length; cy /= poly.length;
+
+    // windshield surface tangent -> outward normal (constant along the straight top edge)
+    var tx = P1[0] - P0[0], ty = P1[1] - P0[1], tl = Math.sqrt(tx*tx + ty*ty) || 1;
+    tx /= tl; ty /= tl;
+
+    var n = CONFIG.rayCount, sp = CONFIG.hitSpread, dp = CONFIG.hitDepth || [0, 0];
+    var B0 = poly[5], B1 = poly[3];            // approx bottom edge of the glass, left -> right
+    slots = [];
+    for(var k = 0; k < n; k++){
+      var along = n > 1 ? lerp(sp[0], sp[1], k / (n - 1)) : (sp[0] + sp[1]) / 2;
+      var jd = 0.5 + k * 0.61803398875; jd -= Math.floor(jd);      // scattered depth per ray
+      var down = lerp(dp[0], dp[1], jd);
+      var tX = lerp(P0[0], P1[0], along), tY = lerp(P0[1], P1[1], along);   // point on the top edge
+      var bX = lerp(B0[0], B1[0], along), bY = lerp(B0[1], B1[1], along);   // point on the bottom edge
+      var ex = lerp(tX, bX, down), ey = lerp(tY, bY, down);                 // contact anywhere on the glass
+      var C = [ lerp(ex, cx, CONFIG.hitInset), lerp(ey, cy, CONFIG.hitInset) ];
+
+      var dx = C[0] - S[0], dy = C[1] - S[1], dl = Math.sqrt(dx*dx + dy*dy) || 1;
+      var D = [ dx / dl, dy / dl ];
+
+      var nx = -ty, ny = tx;
+      if( (nx * (S[0] - C[0]) + ny * (S[1] - C[1])) < 0 ){ nx = -nx; ny = -ny; }
+      var dot = D[0]*nx + D[1]*ny;                       // reflect: R = D - 2(D.N)N
+      var R = [ D[0] - 2*dot*nx, D[1] - 2*dot*ny ];
+
+      slots.push({
+        C: C, D: D, R: R, inLen: dl,
+        Cend: [ C[0] + R[0]*dl*CONFIG.reflectLen, C[1] + R[1]*dl*CONFIG.reflectLen ],
+        off:  k / n,                                     // staggered launch -> rapid cascade
+        seed: k * 1.7
+      });
+    }
+  }
+
+  function resize(){
+    var r = stage.getBoundingClientRect();
+    if(!r.width || !r.height) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var boxAR = W / H, s, ox, oy;                  // reproduce object-fit:cover
+    if(boxAR > IMG_AR){ s = W / 1689; ox = 0; oy = (H - 931 * s) / 2; }
+    else              { s = H / 931;  oy = 0; ox = (W - 1689 * s) / 2; }
+    map = function(n){ return [ox + n[0] * 1689 * s, oy + n[1] * 931 * s]; };
+    baseK = Math.max(0.62, Math.min(2.1, Math.min(W, H) / 520));
+    computeGeometry();
+    if(reduce) drawStatic();
+  }
+
+  function easeOut(t){ return t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3); }
+
+  function seg(x1,y1,x2,y2,w,color){
+    ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  }
+
+  // solid arrowhead at (tx,ty) pointing along unit vector (ux,uy)
+  function arrowHead(tx,ty,ux,uy,size,color,a){
+    var px = -uy, py = ux;                     // perpendicular
+    var back = size, wing = size * 0.62;
+    var bx = tx - ux*back, by = ty - uy*back;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = color.replace('%A%', a);
+    ctx.beginPath();
+    ctx.moveTo(tx, ty);
+    ctx.lineTo(bx + px*wing, by + py*wing);
+    ctx.lineTo(bx - px*wing, by - py*wing);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawSun(){
+    if(!S) return;
+    var rad = 150 * baseK;
+    var g = ctx.createRadialGradient(S[0], S[1], 0, S[0], S[1], rad);
+    g.addColorStop(0,    'rgba(255,248,232,0.95)');
+    g.addColorStop(0.18, 'rgba(255,240,210,0.55)');
+    g.addColorStop(0.5,  'rgba(255,214,168,0.16)');
+    g.addColorStop(1,    'rgba(255,214,168,0)');
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(S[0], S[1], rad, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // incoming ray: pale orange body + subtle violet core
+  function drawIncoming(x1,y1,x2,y2,a){
+    var w = CONFIG.rayWidth * baseK;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.shadowColor = 'rgba(255,190,140,0.45)'; ctx.shadowBlur = 3 * baseK;
+    seg(x1,y1,x2,y2, w * 2.1, 'rgba(255,190,140,' + (a * 0.7) + ')');
+    ctx.shadowBlur = 0;
+    seg(x1,y1,x2,y2, w * 0.8, 'rgba(206,182,255,' + a + ')');
+    ctx.restore();
+  }
+
+  // reflected ray: electric violet-blue (UV rejected)
+  function drawReflected(x1,y1,x2,y2,a){
+    var w = CONFIG.rayWidth * baseK;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.shadowColor = 'rgba(150,130,255,0.5)'; ctx.shadowBlur = 3 * baseK;
+    seg(x1,y1,x2,y2, w * 2.0, 'rgba(150,130,255,' + (a * 0.7) + ')');
+    ctx.shadowBlur = 0;
+    seg(x1,y1,x2,y2, w * 0.75, 'rgba(190,210,255,' + a + ')');
+    ctx.restore();
+  }
+
+  // no-film continuation into the cabin: warm, no bounce
+  function drawThrough(x1,y1,x2,y2,a){
+    var w = CONFIG.rayWidth * baseK;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.shadowColor = 'rgba(255,180,130,0.45)'; ctx.shadowBlur = 3 * baseK;
+    seg(x1,y1,x2,y2, w * 2.0, 'rgba(255,180,130,' + (a * 0.7) + ')');
+    ctx.shadowBlur = 0;
+    seg(x1,y1,x2,y2, w * 0.75, 'rgba(255,226,196,' + a + ')');
+    ctx.restore();
+  }
+
+  function drawImpact(cpt, gl){
+    var rad = (6 + 9 * gl) * baseK;
+    var g = ctx.createRadialGradient(cpt[0], cpt[1], 0, cpt[0], cpt[1], rad);
+    if(mode === 'pass'){
+      g.addColorStop(0, 'rgba(255,212,172,' + (0.38 * gl) + ')');
+      g.addColorStop(1, 'rgba(255,170,120,0)');
+    } else {
+      g.addColorStop(0,   'rgba(216,208,255,' + (0.55 * gl) + ')');
+      g.addColorStop(0.5, 'rgba(150,130,255,' + (0.28 * gl) + ')');
+      g.addColorStop(1,   'rgba(120,110,255,0)');
+    }
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cpt[0], cpt[1], rad, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // one ray's full arc: travel in -> impact -> bounce out (or pass through), p in [0,1)
+  function drawRay(sl, p){
+    var C = sl.C;
+    var wob = 0.90 + 0.10 * Math.sin(performance.now() * 0.004 + sl.seed);
+    var head = 9 * baseK;
+
+    if(p < 0.40){
+      var pin = easeOut(p / 0.40);
+      var tx = lerp(S[0],C[0],pin), ty = lerp(S[1],C[1],pin);
+      var ain = (0.13 + 0.46 * pin) * wob;
+      drawIncoming(S[0], S[1], tx, ty, ain);
+      // arrowhead on the advancing tip, driving toward the glass
+      if(pin > 0.06) arrowHead(tx, ty, sl.D[0], sl.D[1], head, 'rgba(224,206,255,%A%)', Math.min(1, ain + 0.3));
+    } else {
+      var infade = 1 - easeOut((p - 0.40) / 0.52);
+      if(infade > 0){
+        drawIncoming(S[0], S[1], C[0], C[1], 0.58 * infade * wob);
+        arrowHead(C[0], C[1], sl.D[0], sl.D[1], head, 'rgba(224,206,255,%A%)', 0.85 * infade);
+      }
+    }
+
+    if(p >= 0.36 && p < 0.82){
+      var gl = Math.sin(Math.min((p - 0.36) / 0.46, 1) * Math.PI);
+      if(gl > 0) drawImpact(C, gl);
+    }
+
+    if(p >= 0.42){
+      var pout = easeOut((p - 0.42) / 0.44);
+      var ofade = p < 0.86 ? 1 : (1 - easeOut((p - 0.86) / 0.14));
+      var a = (0.13 + 0.44 * pout) * ofade * wob;
+      if(a > 0){
+        if(mode === 'pass'){
+          var e = [ C[0] + sl.D[0]*sl.inLen*CONFIG.throughLen, C[1] + sl.D[1]*sl.inLen*CONFIG.throughLen ];
+          var tpx = lerp(C[0],e[0],pout), tpy = lerp(C[1],e[1],pout);
+          drawThrough(C[0], C[1], tpx, tpy, a);
+          if(pout > 0.06) arrowHead(tpx, tpy, sl.D[0], sl.D[1], head, 'rgba(255,226,196,%A%)', Math.min(1, a + 0.3) * ofade);
+        } else {
+          var rpx = lerp(C[0],sl.Cend[0],pout), rpy = lerp(C[1],sl.Cend[1],pout);
+          drawReflected(C[0], C[1], rpx, rpy, a);
+          // arrowhead bouncing back off the glass into the sky
+          if(pout > 0.06) arrowHead(rpx, rpy, sl.R[0], sl.R[1], head, 'rgba(200,216,255,%A%)', Math.min(1, a + 0.3) * ofade);
+        }
+      }
+    }
+  }
+
+  function render(){
+    ctx.clearRect(0, 0, W, H);
+    if(!slots.length) return;
+    drawSun();
+    for(var i = 0; i < slots.length; i++){
+      var p = phase + slots[i].off;
+      p -= Math.floor(p);
+      drawRay(slots[i], p);
+    }
+  }
+
+  function drawStatic(){
+    if(!map) return;
+    computeGeometry();
+    ctx.clearRect(0, 0, W, H);
+    if(!slots.length) return;
+    drawSun();
+    for(var i = 0; i < slots.length; i++){
+      drawRay(slots[i], 0.20 + (i / Math.max(1, slots.length)) * 0.6);  // frozen cascade
+    }
+  }
+
+  function frame(now){
+    if(!running) return;
+    var dt = Math.min((now - lastT) / 1000, 0.05); lastT = now;
+    phase += dt * 1000 / CONFIG.cycleMs;
+    if(phase >= 1) phase -= 1;
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  function onScreen(){
+    var r = root.getBoundingClientRect();
+    return r.bottom > 0 && r.top < (window.innerHeight || document.documentElement.clientHeight);
+  }
+  function start(){
+    if(running || reduce) return;
+    running = true; lastT = performance.now();
+    requestAnimationFrame(frame);
+  }
+  function stop(){ running = false; }
+  window.UVP = { config: CONFIG, start: start, stop: stop, resize: resize };
+
+  if('ResizeObserver' in window) new ResizeObserver(resize).observe(stage);
+  else window.addEventListener('resize', resize);
+
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting ? start() : stop(); });
+    }, { threshold: 0.15 }).observe(root);
+  }
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) stop();
+    else if(onScreen()) start();
+  });
+
+  function init(){
+    resize();
+    syncMode();
+    if(reduce){ drawStatic(); return; }
+    if(onScreen()) start();
+  }
+  if(document.readyState === 'complete') init();
+  else window.addEventListener('load', init);
+  if(photo && !photo.complete) photo.addEventListener('load', resize, { once: true });
+})();
+</script>
+
+<script>
+/* ============================================================
+   Video section behaviour
+   1. "Watch Videos" button -> scroll to the first video (the only
+      script-initiated scroll on the page) and play it WITH SOUND
+      (the click is a user gesture, so unmuted autoplay is allowed).
+   2. Each video auto-plays when >=60% visible and pauses when it
+      leaves; it restarts from 0 each time it re-enters view, so
+      scrolling back to the first video plays it from the start.
+   3. Any interaction unlocks sound for all videos.
+   The page never auto-scrolls while the user is scrolling.
+   ============================================================ */
+(function(){
+  var section  = document.getElementById('videos');
+  var wrappers = Array.prototype.slice.call(document.querySelectorAll('.video-wrapper'));
+  var frames   = wrappers
+    .map(function(w){ return w.querySelector('iframe[src*="youtube.com/embed"]'); })
+    .filter(Boolean);
+  if(!frames.length) return;
+
+  var soundUnlocked = false;
+  var inView = null;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function cmd(frame, func, args){
+    if(!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      JSON.stringify({ event:'command', func:func, args:args || [] }), '*'
+    );
+  }
+
+  function play(frame){
+    inView = frame;
+    cmd(frame, 'seekTo', [0, true]);          // always from the beginning
+    cmd(frame, 'playVideo');
+    if(soundUnlocked){ cmd(frame, 'unMute'); cmd(frame, 'setVolume', [100]); }
+  }
+  function pause(frame){
+    if(inView === frame) inView = null;
+    cmd(frame, 'pauseVideo');
+  }
+
+  var programmatic = false, pgTimer = null;
+  function holdProgrammatic(ms){
+    programmatic = true;
+    if(pgTimer) clearTimeout(pgTimer);
+    pgTimer = setTimeout(function(){ programmatic = false; }, ms);
+  }
+
+  /* fast, snappy scroll that drops the target to the viewport centre
+     in ~320ms (much quicker than the browser's default smooth scroll).
+     While it runs, `programmatic` is held true so the snap logic and
+     nothing else fights it or bounces the page the other way. */
+  function quickScrollToCenter(el){
+    var rect = el.getBoundingClientRect();
+    var startY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var destY = startY + rect.top + rect.height / 2 - window.innerHeight / 2;
+    var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    destY = Math.max(0, Math.min(destY, maxY));
+    if(reduce || Math.abs(destY - startY) < 4){ holdProgrammatic(150); window.scrollTo(0, destY); return; }
+    var dur = 320, t0 = performance.now();
+    holdProgrammatic(dur + 220);
+    (function step(now){
+      var p = Math.min((now - t0) / dur, 1);
+      var e = 1 - Math.pow(1 - p, 3);            // ease-out cubic
+      window.scrollTo(0, startY + (destY - startY) * e);
+      if(p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && e.intersectionRatio >= 0.6) play(e.target);
+        else pause(e.target);
+      });
+    }, { threshold:[0, 0.6] });
+    frames.forEach(function(f){ io.observe(f); });
+  } else {
+    frames.forEach(function(f){ cmd(f, 'playVideo'); });
+  }
+
+  /* NOTE: there is deliberately NO scroll-triggered auto-scrolling here.
+     A previous "snap to nearest video" listener re-centred a video every
+     time scrolling paused near one, which pulled the page upward on its
+     own. The page now keeps whatever scroll position the user chose;
+     only the explicit "Watch Videos" click below moves the viewport. */
+
+  /* ---- neutralise YouTube's "focus the player on PLAY" scroll ----
+     When a YouTube embed transitions to PLAYING (~1s after Play, once it
+     finishes buffering) it moves keyboard focus INTO the <iframe>. If the
+     player sits partly above the fold the browser scrolls it into view —
+     an unrequested upward jump of ~150px that also re-reveals the header.
+     We can't pass {preventScroll:true} to YouTube's internal focus call,
+     so we record the position the USER last scrolled to and restore it
+     the instant focus enters a video iframe. This is event-driven (fires
+     once per focus, not per frame) and touches nothing else. */
+  var userY = window.pageYOffset || 0;
+  var lastIframeFocusAt = 0;
+  // any genuine scroll intent refreshes the position we consider "the user's"
+  ['wheel','touchmove','keydown','pointerdown','scrollend'].forEach(function(evt){
+    window.addEventListener(evt, function(){ userY = window.pageYOffset || 0; }, { passive:true });
+  });
+  window.addEventListener('scroll', function(){
+    // trust every scroll except the ~half-second blip right after the
+    // iframe grabs focus (that one is corrected in the focusin handler)
+    if(Date.now() - lastIframeFocusAt > 700) userY = window.pageYOffset || 0;
+  }, { passive:true });
+  document.addEventListener('focusin', function(e){
+    if(frames.indexOf(e.target) === -1) return;
+    lastIframeFocusAt = Date.now();
+    var y = userY;
+    if((window.pageYOffset || 0) !== y) window.scrollTo(0, y);
+    // the browser's scroll-into-view can land a frame later than focusin
+    requestAnimationFrame(function(){
+      if((window.pageYOffset || 0) !== y) window.scrollTo(0, y);
+    });
+  }, true);
+
+  /* ---- "Watch Videos" ----
+     Scroll straight down to the first video and start it with sound.
+     We drive playback purely through the YouTube JS API (the iframes
+     already carry enablejsapi=1) — the iframe src is never rewritten,
+     because reloading an off-screen frame mid-scroll made the page jump. */
+  function centerNow(el){
+    var rect = el.getBoundingClientRect();
+    var y = (window.pageYOffset || document.documentElement.scrollTop || 0)
+          + rect.top + rect.height / 2 - window.innerHeight / 2;
+    var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo(0, Math.max(0, Math.min(y, maxY)));
+  }
+
+  var watch = document.querySelector('.hero-watch');
+  if(watch){
+    watch.addEventListener('click', function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(watch.blur) watch.blur();           // no focused off-screen anchor to scroll back to
+      soundUnlocked = true;
+      var first = frames[0], target = wrappers[0];
+      if(!target) return;
+      // settle any scroll-reveal transforms first so the target's
+      // measured position is final and nothing drifts afterwards
+      var node = target;
+      while(node){
+        if(node.classList && node.classList.contains('reveal')) node.classList.add('in');
+        node = node.parentElement;
+      }
+      quickScrollToCenter(target);
+      // lock the position after the reveal/transition would have settled,
+      // so the page can't creep or bounce back up
+      setTimeout(function(){ holdProgrammatic(120); centerNow(target); }, 380);
+      setTimeout(function(){ holdProgrammatic(120); centerNow(target); }, 780);
+      setTimeout(function(){ play(first); }, 240);
+      setTimeout(function(){ cmd(first,'unMute'); cmd(first,'setVolume',[100]); cmd(first,'playVideo'); }, 900);
+    });
+  }
+
+  /* ---- 3. unlock sound on first interaction ---- */
+  function unlockSound(){
+    if(soundUnlocked) return;
+    soundUnlocked = true;
+    if(inView){ cmd(inView, 'unMute'); cmd(inView, 'setVolume', [100]); }
+    window.removeEventListener('pointerdown', unlockSound);
+    window.removeEventListener('keydown', unlockSound);
+    window.removeEventListener('touchstart', unlockSound);
+  }
+  window.addEventListener('pointerdown', unlockSound, { passive:true });
+  window.addEventListener('keydown', unlockSound);
+  window.addEventListener('touchstart', unlockSound, { passive:true });
+})();
+</script>
+
+<script>
+/* UV99 logo (.wordmark): visible at the top and whenever the
+   visitor scrolls up; hidden while they scroll down the page. */
+(function(){
+  var mark = document.querySelector('.wordmark');
+  if(!mark) return;
+  var last = window.pageYOffset || 0, ticking = false;
+  function update(){
+    ticking = false;
+    var y = window.pageYOffset || 0;
+    if(y < 80){ mark.classList.remove('is-hidden'); }
+    else if(y > last + 6){ mark.classList.add('is-hidden'); }
+    else if(y < last - 6){ mark.classList.remove('is-hidden'); }
+    last = y;
+  }
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(update); ticking = true; }
+  }, { passive:true });
+})();
+</script>
+
+</body>
+</html>
