@@ -3,8 +3,8 @@
   "buildCommand": "node build.js",
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/QR", "destination": "https://uv99-qr.vercel.app/" },
-    { "source": "/QR/", "destination": "https://uv99-qr.vercel.app/" },
-    { "source": "/QR/:path*", "destination": "https://uv99-qr.vercel.app/:path*" }
+    { "source": "/QR", "destination": "/qr.html" },
+    { "source": "/QR/", "destination": "/qr.html" },
+    { "source": "/QR/:path*", "destination": "/:path*" }
   ]
 }
