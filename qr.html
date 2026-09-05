@@ -102,13 +102,7 @@
     position:fixed;top:calc(12px + var(--safe-top));left:16px;z-index:120;
     display:flex;align-items:center;font-family:'Unbounded',sans-serif;font-weight:800;font-size:19px;letter-spacing:-0.02em;color:#fff;
     filter:drop-shadow(0 1px 2px rgba(0,0,0,0.15));
-    transition:transform .3s ease, opacity .3s ease;
   }
-  /* hidden while scrolling down the page; restored on scroll up */
-  .wordmark.is-hidden{
-    transform:translateY(-160%);opacity:0;pointer-events:none;
-  }
-  @media (prefers-reduced-motion: reduce){ .wordmark{ transition:none; } }
   .wordmark img{height:44px;width:auto;display:block;}
   .logo-img{height:28px;width:auto;}
   .pill{
@@ -2771,27 +2765,6 @@
   window.addEventListener('pointerdown', unlockSound, { passive:true });
   window.addEventListener('keydown', unlockSound);
   window.addEventListener('touchstart', unlockSound, { passive:true });
-})();
-</script>
-
-<script>
-/* UV99 logo (.wordmark): visible at the top and whenever the
-   visitor scrolls up; hidden while they scroll down the page. */
-(function(){
-  var mark = document.querySelector('.wordmark');
-  if(!mark) return;
-  var last = window.pageYOffset || 0, ticking = false;
-  function update(){
-    ticking = false;
-    var y = window.pageYOffset || 0;
-    if(y < 80){ mark.classList.remove('is-hidden'); }
-    else if(y > last + 6){ mark.classList.add('is-hidden'); }
-    else if(y < last - 6){ mark.classList.remove('is-hidden'); }
-    last = y;
-  }
-  window.addEventListener('scroll', function(){
-    if(!ticking){ requestAnimationFrame(update); ticking = true; }
-  }, { passive:true });
 })();
 </script>
 
