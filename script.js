@@ -41,6 +41,33 @@
     });
   }
 
+  /* ---------- logo: visible only in the hero, hidden while scrolling down
+     the page, restored near the top or on scroll-up ---------- */
+  var railLogo = document.querySelector('.upo-rail__logo');
+  if (railLogo) {
+    var logoHidden = false, logoLastY = window.pageYOffset || 0, logoTicking = false;
+    var setLogoHidden = function (hide) {
+      if (hide === logoHidden) return;
+      logoHidden = hide;
+      if (animate) {
+        gsap.to(railLogo, { autoAlpha: hide ? 0 : 1, y: hide ? -16 : 0, duration: .3, ease: 'power2.out', overwrite: 'auto' });
+      } else {
+        railLogo.classList.toggle('is-hidden', hide);
+      }
+    };
+    var updateLogo = function () {
+      logoTicking = false;
+      var yNow = window.pageYOffset || 0;
+      if (yNow < 80) setLogoHidden(false);
+      else if (yNow > logoLastY + 6) setLogoHidden(true);
+      else if (yNow < logoLastY - 6) setLogoHidden(false);
+      logoLastY = yNow;
+    };
+    window.addEventListener('scroll', function () {
+      if (!logoTicking) { requestAnimationFrame(updateLogo); logoTicking = true; }
+    }, { passive: true });
+  }
+
   /* ---------- smooth active-nav highlighting (no GSAP needed) ---------- */
   var navLinks = Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
   var sections = navLinks

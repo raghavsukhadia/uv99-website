@@ -5,7 +5,21 @@
   const toggle = document.querySelector('.nav-toggle');
   const links = document.querySelector('.nav-links');
 
-  const updateHeader = () => header && header.classList.toggle('is-stuck', window.scrollY > 24);
+  // Logo/header: visible in the hero, hidden while scrolling down the page,
+  // restored near the top or as soon as you scroll back up. Skipped while
+  // the mobile menu is open (the open dropdown is positioned off the header).
+  let lastScrollY = window.scrollY;
+  const updateHeader = () => {
+    if (!header) return;
+    header.classList.toggle('is-stuck', window.scrollY > 24);
+    const menuOpen = document.body.classList.contains('menu-open');
+    if (!menuOpen) {
+      if (window.scrollY < 80) header.classList.remove('is-hidden');
+      else if (window.scrollY > lastScrollY + 6) header.classList.add('is-hidden');
+      else if (window.scrollY < lastScrollY - 6) header.classList.remove('is-hidden');
+    }
+    lastScrollY = window.scrollY;
+  };
   updateHeader();
   addEventListener('scroll', updateHeader, { passive: true });
 
@@ -14,6 +28,7 @@
       const open = links.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', String(open));
       document.body.classList.toggle('menu-open', open);
+      if (open && header) header.classList.remove('is-hidden');
     });
     links.addEventListener('click', () => {
       links.classList.remove('is-open');

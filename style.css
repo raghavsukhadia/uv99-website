@@ -114,6 +114,21 @@ main { position: relative; z-index: 1; }
 .upo-rail__logo {
   width: clamp(74px, 6vw, 96px);
   color: #fff;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.upo-rail__logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+/* Hero-only: hidden once the visitor scrolls past the top, restored
+   near the top or when scrolling back up (see script.js). Class-based
+   fallback for when GSAP is unavailable — see script.js for the GSAP path. */
+.upo-rail__logo.is-hidden {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
 }
 
 .upo-rail__nav {

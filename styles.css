@@ -26,8 +26,11 @@ button, input, select, textarea { font: inherit; }
 .skip-link { position: fixed; top: 8px; left: 8px; z-index: 999; padding: 10px 14px; background: white; transform: translateY(-150%); }
 .skip-link:focus { transform: none; }
 
-.site-header { position: sticky; top: 0; z-index: 50; height: 78px; border-bottom: 1px solid transparent; transition: .25s ease; }
+.site-header { position: sticky; top: 0; z-index: 50; height: 78px; border-bottom: 1px solid transparent; transition: .25s ease, transform .3s ease; }
 .site-header.is-stuck { background: rgba(0, 0, 0, .85); border-color: var(--line); backdrop-filter: blur(16px); }
+/* Hero-only: the header (with the logo) hides once you scroll down the
+   page and reappears near the top or as soon as you scroll back up. */
+.site-header.is-hidden { transform: translateY(-100%); }
 .nav-shell { width: 100%; height: 100%; margin: auto; padding-inline: clamp(20px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -.06em; }
 .brand__mark { width: 66px; height: 40px; display: grid; place-items: center; color: white; font-size: 19px; font-style: italic; transform: skewX(-8deg); background: linear-gradient(135deg, var(--plum), var(--pink)); clip-path: polygon(13% 0, 87% 0, 100% 50%, 87% 100%, 13% 100%, 0 50%); }
