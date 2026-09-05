@@ -2,19 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<script>
-/* Mount-point base URL. When this page is reverse-proxied under /QR on the
-   main UV99 site, pin all relative asset URLs (assets/...) to that prefix so
-   CSS, JS and images resolve correctly with or without a trailing slash.
-   Served standalone on uv99-qr.vercel.app this is a no-op. Must stay the first
-   node in <head> so the <base> exists before any <link>/<style>/<img> is parsed. */
-(function () {
-  var underQR = /^\/QR(?=\/|$)/.test(location.pathname);
-  var base = document.createElement("base");
-  base.href = (underQR ? "/QR" : "") + "/";
-  document.head.insertBefore(base, document.head.firstChild);
-})();
-</script>
+<!-- Asset URLs below are root-absolute (/assets/...), not relative, so this
+     page resolves them correctly regardless of the route it's served under
+     (/QR, /qr.html, a local dev server, ...) — no <base> tag / rewrite-chain
+     dependency needed. (This page now ships in-repo rather than being
+     reverse-proxied to a separate deployment, so root-absolute is safe.) -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>UV99 Glazing | The Rays Stop Here</title>
 <meta name="description" content="UV99 Glazing — advanced UV-defense glazing that blocks up to 99% of harmful UV-A and UV-B rays. UV99 and UV PRO series.">
@@ -76,15 +68,27 @@
   /* ================= HERO ================= */
   .hero{
     position:relative;
-    min-height:min(100svh, 760px);
     color:#fff;
     display:flex;
     flex-direction:column;
     overflow:hidden;
   }
+  /* Box matches the photo's own ratio (1800/1400) exactly, so "cover" never
+     has to crop anything — the whole image shows, same idea as the mobile
+     hero. .hero's height simply follows the image + the content below it. */
   .hero-bg{
-    position:absolute;inset:0;z-index:0;
-    background:url('assets/hero2.png') center center/cover no-repeat;
+    position:relative;inset:auto;z-index:0;width:100%;
+    aspect-ratio:1800 / 1400;
+    background:url('/assets/hero2.jpg') center center/cover no-repeat;
+  }
+  /* Desktop only: shorten the box and anchor the crop to the bottom, so
+     "cover" trims the empty sunroof/sky sliver off the top while the
+     family stays fully in frame. */
+  @media (min-width:641px){
+    .hero-bg{
+      aspect-ratio:1800 / 1180;
+      background-position:center bottom;
+    }
   }
   .hero-bg::after{
     content:"";position:absolute;inset:0;
@@ -94,7 +98,10 @@
   }
 
   .hero-top{
-    position:relative;z-index:2;
+    /* overlaid on the image's top edge — .hero-bg is a normal, in-flow box
+       now (sized to the photo's own ratio), so this has to float over it
+       rather than simply being the flex column's first item */
+    position:absolute;top:0;left:0;right:0;z-index:2;
     display:flex;align-items:center;justify-content:flex-end;
     padding:calc(18px + var(--safe-top)) 22px 0;
   }
@@ -164,11 +171,14 @@
   @keyframes cue{ 0%{transform:scaleY(0.3);transform-origin:top;} 50%{transform:scaleY(1);transform-origin:top;} 100%{transform:scaleY(0.3);transform-origin:bottom;} }
   @media (prefers-reduced-motion: reduce){ .scroll-cue .line{animation:none;} }
 
-  /* Hero tagline — sits over the bottom of the hero image, above the button */
+  /* Hero tagline — sits over the bottom of the hero image, above the button.
+     .hero-bg is now a normal in-flow box (full, uncropped image), so the
+     overlap onto its lower portion is a negative top margin rather than the
+     old auto-margin-in-a-fixed-height-flex-column trick. */
   .hero-tag{
     position:relative;z-index:3;order:1;
     align-self:center;
-    margin:auto 0 22px;             /* free space above -> pins tagline to image bottom */
+    margin:clamp(-320px, -18vw, -120px) 0 22px;
     padding:0 20px;
     text-align:center;
     font-family:'Unbounded',sans-serif;font-weight:700;
@@ -197,29 +207,27 @@
   .hero-watch__ic{font-size:12px;line-height:1;}
 
   @media (max-width:640px){
-    /* Mobile: show the full comparison image uncropped, copy on a panel below */
+    /* Mobile: image, tagline and Watch Videos button all flow normally, one
+       after another, on the hero's own dark panel — see .hero-bg's height
+       note below for why the image itself is capped rather than running the
+       photo's full (very tall) native aspect ratio. */
     .hero{min-height:0;}
+    /* Box is a little shorter than the photo's true ratio, and pinned to
+       the bottom, so "cover" trims a small slice off the empty sunroof/sky
+       at the top only — the bottom (and the family) stays fully uncropped. */
     .hero-bg{
       position:relative;inset:auto;width:100%;
-      aspect-ratio:864 / 1821;
-      background-image:url('assets/mobileviewhero.png');
-      background-position:center top;
+      aspect-ratio:864 / 1590;
+      background-image:url('/assets/mobileviewhero.jpg');
+      background-position:center bottom;
       background-size:cover;
       background-color:#fff;
-      /* soften the top edge so the photo blends into a white top */
-      -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 7%, #000 100%);
-              mask-image:linear-gradient(180deg, transparent 0%, #000 7%, #000 100%);
-    }
-    .hero-bg::after{
-      background:linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 12%, rgba(255,255,255,0.2) 24%, transparent 38%, transparent 44%, rgba(11,7,16,0.12) 72%, rgba(11,7,16,0.55) 100%);
+      /* the source photo is sharp — cover-scaling on high-DPR phones softens
+         it slightly, so nudge contrast/saturation back up to restore the
+         perceived clarity */
+      filter:contrast(1.08) saturate(1.12) brightness(1.02);
     }
     .hero-top{position:absolute;top:0;left:0;right:0;}
-    /* white top strip now sits behind the pill — give it dark ink so it stays readable */
-    .hero-top .pill{
-      color:#0B0710;
-      border-color:rgba(11,7,16,0.18);
-      background:rgba(11,7,16,0.05);
-    }
     .hero-content{
       position:relative;flex:none;z-index:2;
       background:var(--void);
@@ -236,18 +244,27 @@
     .hero-cta .btn{width:100%;padding:10px 16px;font-size:12px;border-radius:8px;}
     .scroll-cue{display:none;}
 
-    /* Full-width "Watch Videos" bar, flush to the hero image's lower edge
-       (no photo strip left beneath it), sitting below the headline. */
+    /* Full-width "Watch Videos" bar, directly under the tagline, both in
+       normal flow right after the hero image (see .hero note above). */
     .hero-watch{
-      position:absolute;left:0;right:0;bottom:0;
+      position:relative;order:2;
       width:100%;margin:0;
       font-size:14px;
       padding:20px 20px;      /* comfortable vertical padding */
     }
     .hero-tag{
-      position:absolute;left:0;right:0;bottom:66px;   /* just above the button bar */
-      margin:0;
-      font-size:clamp(19px,6vw,26px);
+      position:relative;order:1;z-index:3;
+      /* pull it up so it overlaps the bottom of the photo (over the girl's
+         legs) instead of sitting below it on the white panel — negative
+         margin-top overlaps the preceding image, margin-bottom keeps a
+         small gap before the Watch Videos bar */
+      margin:-215px 0 25px;
+      padding:0 14px;
+      font-size:clamp(15px,5.6vw,23px);   /* scaled down + capped so the line never wraps */
+      white-space:nowrap;
+      letter-spacing:-0.02em;
+      color:#fff;               /* back to white + shadow: it's over the photo again */
+      text-shadow:0 2px 14px rgba(0,0,0,0.6),0 1px 3px rgba(0,0,0,0.55);
     }
     .hero-watch:active{transform:scale(0.98);}
   }
@@ -295,11 +312,20 @@
     width:100%;
     aspect-ratio:16 / 9;          /* final player size reserved before the iframe loads */
     margin-top:24px;
-    border-radius:16px;
+    border-radius:22px;           /* large, premium corners */
     overflow:hidden;
     overflow-anchor:none;          /* this dynamic wrapper must never become a scroll anchor */
     background:var(--void);
-    box-shadow:0 8px 36px rgba(155,43,174,0.18), 0 0 0 1px var(--line);
+    /* thin frame + a soft, wide purple glow — never opaque enough to fight the player itself */
+    box-shadow:0 0 0 1px var(--line), 0 18px 50px -20px rgba(155,43,174,0.35), 0 0 60px -18px rgba(225,79,255,0.22);
+  }
+  /* premium variant: warm gold glow for the flagship UV99+1 video */
+  .video-wrapper--gold{
+    box-shadow:
+      0 0 0 1px rgba(232,185,35,0.4),
+      0 18px 50px -20px rgba(155,43,174,0.35),
+      0 0 70px -14px rgba(232,185,35,0.55),
+      0 0 120px -30px rgba(255,233,168,0.4);
   }
   .video-wrapper iframe{
     position:absolute;inset:0;
@@ -321,7 +347,7 @@
   }
   /* each point is its own card / box, laid out in columns */
   .video-points li{
-    display:block;
+    display:flex;align-items:center;gap:10px;
     font-size:13px;line-height:1.5;color:rgba(255,255,255,0.85);
     font-weight:600;
     min-width:0;
@@ -331,24 +357,25 @@
     border-radius:12px;
     box-shadow:0 8px 24px -14px rgba(155,43,174,0.6);
   }
-  /* staggered fade-up for each column card when the section scrolls into view */
+  /* staggered fade-up for each card, one after another, when the section
+     scrolls into view — delay steps are wide enough (150ms) to actually
+     read as a sequence rather than everything popping in almost together */
   .video-points li:not(.vp-lead){
-    opacity:0;transform:translateY(16px);
-    transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+    opacity:0;transform:translateY(18px);
+    transition:opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1);
   }
   .reveal.in .video-points li:not(.vp-lead){ opacity:1;transform:translateY(0); }
-  .reveal.in .video-points li:nth-of-type(2){ transition-delay:.06s; }
-  .reveal.in .video-points li:nth-of-type(3){ transition-delay:.12s; }
-  .reveal.in .video-points li:nth-of-type(4){ transition-delay:.18s; }
-  .reveal.in .video-points li:nth-of-type(5){ transition-delay:.24s; }
-  .reveal.in .video-points li:nth-of-type(6){ transition-delay:.30s; }
+  .reveal.in .video-points li:nth-of-type(2){ transition-delay:.15s; }
+  .reveal.in .video-points li:nth-of-type(3){ transition-delay:.30s; }
+  .reveal.in .video-points li:nth-of-type(4){ transition-delay:.45s; }
+  .reveal.in .video-points li:nth-of-type(5){ transition-delay:.60s; }
+  .reveal.in .video-points li:nth-of-type(6){ transition-delay:.75s; }
   @media (prefers-reduced-motion: reduce){
     .video-points li:not(.vp-lead){ opacity:1;transform:none;transition:none; }
   }
-  .video-points li .vp-ic{ display:none; }
-  .video-points li > span:last-child{ min-width:0; display:block; }
+  .video-points li .vp-ic{ display:block;font-size:18px;line-height:1;flex:none; }
   .video-points li strong{
-    display:block;color:#fff;font-weight:800;font-size:13.5px;margin-bottom:4px;
+    color:#fff;font-weight:800;font-size:13.5px;
   }
   .video-points .vp-sub{
     display:flex;flex-direction:column;gap:4px;margin-top:4px;
@@ -401,12 +428,355 @@
   .video-points .vp-sub > span::before{
     content:"\2192";color:var(--violet);font-weight:800;
   }
-  @media (max-width:520px){
-    .video-points{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
-    .video-points li{ padding:13px 13px; }
+  @media (max-width:640px){
+    /* single column, one pill per row, in markup order (2nd video's point
+       list — the 1st video's points are now the .uvb-grid cards below) */
+    .video-points{ grid-template-columns:1fr; gap:10px; max-width:320px; margin-left:auto; margin-right:auto; justify-items:stretch; }
+    /* every pill is the same width — matches the column, not its own label —
+       and its icon + label are centered inside it rather than left-hugging */
+    .video-points li:not(.vp-lead){ width:100%; padding:13px 16px; justify-content:center; }
   }
-  @media (max-width:380px){
-    .video-points{ grid-template-columns:1fr; }
+
+  /* =====================================================================
+     "How UV99 protects your ride" — premium heading, lead line, and the
+     three benefit cards (Eye Strain / Tanning / Interior Damage) that
+     replace the old pill list, for the FIRST video only. The second
+     video's .video-points pill list further down is untouched.
+     ===================================================================== */
+
+  /* -- heading + lead: purple-gradient emphasis + a small accent bar -- */
+  .uvb-grad{
+    background:linear-gradient(90deg, var(--violet-deep), var(--violet), var(--violet-glow));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .uvb-gold{
+    position:relative;
+    display:inline-block;white-space:nowrap;
+    background:linear-gradient(90deg,#B8860B 0%,#E8B923 35%,#FFE9A8 50%,#E8B923 65%,#B8860B 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#E8B923;
+    text-shadow:0 0 12px rgba(232,185,35,0.35);
+  }
+
+  /* -- "premium" reveal: a glowing line wipes left→right, unmasking the
+     word, then a soft gold-white shine travels up through the letters.
+     Both children are position:absolute so they never affect layout / add
+     CLS — the word's own box size is unchanged throughout.
+     No hidden-by-default state here on purpose: the word stays fully
+     visible via .uvb-gold's normal styling unless/until the script below
+     confirms GSAP + ScrollTrigger loaded and explicitly masks it right
+     before animating — so a blocked CDN or disabled JS never leaves
+     "premium" invisible. -- */
+  .uvb-gold__wipe{
+    position:absolute;top:-0.12em;bottom:-0.12em;left:0;width:2px;
+    background:linear-gradient(180deg, transparent, #fff 35%, #FFE9A8 55%, #fff 70%, transparent);
+    box-shadow:0 0 10px 2px rgba(255,233,168,0.85), 0 0 24px 6px rgba(255,255,255,0.45);
+    opacity:0;pointer-events:none;
+  }
+  .uvb-gold__shine{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, transparent 32%, rgba(255,250,230,0.95) 50%, transparent 68%);
+    background-size:100% 260%;background-position:0 140%;background-repeat:no-repeat;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    opacity:0;pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .uvb-gold__wipe,.uvb-gold__shine{ display:none; }
+  }
+  .uvb-heading__bar{
+    display:block;width:38px;height:3px;margin:2px 0 0;border-radius:999px;
+    background:linear-gradient(90deg, var(--violet), var(--violet-glow));
+  }
+  #videos > .wrap > .eyebrow-dark,
+  #videos > .wrap > .uvb-heading{
+    justify-content:center;text-align:center;
+  }
+  #videos > .wrap > .uvb-heading__bar{ margin-left:auto;margin-right:auto; }
+  .uvb-story .uvb-heading{ text-align:center;margin-bottom:12px; }
+  .uvb-story .uvb-heading__bar{ margin:2px auto 22px; }
+  .uvb-heading__arrow{
+    display:block;width:26px;height:26px;margin:14px auto 0;color:var(--violet);
+  }
+  .uvb-heading__arrow--anim{
+    animation:uvb-heading-arrow-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes uvb-heading-arrow-bounce{
+    0%,100%{ transform:translateY(0); opacity:0.6; }
+    50%{ transform:translateY(6px); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .uvb-heading__arrow--anim{ animation:none; }
+  }
+  .uvb-lead{
+    margin:26px 0 0;
+    font-family:'Unbounded',sans-serif;font-weight:700;letter-spacing:-0.005em;
+    font-size:clamp(17px,2.4vw,21px);line-height:1.35;color:var(--ink);
+  }
+  .uvb-lead__bar{
+    display:block;width:28px;height:3px;margin:10px 0 0;border-radius:999px;
+    background:linear-gradient(90deg, var(--violet), var(--violet-glow));
+  }
+
+  /* -- card grid: 3 up on desktop, 2 on tablet, 1 on mobile -- */
+  .uvb-grid{
+    position:relative;
+    margin-top:26px;
+    display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:18px;
+  }
+  /* extremely soft radial purple glow behind the whole card row */
+  .uvb-grid::before{
+    content:"";position:absolute;z-index:0;
+    inset:-40px -20px;
+    background:radial-gradient(60% 70% at 50% 40%, rgba(155,43,174,0.10), transparent 72%);
+    pointer-events:none;
+  }
+  @media (max-width:900px){ .uvb-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:640px){
+    .uvb-grid{ grid-template-columns:1fr; gap:10px; justify-items:center; }
+    .uvb-grid .uvb-card{
+      width:100%; max-width:220px;
+      flex-direction:row; align-items:center; gap:10px;
+      padding:12px 14px;
+    }
+    .uvb-grid .uvb-card__icon{ margin-bottom:0;font-size:20px; }
+    .uvb-grid .uvb-card__title{ font-size:14px; }
+    .uvb-grid--pct .uvb-card{
+      flex-direction:column; align-items:center; gap:0;
+      max-width:220px; padding:14px 16px; text-align:center;
+    }
+  }
+
+  /* -- the card itself -- */
+  .uvb-card{
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;
+    min-height:0;                 /* never forced tall — content decides height */
+    padding:20px 18px;
+    background:linear-gradient(180deg, #fff, var(--paper-2));
+    border:1px solid var(--line);
+    border-left:3px solid var(--violet);
+    border-radius:20px;
+    box-shadow:0 10px 30px -22px rgba(155,43,174,0.28);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .35s cubic-bezier(.16,1,.3,1), border-color .35s ease, box-shadow .35s ease;
+  }
+
+  /* -- premium variant: dark glass card with a glowing gold stat, used for
+     the UV99+1 rejection-% figures so the flagship section reads as a step
+     up from the plain white cards used elsewhere -- */
+  .uvb-card--premium{
+    overflow:hidden;
+    border-radius:24px;
+    background:
+      radial-gradient(120% 90% at 20% 0%, rgba(225,79,255,0.24), transparent 55%),
+      linear-gradient(165deg, #1c1029 0%, #0b0710 74%);
+    border:1px solid rgba(232,185,35,0.28);
+    border-left:3px solid var(--violet-glow);
+    box-shadow:
+      0 20px 46px -26px rgba(155,43,174,0.55),
+      0 0 40px -18px rgba(225,79,255,0.32),
+      0 0 0 1px rgba(232,185,35,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  /* soft diagonal glass sheen across the top of the card */
+  .uvb-card--premium::after{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(120deg, rgba(255,255,255,0.09) 0%, transparent 32%);
+  }
+  .uvb-card--premium .uvb-card__label{
+    position:relative;z-index:1;width:100%;
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:800;
+    letter-spacing:0.06em;text-transform:uppercase;
+    color:#fff;margin-bottom:14px;
+  }
+  /* small gold divider under the label */
+  .uvb-card--premium .uvb-card__label::after{
+    content:"";position:absolute;left:0;bottom:-8px;width:22px;height:2px;border-radius:999px;
+    background:linear-gradient(90deg,#B8860B,#FFE9A8,#B8860B);
+  }
+  .uvb-grid--pct .uvb-card--premium .uvb-card__label::after{ left:50%;transform:translateX(-50%); }
+  .uvb-card--premium .uvb-card__stat{
+    position:relative;z-index:1;width:100%;
+    font-family:'Unbounded',sans-serif;font-weight:800;font-size:26px;line-height:1;letter-spacing:0.01em;
+    color:#fff;
+    text-shadow:0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(225,79,255,0.4);
+  }
+  @media (hover:hover){
+    .uvb-card--premium:hover{ border-color:rgba(232,185,35,0.5); }
+  }
+  .uvb-card:focus-visible{ outline:2px solid var(--violet-glow); outline-offset:3px; }
+  .uvb-card__glow{
+    position:absolute;inset:0;border-radius:inherit;z-index:-1;
+    opacity:0;transition:opacity .35s ease;
+    box-shadow:0 0 0 1px rgba(225,79,255,0.35), 0 20px 46px -20px rgba(155,43,174,0.5);
+  }
+  .uvb-card__num{
+    position:absolute;top:18px;right:20px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+    letter-spacing:0.05em;color:rgba(155,43,174,0.38);
+  }
+  .uvb-card__icon{
+    display:inline-block;font-size:26px;line-height:1;margin-bottom:10px;
+    transition:transform .35s cubic-bezier(.16,1,.3,1);
+  }
+  .uvb-card__title{
+    font-family:'Unbounded',sans-serif;font-weight:700;font-size:16.5px;
+    color:var(--ink);margin-bottom:0;letter-spacing:-0.005em;
+  }
+  .uvb-card__desc{
+    font-size:13.5px;line-height:1.6;color:var(--ink-soft);
+    transition:color .35s ease;
+  }
+  .uvb-card__arrow{
+    position:absolute;left:18px;bottom:16px;
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--violet);color:#fff;
+    transition:transform .35s cubic-bezier(.16,1,.3,1), background .35s ease;
+  }
+  .uvb-card__arrow svg{ width:16px;height:16px; }
+
+  /* -- premium % cards: staggered fade + slide-up as the section reveals -- */
+  .uvb-grid--pct .uvb-card{
+    opacity:0;transform:translateY(24px) scale(.97);
+    transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+  }
+  .wrap.reveal.in .uvb-grid--pct .uvb-card{ opacity:1;transform:none; }
+  .wrap.reveal.in .uvb-grid--pct .uvb-card:nth-child(1){ transition-delay:.08s; }
+  .wrap.reveal.in .uvb-grid--pct .uvb-card:nth-child(2){ transition-delay:.2s; }
+  .wrap.reveal.in .uvb-grid--pct .uvb-card:nth-child(3){ transition-delay:.32s; }
+  .wrap.reveal.in .uvb-grid--pct .uvb-card:nth-child(4){ transition-delay:.44s; }
+  @media (prefers-reduced-motion: reduce){
+    .uvb-grid--pct .uvb-card{ opacity:1;transform:none;transition:none; }
+  }
+
+  /* -- hover: lift, border/glow strengthen, icon + arrow move, copy brightens -- */
+  @media (hover:hover){
+    .uvb-card:hover{ transform:translateY(-7px); border-color:rgba(155,43,174,0.55); box-shadow:0 22px 46px -22px rgba(155,43,174,0.4); }
+    .uvb-card:hover .uvb-card__glow{ opacity:1; }
+    .uvb-card:hover .uvb-card__icon{ transform:scale(1.05); }
+    .uvb-card:hover .uvb-card__desc{ color:var(--ink); }
+    .uvb-card:hover .uvb-card__arrow{ transform:translateX(4px); background:var(--violet-glow); }
+  }
+
+  /* -- active / clicked state: this card highlighted, the rest recede -- */
+  .uvb-grid.has-active .uvb-card{ opacity:0.55; transform:none; }
+  .uvb-grid.has-active .uvb-card.is-active{
+    opacity:1;
+    border-color:rgba(155,43,174,0.6);
+    box-shadow:0 0 0 1px rgba(225,79,255,0.4), 0 24px 50px -20px rgba(155,43,174,0.45);
+  }
+  .uvb-grid.has-active .uvb-card.is-active .uvb-card__glow{ opacity:1; }
+
+  /* -- icon micro-animations: continuous, small-amplitude, premium -- */
+  .uvb-card__icon--eye{ animation:uvb-blink 5s ease-in-out infinite; }
+  @keyframes uvb-blink{ 0%,88%,100%{ transform:scaleY(1); } 92%{ transform:scaleY(0.15); } 96%{ transform:scaleY(1); } }
+  @keyframes uvb-spin{ to{ transform:rotate(360deg); } }
+  .uvb-card__icon--seat{ animation:uvb-float 3.6s ease-in-out infinite; }
+  @keyframes uvb-float{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-3px) scale(1.03); } }
+
+  /* -- scroll reveal: heading, video, lead and cards each settle in turn,
+     layered on top of the section's own shared .wrap.reveal fade (untouched,
+     so the second video + its point list further down keep animating in
+     exactly as before). -- */
+  #videos .uvb-heading,
+  #videos .uvb-story--hero .video-wrapper,
+  #videos .uvb-lead,
+  #videos .uvb-card{
+    opacity:0;transform:translateY(22px);
+    transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
+  }
+  #videos .wrap.reveal.in .uvb-heading,
+  #videos .wrap.reveal.in .uvb-story--hero .video-wrapper,
+  #videos .wrap.reveal.in .uvb-lead,
+  #videos .wrap.reveal.in .uvb-card{ opacity:1;transform:translateY(0); }
+  #videos .wrap.reveal.in .uvb-story--hero .video-wrapper{ transition-delay:.1s; }
+  #videos .wrap.reveal.in .uvb-lead{ transition-delay:.2s; }
+  #videos .wrap.reveal.in .uvb-card:nth-child(1){ transition-delay:.3s; }
+  #videos .wrap.reveal.in .uvb-card:nth-child(2){ transition-delay:.42s; }
+  #videos .wrap.reveal.in .uvb-card:nth-child(3){ transition-delay:.54s; }
+  #videos .wrap.reveal.in .uvb-card:nth-child(4){ transition-delay:.66s; }
+
+  @media (prefers-reduced-motion: reduce){
+    .uvb-card,.uvb-card__glow,.uvb-card__icon,.uvb-card__desc,.uvb-card__arrow{ transition:none!important; }
+    .uvb-card__icon--eye,.uvb-card__icon--sun,.uvb-card__icon--seat{ animation:none!important; }
+    #videos .uvb-heading,#videos .uvb-story--hero .video-wrapper,#videos .uvb-lead,#videos .uvb-card{
+      opacity:1!important;transform:none!important;transition:none!important;
+    }
+  }
+
+  /* =====================================================================
+     Vertical story blocks — one per video. Gentle (non-mandatory) scroll
+     snap centers whichever story the user has scrolled to; the currently
+     "active" story (its video ≥60% visible, driven by the existing
+     IntersectionObserver in the script below) gets a soft glow on its
+     player and the others recede slightly, so it reads as the current
+     focus of attention without ever blocking free scrolling.
+     ===================================================================== */
+  #videos{ scroll-snap-type:y proximity; }
+  .uvb-story{ scroll-snap-align:center; }
+  .uvb-story + .uvb-story{ margin-top:24px; }
+  .uvb-story .video-wrapper{
+    transition:box-shadow .6s ease, opacity .6s ease;
+  }
+  .uvb-story.is-active .video-wrapper{
+    box-shadow:0 0 0 1.5px rgba(225,79,255,0.55), 0 26px 60px -18px rgba(155,43,174,0.45), 0 0 70px -14px rgba(225,79,255,0.32);
+  }
+  .uvb-story:not(.is-active) .video-wrapper{ opacity:0.93; }
+
+  /* -- swipe/scroll-to-continue indicator between stories -- */
+  .uvb-swipe{
+    display:flex;flex-direction:column;align-items:center;gap:9px;
+    margin:18px 0 2px;color:var(--violet);
+  }
+  .uvb-swipe__arrow{
+    width:20px;height:20px;
+    animation:uvb-swipe-float 1.8s ease-in-out infinite;
+  }
+  @keyframes uvb-swipe-float{
+    0%,100%{ transform:translateY(0); opacity:0.5; }
+    50%{ transform:translateY(6px); opacity:1; }
+  }
+  .uvb-swipe__label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .uvb-swipe__mobile{ display:none; }
+  @media (max-width:640px){
+    .uvb-swipe__desktop{ display:none; }
+    .uvb-swipe__mobile{ display:inline; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .uvb-story .video-wrapper{ transition:none; }
+    .uvb-swipe__arrow{ animation:none; }
+  }
+
+  /* ================= PRODUCT CUTOUT (below the cabin-temperature simulator) ================= */
+  .hs-sir{
+    position:relative;
+    display:flex;justify-content:center;
+    padding:36px 0;
+  }
+  /* soft purple glow behind the packaging, wide and blurred so it reads as
+     ambient light rather than a hard shape */
+  .hs-sir::before{
+    content:"";position:absolute;z-index:0;
+    inset:-10% -20%;
+    background:radial-gradient(55% 65% at 50% 50%, rgba(155,43,174,0.24), rgba(225,79,255,0.08) 55%, transparent 78%);
+    filter:blur(6px);
+    pointer-events:none;
+  }
+  .hs-sir__img{
+    position:relative;z-index:1;
+    width:100%;max-width:220px;height:auto;
+    filter:drop-shadow(0 18px 30px rgba(155,43,174,0.32));
+    /* the source photo's own visible boxes sit left of its canvas centre
+       (empty transparent margin on the right) — nudge right so the
+       packaging itself, not the transparent canvas, reads as centred */
+    transform:translateX(15%);
+  }
+  .hs-sir__logo{
+    display:block;margin:0 auto;height:36px;width:auto;
   }
 
   /* ================= HOW IT WORKS (real sequence → numbers OK) ================= */
@@ -1014,6 +1384,25 @@
     box-shadow:0 0 0 1px rgba(225,79,255,0.28), 0 12px 30px -16px rgba(225,79,255,0.5);
   }
 
+  /* -- the premium tier (Premium Series tab + its lone UV99+1 variant)
+     keeps the normal button look, just a soft gold border + faint glow
+     and gold-tinted label, so it reads as premium without going dark/heavy. -- */
+  .hs-seg__seriesbtn[data-series="premium"],
+  .hs-seg__variant[data-state="uvp1"]{
+    border-color:rgba(184,134,11,0.4);color:#8a6512;
+    box-shadow:0 0 14px -4px rgba(232,185,35,0.45);
+  }
+  .hs-seg__seriesbtn[data-series="premium"]:hover,
+  .hs-seg__variant[data-state="uvp1"]:hover{
+    border-color:#B8860B;color:#6b4d0d;
+  }
+  .hs-seg__seriesbtn[data-series="premium"].is-active,
+  .hs-seg__variant[data-state="uvp1"].is-active{
+    background:linear-gradient(180deg, rgba(232,185,35,0.16), rgba(184,134,11,0.06));
+    border-color:#E8B923;color:#6b4d0d;
+    box-shadow:0 0 0 1px rgba(232,185,35,0.4), 0 12px 30px -16px rgba(184,134,11,0.5);
+  }
+
   /* layout grid */
   .hs-grid{
     display:grid;
@@ -1086,9 +1475,17 @@
   .hs-stat__name{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;}
   .hs-stat__badge{
     font-style:normal;font-size:9px;font-weight:700;letter-spacing:0.05em;
-    margin-left:6px;padding:2px 6px;border-radius:20px;
-    background:rgba(30,134,168,0.14);color:#1E86A8;vertical-align:middle;
+    margin-left:6px;padding:2px 7px;border-radius:20px;
+    background:rgba(184,134,11,0.12);color:#B8860B;vertical-align:middle;
+    border:1px solid rgba(232,185,35,0.45);
+    box-shadow:0 0 7px 0 rgba(232,185,35,0.35);
+    animation:hs-badge-glow 2.6s ease-in-out infinite;
   }
+  @keyframes hs-badge-glow{
+    0%,100%{ box-shadow:0 0 6px 0 rgba(232,185,35,0.3); }
+    50%{ box-shadow:0 0 13px 2px rgba(232,185,35,0.65); }
+  }
+  @media (prefers-reduced-motion: reduce){ .hs-stat__badge{ animation:none; } }
   .hs-stat__val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:var(--ink);}
   .hs-bar{height:6px;border-radius:3px;background:rgba(155,43,174,0.10);overflow:hidden;}
   .hs-bar__fill{
@@ -1235,7 +1632,7 @@
   <div class="hero-bg" aria-hidden="true"></div>
 
   <div class="hero-top">
-    <a href="https://uv99.in" class="wordmark"><img src="assets/logo.png" alt="UV99"></a>
+    <a href="https://uv99.in" class="wordmark"><img src="/assets/logo.png" alt="UV99"></a>
     <span class="pill">3-Year Warranty</span>
   </div>
 
@@ -1250,65 +1647,91 @@
 <section class="section" id="videos" style="padding-bottom:16px">
   <div class="wrap reveal">
     <div class="eyebrow-dark">See It In Action</div>
-    <h2>How UV99<br>protects your ride</h2>
-    <div class="video-wrapper">
-      <iframe src="https://www.youtube.com/embed/SIgob7498Ls?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    <h2 class="uvb-heading"><span class="uvb-grad">Problems</span></h2>
+    <span class="uvb-heading__bar" aria-hidden="true"></span>
+    <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+    <!-- ---- Story 1: the problem, in three parts ---- -->
+    <div class="uvb-story uvb-story--hero" data-uvb-story>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/c-oA9XR6c-4?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+
+
+      <div class="uvb-grid">
+        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon uvb-card__icon--eye" aria-hidden="true">👁</span>
+          <p class="uvb-card__title">Eye Strain</p>
+        </article>
+        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon uvb-card__icon--sun" aria-hidden="true">☀</span>
+          <p class="uvb-card__title">Tanning</p>
+        </article>
+        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon uvb-card__icon--seat" aria-hidden="true">🔥</span>
+          <p class="uvb-card__title">Skin Damage</p>
+        </article>
+        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon" aria-hidden="true">🚗</span>
+          <p class="uvb-card__title">Interior Damage</p>
+        </article>
+      </div>
+
     </div>
 
-    <ul class="video-points">
-      <li class="vp-lead">The sun damage most drivers never see.</li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">🔍</span>
-        <span><strong>Visual Exposure Analysis</strong>Maps the UV and heat load reaching your cabin on an average drive.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">☀</span>
-        <span><strong>Cumulative UV</strong>Unprotected glass lets damage build with every trip.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">❄</span>
-        <span><strong>Cabin Heat</strong>Trapped solar heat pushes up temperature and AC load.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">🛡</span>
-        <span><strong>Interior Protection</strong>Slows fading, cracking and hardening of trims and seats.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">✓</span>
-        <span><strong>UV99 Defense</strong>Blocks 99% of UVA &amp; UVB rays before they get in.</span>
-      </li>
-    </ul>
+    <!-- ---- Story 2: the fix, layered over the same footage ---- -->
+    <div class="uvb-story" data-uvb-story>
+      <h2 class="uvb-heading">The <span class="uvb-grad">solution</span></h2>
+      <span class="uvb-heading__bar" aria-hidden="true"></span>
+      <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-    <div class="video-wrapper">
-      <iframe src="https://www.youtube.com/embed/GVbACM2Zhhw?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/GVbACM2Zhhw?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+
+      <div class="uvb-grid">
+        <article class="uvb-card">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon" aria-hidden="true">🛡</span>
+          <p class="uvb-card__title">Interior Protection</p>
+        </article>
+        <article class="uvb-card">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon" aria-hidden="true">☀</span>
+          <p class="uvb-card__title">Skin Protection</p>
+        </article>
+        <article class="uvb-card">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon" aria-hidden="true">❄</span>
+          <p class="uvb-card__title">Enhanced Comfort</p>
+        </article>
+        <article class="uvb-card">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon" aria-hidden="true">◐</span>
+          <p class="uvb-card__title">Glare Reduction</p>
+        </article>
+        <article class="uvb-card">
+          <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__icon" aria-hidden="true">◎</span>
+          <p class="uvb-card__title">Optical Clarity</p>
+        </article>
+      </div>
+
     </div>
 
-    <ul class="video-points">
-      <li class="vp-lead">Rejects 99% of ultraviolet rays.</li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">🛡</span>
-        <span><strong>Interior Protection</strong>Guards dashboard &amp; seats from fading, cracking, deterioration.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">☀</span>
-        <span><strong>Skin Protection</strong>Shields you and passengers from harmful UV on every drive.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">❄</span>
-        <span><strong>Enhanced Comfort</strong>A cooler, more pleasant cabin on every trip.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">◐</span>
-        <span><strong>Glare Reduction</strong>Safer driving in bright, harsh conditions.</span>
-      </li>
-      <li>
-        <span class="vp-ic" aria-hidden="true">◎</span>
-        <span><strong>Optical Clarity</strong>Sharp, distortion-free visibility, day and night.</span>
-      </li>
-    </ul>
+    <!-- ---- Story 3: the film in daily use ---- -->
+    <div class="uvb-story" data-uvb-story>
+      <h2 class="uvb-heading">UV99 <span class="uvb-grad">Series</span></h2>
+      <span class="uvb-heading__bar" aria-hidden="true"></span>
+      <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-    <div class="video-wrapper">
-      <iframe src="https://www.youtube.com/embed/VBQYjBibX_4?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/IMu1kOATBQw?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
     </div>
   </div>
 </section>
@@ -1318,16 +1741,13 @@
   <div class="wrap reveal">
     <div class="eyebrow-dark">The Range</div>
     <h2>Pick your level<br>of protection</h2>
-    <p class="lead">Same UV defense underneath. Choose how much heat rejection and tone you want on top.</p>
 
     <div class="tabs" role="tablist">
       <div class="tab active" role="tab" data-target="panel-uv99">UV99 Series</div>
       <div class="tab" role="tab" data-target="panel-pro">UV PRO Series</div>
-      <div class="tab" role="tab" data-target="panel-plus1">UV99 +1</div>
     </div>
 
     <div class="panel active" id="panel-uv99">
-      <p class="desc">Pure UV protection with a virtually invisible, factory-fitted look.</p>
       <div class="variant-grid">
         <div class="variant">
           <h4>UV99 70</h4>
@@ -1363,7 +1783,6 @@
     </div>
 
     <div class="panel" id="panel-pro">
-      <p class="desc">Same 99% UV protection, plus advanced infrared heat-rejection for a cooler cabin.</p>
       <div class="variant-grid">
         <div class="variant">
           <h4>UV PRO 70</h4>
@@ -1423,7 +1842,42 @@
       </div>
     </div>
 
-    <p class="qc-note">All values averaged from routine QC data · may vary batch to batch (± 5%)</p>
+  </div>
+</section>
+
+<!-- ================= UV99 +1 — DEMO VIDEO ================= -->
+<section class="section" style="padding-top:8px">
+  <div class="wrap reveal">
+    <h2 class="uvb-heading" style="text-align:center">Need the <span class="uvb-gold" data-premium-fx>premium<span class="uvb-gold__wipe" aria-hidden="true"></span><span class="uvb-gold__shine" aria-hidden="true">premium</span></span> option?<br>Go with <span class="uvb-grad">UV99 +1</span></h2>
+    <span class="uvb-heading__bar" aria-hidden="true" style="margin:2px auto 22px"></span>
+    <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+    <div class="video-wrapper video-wrapper--gold">
+      <iframe src="https://www.youtube.com/embed/po2uTzsaJT8?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+
+    <div class="uvb-grid uvb-grid--pct">
+      <article class="uvb-card uvb-card--premium">
+        <span class="uvb-card__glow" aria-hidden="true"></span>
+        <p class="uvb-card__label">Visible Light Transmission</p>
+        <p class="uvb-card__stat"><span class="uvb-pct" data-count="70">0</span>%</p>
+      </article>
+      <article class="uvb-card uvb-card--premium">
+        <span class="uvb-card__glow" aria-hidden="true"></span>
+        <p class="uvb-card__label">Ultra Violet Rejected</p>
+        <p class="uvb-card__stat"><span class="uvb-pct" data-count="100">0</span>%</p>
+      </article>
+      <article class="uvb-card uvb-card--premium">
+        <span class="uvb-card__glow" aria-hidden="true"></span>
+        <p class="uvb-card__label">Infrared Rejected</p>
+        <p class="uvb-card__stat"><span class="uvb-pct" data-count="89">0</span>%</p>
+      </article>
+      <article class="uvb-card uvb-card--premium">
+        <span class="uvb-card__glow" aria-hidden="true"></span>
+        <p class="uvb-card__label">Heat Rejection</p>
+        <p class="uvb-card__stat"><span class="uvb-pct" data-count="54">0</span>%</p>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -1503,8 +1957,7 @@
   <div class="hs-wrap reveal">
     <div class="hs-head">
       <div class="eyebrow-dark">Interactive Demo</div>
-      <h2 id="hs-heading">Watch the film reject heat</h2>
-      <p>Select a UV99 film and see how it changes the sunlight hitting the glass, the heat entering the cabin, and how the family inside feels. Figures shown are demonstration values.</p>
+      <h2 id="hs-heading">Watch the film reject UV rays</h2>
     </div>
 
     <div class="hs-seg" role="group" aria-label="Window film selection">
@@ -1532,7 +1985,7 @@
     <div class="hs-grid">
       <div class="hs-stage-card" id="hs-stage-region" role="region" aria-label="Film effect visualisation" aria-live="polite" tabindex="0">
         <div class="hs-stage" data-state="none" role="img" aria-label="Cabin heat visualisation">
-          <img class="hs-photo" src="assets/123.png" alt="" width="1689" height="931" loading="lazy" decoding="async">
+          <img class="hs-photo" src="/assets/123.png" alt="" width="1689" height="931" loading="lazy" decoding="async">
           <svg class="hs-fx" viewBox="0 0 1690 931" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
               <radialGradient id="hs-glow-grad" cx="0.5" cy="0.5" r="0.5">
@@ -1641,6 +2094,16 @@
     </div>
 
     <p class="hs-live" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- ================= PRODUCT CUTOUT ================= -->
+<section class="section" style="padding-top:0">
+  <div class="wrap reveal">
+    <img class="hs-sir__logo" src="/assets/logo.png" alt="UV99" loading="lazy" decoding="async">
+  </div>
+  <div class="wrap reveal hs-sir">
+    <img class="hs-sir__img" src="/assets/SIR-cutout.png" alt="UV99 window film packaging" loading="lazy" decoding="async">
   </div>
 </section>
 
@@ -1775,6 +2238,37 @@
       io.observe(cmp);
     } else {
       activate();
+    }
+  })();
+
+  // ---- UV99+1 rejection-% cards: fast count-up on reveal ----
+  (function(){
+    const pct = document.querySelectorAll('.uvb-grid--pct .uvb-pct');
+    if(!pct.length) return;
+
+    function countUp(el){
+      const target = parseFloat(el.dataset.count);
+      if(reduceMotion){ el.textContent = target; return; }
+      const dur = 900, start = performance.now();
+      (function tick(now){
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target);
+        if(p < 1) requestAnimationFrame(tick);
+        else el.textContent = target;
+      })(start);
+    }
+
+    const grid = pct[0].closest('.uvb-grid--pct');
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ pct.forEach(countUp); io.disconnect(); }
+        });
+      }, {threshold:0.4});
+      io.observe(grid);
+    } else {
+      pct.forEach(countUp);
     }
   })();
 
@@ -2074,7 +2568,7 @@
 
       /* "Without Film" shows 123.png; any selected film shows the calibrated base photo */
       if(photoEl){
-        var wantSrc = key === 'none' ? 'assets/123.png' : 'assets/new%20car.orig.png';
+        var wantSrc = key === 'none' ? '/assets/123.png' : '/assets/new%20car.orig.png';
         if(photoEl.getAttribute('src') !== wantSrc) photoEl.setAttribute('src', wantSrc);
       }
 
@@ -2626,15 +3120,30 @@
     );
   }
 
+  function storyOf(frame){
+    var el = frame;
+    while(el && el !== section && !el.classList.contains('uvb-story')) el = el.parentElement;
+    return (el && el.classList.contains('uvb-story')) ? el : null;
+  }
+
   function play(frame){
     inView = frame;
     cmd(frame, 'seekTo', [0, true]);          // always from the beginning
     cmd(frame, 'playVideo');
     if(soundUnlocked){ cmd(frame, 'unMute'); cmd(frame, 'setVolume', [100]); }
+    var story = storyOf(frame);
+    if(story){
+      Array.prototype.slice.call(document.querySelectorAll('.uvb-story.is-active')).forEach(function(s){
+        if(s !== story) s.classList.remove('is-active');
+      });
+      story.classList.add('is-active');
+    }
   }
   function pause(frame){
     if(inView === frame) inView = null;
     cmd(frame, 'pauseVideo');
+    var story = storyOf(frame);
+    if(story) story.classList.remove('is-active');
   }
 
   var programmatic = false, pgTimer = null;
@@ -2766,6 +3275,109 @@
   window.addEventListener('keydown', unlockSound);
   window.addEventListener('touchstart', unlockSound, { passive:true });
 })();
+</script>
+
+<!-- "How UV99 protects your ride" — benefit-card active state. Click/tap a
+     card (or Enter/Space it) to highlight it and recede the others; click
+     it again, or click elsewhere, to clear. No layout shift, just opacity
+     + glow, so it never fights the scroll position. -->
+<script>
+(function(){
+  var grid = document.querySelector('.uvb-grid');
+  if(!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('[data-uvb-card]'));
+
+  function setActive(card){
+    var already = card.classList.contains('is-active');
+    cards.forEach(function(c){
+      c.classList.remove('is-active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    if(!already){
+      card.classList.add('is-active');
+      card.setAttribute('aria-pressed', 'true');
+      grid.classList.add('has-active');
+    } else {
+      grid.classList.remove('has-active');
+    }
+  }
+
+  cards.forEach(function(card){
+    card.addEventListener('click', function(){ setActive(card); });
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); setActive(card); }
+    });
+  });
+
+  document.addEventListener('click', function(e){
+    if(!grid.contains(e.target)){
+      cards.forEach(function(c){ c.classList.remove('is-active'); c.setAttribute('aria-pressed','false'); });
+      grid.classList.remove('has-active');
+    }
+  });
+})();
+</script>
+
+<!-- GSAP + ScrollTrigger — used only for the "premium" word reveal below.
+     Loaded last, deferred, so it never blocks first paint; the word is
+     already fully visible via plain CSS if this fails to load. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+<!-- "Need the premium option?" — a glowing line wipes across "premium",
+     unmasking it, then a soft gold-white shine travels upward through the
+     letters and fades, leaving the word clean and slightly luminous.
+     Runs once, ~1.3s, triggered when the section is ~70% down the
+     viewport. Degrades to the always-visible static word if GSAP/
+     ScrollTrigger fail to load or the visitor prefers reduced motion. -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var word = document.querySelector('[data-premium-fx]');
+  if (!word) return;
+
+  var reduce = false;
+  try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  if (reduce || !window.gsap || !window.ScrollTrigger) return; // stays visible, static — no hidden state to fall back from
+
+  var gsap = window.gsap;
+  gsap.registerPlugin(window.ScrollTrigger);
+
+  var line  = word.querySelector('.uvb-gold__wipe');
+  var shine = word.querySelector('.uvb-gold__shine');
+  var section = word.closest('section');
+
+  // Mask the word only now, right before building the timeline that will
+  // unmask it — if anything above bailed out, "premium" was never hidden.
+  gsap.set(word, { clipPath: 'inset(0 100% 0 -0.1em)' });
+  gsap.set(line, { opacity: 0, x: 0 });
+  gsap.set(shine, { opacity: 0, backgroundPositionY: '140%' });
+
+  var tl = gsap.timeline({
+    paused: true,
+    defaults: { ease: 'power3.out' },
+    onComplete: function () {
+      // final state: fully revealed, glow layers spent — clean and static
+      gsap.set(word, { clipPath: 'inset(0 0% 0 -0.1em)' });
+      gsap.set([line, shine], { opacity: 0 });
+    }
+  });
+
+  var w = word.offsetWidth;
+  tl.set(line, { opacity: 1 })
+    .to(line, { x: w + 6, duration: 0.5 }, 0)
+    .to(word, { clipPath: 'inset(0 0% 0 -0.1em)', duration: 0.5 }, 0)
+    .to(line, { opacity: 0, duration: 0.18 }, 0.42)
+    .to(shine, { backgroundPositionY: '-60%', opacity: 1, duration: 0.65, ease: 'power2.out' }, 0.4)
+    .to(shine, { opacity: 0, duration: 0.35, ease: 'power2.out' }, 1.05);
+  // total run ≈ 1.4s, within the 1.2–1.6s target
+
+  window.ScrollTrigger.create({
+    trigger: section || word,
+    start: 'top 70%',
+    once: true,
+    onEnter: function () { tl.play(); }
+  });
+});
 </script>
 
 </body>
