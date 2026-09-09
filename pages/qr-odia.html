@@ -15,6 +15,9 @@
 <meta name="description" content="UV99 Glazing — advanced UV-defense glazing that blocks up to 99% of harmful UV-A and UV-B rays. UV99 and UV PRO series.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="dns-prefetch" href="https://googlevideo.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style id="qr-i18n-style">
@@ -1704,7 +1707,7 @@
     <!-- ---- Story 1: the problem, in three parts ---- -->
     <div class="uvb-story uvb-story--hero" data-uvb-story>
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/QF6BqdnndRs?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/QF6BqdnndRs?autoplay=1&rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="eager"></iframe>
       </div>
 
 
@@ -1740,7 +1743,7 @@
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/BRiYAXQV5Mg?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/BRiYAXQV5Mg?playsinline=1&rel=0&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
 
       <div class="uvb-grid">
@@ -1780,7 +1783,7 @@
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/MAfSG6obnYs?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/MAfSG6obnYs?rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
     </div>
   </div>
@@ -1903,7 +1906,7 @@
     <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
     <div class="video-wrapper video-wrapper--gold">
-      <iframe src="https://www.youtube.com/embed/cLFpNW8vE3w?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <iframe src="https://www.youtube.com/embed/cLFpNW8vE3w?rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
 
     <div class="uvb-grid uvb-grid--pct">
@@ -3239,6 +3242,12 @@
     inView = frame;
     cmd(frame, 'seekTo', [0, true]);          // always from the beginning
     cmd(frame, 'playVideo');
+    // Mobile: the YouTube iframe is often not ready for the first command
+    // (lazy-load + slow network), so retry. Muted autoplay is permitted, so
+    // this makes the video actually start without a manual tap.
+    [400, 1200, 2600].forEach(function(ms){
+      setTimeout(function(){ if(inView === frame) cmd(frame, 'playVideo'); }, ms);
+    });
     if(soundUnlocked){ cmd(frame, 'unMute'); cmd(frame, 'setVolume', [100]); }
     var story = storyOf(frame);
     if(story){
@@ -3380,7 +3389,7 @@
   function unlockSound(){
     if(soundUnlocked) return;
     soundUnlocked = true;
-    if(inView){ cmd(inView, 'unMute'); cmd(inView, 'setVolume', [100]); }
+    if(inView){ cmd(inView, 'playVideo'); cmd(inView, 'unMute'); cmd(inView, 'setVolume', [100]); }
     ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){
       window.removeEventListener(evt, unlockSound);
     });

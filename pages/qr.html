@@ -12,22 +12,107 @@
 <meta name="description" content="UV99 Glazing — advanced UV-defense glazing that blocks up to 99% of harmful UV-A and UV-B rays. UV99 and UV PRO series.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="dns-prefetch" href="https://googlevideo.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<style>
+  /* Full-screen "detecting location" cover. Painted from <head> BEFORE <body>
+     renders, so a phone that scans /QR/ never sees the English page flash by
+     while geolocation resolves. Driven purely by a class on <html>. */
+  html.qr-detecting, html.qr-detecting body { overflow:hidden !important; }
+  html.qr-detecting::before{
+    content:"Detecting your location\2026";
+    position:fixed; inset:0; z-index:2147483000;
+    display:flex; align-items:center; justify-content:center; padding-top:64px;
+    background:#0B0710; color:#EBD6FF;
+    font:600 14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    letter-spacing:.02em;
+  }
+  html.qr-detecting::after{
+    content:""; position:fixed; left:50%; top:calc(50% - 34px); margin-left:-13px;
+    width:26px; height:26px; border-radius:50%;
+    border:2px solid rgba(226,180,255,.25); border-top-color:#E14FFF;
+    z-index:2147483001; animation:qr-spin .8s linear infinite;
+  }
+  @keyframes qr-spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion:reduce){ html.qr-detecting::after{ animation-duration:2.4s; } }
+</style>
 <script>
-/* Returning visitor with a saved regional choice -> go straight there (base /QR/ only,
-   synchronous, no English flash). Only fast-redirects when a prior GPS reverse-geocode
-   actually confirmed this region (uv99_qr_geo_verified === stored). An unverified or
-   stale stored value is left for the async GPS check below to reconcile, so a wrong
-   earlier guess (e.g. Telugu for a Maharashtra visitor) can never become permanent. */
+/* ============================================================================
+   UV99 QR — mobile-first location → language redirect.  Runs IMMEDIATELY on
+   the base /QR/ URL, before the English page paints.
+
+     scan /QR/  →  "Detecting…" overlay  →  ask location  →  reverse-geocode
+                →  map Indian state → replace() to /QR/<lang>
+     any failure / denial / timeout / outside India  →  reveal English
+
+   Resolved once per browser SESSION (a fresh scan = new session = re-detect).
+   Add ?stay to the URL to force the English page and skip detection.
+   ============================================================================ */
 (function () {
-  if (!/\/QR\/?$/i.test(location.pathname) && !/\/qr\.html$/i.test(location.pathname)) return;
-  var URLS = { hindi:'/QR/hindi', kannada:'/QR/kannada', odia:'/QR/odia',
+  var path = location.pathname;
+  if (!/\/QR\/?$/i.test(path) && !/\/qr\.html$/i.test(path)) return;   // base URL only
+
+  var URLS = { en:'/QR/', hindi:'/QR/hindi', kannada:'/QR/kannada', odia:'/QR/odia',
                telugu:'/QR/telugu', tamil:'/QR/tamil', malayalam:'/QR/malayalam' };
-  var stored = null, verified = null;
-  try { stored = localStorage.getItem('uv99_qr_lang'); } catch (e) {}
-  try { verified = localStorage.getItem('uv99_qr_geo_verified'); } catch (e) {}
-  if (stored && URLS[stored] && verified === stored) location.replace(URLS[stored]);
+  var STATE_LANG = {
+    'madhya pradesh':'hindi',
+    'karnataka':'kannada',
+    'odisha':'odia', 'orissa':'odia',
+    'telangana':'telugu', 'andhra pradesh':'telugu',
+    'tamil nadu':'tamil',
+    'kerala':'malayalam'
+    /* Maharashtra + every other state / country / failure  →  English (absent on purpose) */
+  };
+  var doc = document.documentElement;
+  function ssGet(k){ try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+  function ssSet(k,v){ try { sessionStorage.setItem(k,v); } catch (e) {} }
+
+  if (/[?&]stay\b/i.test(location.search)) { ssSet('uv99_qr_geo','en'); return; }   // opt-out
+
+  var done = ssGet('uv99_qr_geo');                    // already resolved this session
+  if (done) { if (done !== 'en' && URLS[done]) location.replace(URLS[done]); return; }
+
+  if (!('geolocation' in navigator) || window.isSecureContext === false) {
+    ssSet('uv99_qr_geo','en'); return;                // no API / http:// → English, no overlay
+  }
+
+  doc.classList.add('qr-detecting');                  // cover the page NOW
+  var settled = false;
+  function reveal(){ settled = true; doc.classList.remove('qr-detecting'); }
+  function toEnglish(){ if (settled) return; ssSet('uv99_qr_geo','en'); reveal(); }
+  function toLang(lang, state){
+    if (settled) return;                              // a timeout already revealed English — don't jump late
+    ssSet('uv99_qr_geo', lang);
+    if (state) ssSet('uv99_qr_state', state);
+    if (lang !== 'en' && URLS[lang]) { settled = true; location.replace(URLS[lang]); }   // overlay stays through nav
+    else reveal();
+  }
+
+  var hardCap = setTimeout(toEnglish, 18000);         // never hang on a broken in-app webview
+
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    var api = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' +
+              encodeURIComponent(pos.coords.latitude) + '&longitude=' +
+              encodeURIComponent(pos.coords.longitude) + '&localityLanguage=en';
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var fetchCap = setTimeout(function(){ if (ctrl) ctrl.abort(); clearTimeout(hardCap); toEnglish(); }, 8000);
+    fetch(api, ctrl ? { signal: ctrl.signal } : undefined)
+      .then(function (r){ return r.json(); })
+      .then(function (d){
+        clearTimeout(fetchCap); clearTimeout(hardCap);
+        var cc    = (d && d.countryCode ? String(d.countryCode) : '').trim().toUpperCase();
+        var state = (d && d.principalSubdivision ? String(d.principalSubdivision) : '').trim();
+        var lang  = (cc === 'IN') ? (STATE_LANG[state.toLowerCase()] || 'en') : 'en';
+        try { console.log('[UV99 QR geo] ' + (cc||'(none)') + ' → ' + (state||'(none)') + ' → ' + lang); } catch (e) {}
+        toLang(lang, state);
+      })
+      .catch(function (){ clearTimeout(fetchCap); clearTimeout(hardCap); toEnglish(); });
+  }, function (){
+    clearTimeout(hardCap); toEnglish();               // denied / unavailable / timeout
+  }, { enableHighAccuracy:false, timeout:15000, maximumAge:300000 });
 })();
 </script>
 
@@ -1718,7 +1803,7 @@
     <!-- ---- Story 1: the problem, in three parts ---- -->
     <div class="uvb-story uvb-story--hero" data-uvb-story>
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/yDkafywKRus?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/yDkafywKRus?autoplay=1&rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="eager"></iframe>
       </div>
 
 
@@ -1754,7 +1839,7 @@
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/iABkMOM-ETA?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/iABkMOM-ETA?playsinline=1&rel=0&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
 
       <div class="uvb-grid">
@@ -1794,7 +1879,7 @@
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/Cztjbxj07Lk?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/Cztjbxj07Lk?rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
     </div>
   </div>
@@ -1917,7 +2002,7 @@
     <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
     <div class="video-wrapper video-wrapper--gold">
-      <iframe src="https://www.youtube.com/embed/OhsYymfl7x4?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <iframe src="https://www.youtube.com/embed/OhsYymfl7x4?rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
 
     <div class="uvb-grid uvb-grid--pct">
@@ -2238,91 +2323,20 @@
   wrap.appendChild(loc);
   (document.body || document.documentElement).appendChild(wrap);
 
-  /* ---- first-visit auto-detection (base /QR/ only) ---- */
-  function remember(l){ try { localStorage.setItem('uv99_qr_lang', l); } catch (e) {} }
+  /* ---- detected-location pill ----
+     Location detection + the language redirect now run in the <head> script
+     (so the correct regional page paints first, with no English flash on
+     mobile). All that's left here is to surface the detected Indian state in
+     the corner pill, when the <head> pass stored one this session. */
   function showLoc(s){
     if (!s) return;
     loc.querySelector('.qr-loc__txt').textContent = LOC_LABEL + ': ' + s;
     loc.classList.add('is-visible');
   }
-  var stored = null, verified = null;
-  try { stored   = localStorage.getItem('uv99_qr_lang'); } catch (e) {}
-  try { verified = localStorage.getItem('uv99_qr_geo_verified'); } catch (e) {}
-  var isBase = /\/QR\/?$/i.test(location.pathname) || /\/qr\.html$/i.test(location.pathname);
-
-  /* Language is decided ONLY by the reverse-geocoded countryCode + principalSubdivision.
-     Never from latitude/longitude, city, navigator.language, IP, or any other guess.
-     Run the check on the base page whenever the stored choice has not been confirmed
-     by GPS (first visit, or a stale/wrong stored value that needs reconciling). */
-  function clearStale() {
-    try { localStorage.removeItem('uv99_qr_lang'); } catch (e) {}
-    try { localStorage.removeItem('uv99_qr_geo_verified'); } catch (e) {}
-  }
-
-  if (isBase && navigator.geolocation && (!stored || verified !== stored)) {
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' +
-            encodeURIComponent(pos.coords.latitude) + '&longitude=' +
-            encodeURIComponent(pos.coords.longitude) + '&localityLanguage=en')
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-          // 1. read only the two fields we trust
-          var countryCode = (d && d.countryCode ? String(d.countryCode) : '').trim().toUpperCase();
-          // 2. normalize principalSubdivision: trim + lowercase
-          var principalSubdivision = (d && d.principalSubdivision ? String(d.principalSubdivision) : '').trim();
-          var normState = principalSubdivision.toLowerCase();
-
-          // 3. exact state -> regional language. 6 supported mappings only.
-          var STATE_LANG = {
-            'madhya pradesh': 'hindi',
-            'karnataka': 'kannada',
-            'odisha': 'odia', 'orissa': 'odia',
-            'telangana': 'telugu',
-            'andhra pradesh': 'telugu',
-            'tamil nadu': 'tamil',
-            'kerala': 'malayalam'
-            // 'maharashtra' is intentionally ABSENT -> English. No Marathi / Gujarati.
-          };
-
-          // 4. must be in India; otherwise English. Any unlisted state -> English.
-          var detectedState = principalSubdivision || '(unknown)';
-          var mappedLanguage = 'en';
-          if (countryCode === 'IN') {
-            mappedLanguage = STATE_LANG[normState] || 'en';
-          }
-
-          console.log('[UV99 QR geo] ' +
-            (countryCode || '(none)') + ' → ' +
-            (principalSubdivision || '(none)') + ' → ' +
-            detectedState + ' → ' + mappedLanguage);
-
-          // reconcile: a stored language that disagrees with GPS is stale -> drop it
-          if (stored && stored !== mappedLanguage) clearStale();
-
-          if (principalSubdivision) {
-            try { sessionStorage.setItem('uv99_qr_state', principalSubdivision); } catch (e) {}
-          }
-          remember(mappedLanguage);
-          try { localStorage.setItem('uv99_qr_geo_verified', mappedLanguage); } catch (e) {}
-
-          if (mappedLanguage !== 'en') {
-            window.location.replace(URLS[mappedLanguage]);            // replace() -> no loop
-          } else {
-            showLoc(principalSubdivision);                           // Maharashtra, Delhi, ... stay here (English)
-          }
-        })
-        .catch(function () {                                         // reverse-geocode failed -> English
-          console.log('[UV99 QR geo] (none) → (none) → (unknown) → en  [reverse-geocode failed]');
-          // Keep a GPS-confirmed regional value through a transient failure;
-          // otherwise fall back to English and drop any unverified stored guess.
-          if (!(stored && stored === verified)) { clearStale(); remember('en'); }
-        });
-    }, function () {                                                 // denied / unavailable / timeout -> English
-      console.log('[UV99 QR geo] (none) → (none) → (unknown) → en  [GPS denied/unavailable]');
-      // Keep only a GPS-confirmed regional value; drop any unverified/stale guess.
-      if (!(stored && stored === verified)) { clearStale(); remember('en'); }
-    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
-  }
+  try {
+    var st = sessionStorage.getItem('uv99_qr_state');
+    if (st) showLoc(st);
+  } catch (e) {}
 })();
 </script>
 
