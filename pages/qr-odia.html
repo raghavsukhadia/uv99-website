@@ -1,18 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="or">
 <head>
 <meta charset="UTF-8">
+<!-- Odia-only language reinforcement: <html lang="or"> is the primary signal;
+     this legacy hint is a harmless secondary one for detectors that still read it. -->
+<meta http-equiv="Content-Language" content="or">
 <!-- Asset URLs below are root-absolute (/assets/...), not relative, so this
      page resolves them correctly regardless of the route it's served under
      (/QR, /qr.html, a local dev server, ...) — no <base> tag / rewrite-chain
      dependency needed. (This page now ships in-repo rather than being
      reverse-proxied to a separate deployment, so root-absolute is safe.) -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>UV99 Glazing | The Rays Stop Here</title>
+<title>UV99 Glazing | ରଶ୍ମି ଏଠାରେ ଅଟକେ</title>
 <meta name="description" content="UV99 Glazing — advanced UV-defense glazing that blocks up to 99% of harmful UV-A and UV-B rays. UV99 and UV PRO series.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style id="qr-i18n-style">
+  /* Language selector + detected-location indicator. Fixed to the top-right
+     on desktop (clear of the "3-Year Warranty" pill); moved to the
+     bottom-right on phones so it never covers hero or contact content. */
+  .qr-lang{
+    position:fixed; top:60px; right:12px; z-index:130;
+    display:flex; flex-direction:column; align-items:flex-end; gap:8px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .qr-lang__select{
+    -webkit-appearance:none; -moz-appearance:none; appearance:none;
+    background:rgba(16,9,24,0.82); color:#fff;
+    border:1px solid rgba(226,180,255,0.30); border-radius:20px;
+    padding:7px 30px 7px 14px;
+    font:inherit; font-size:11px; letter-spacing:0.04em; line-height:1;
+    cursor:pointer;
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23E2B4FF' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center;
+    box-shadow:0 10px 30px -12px rgba(0,0,0,0.6);
+  }
+  .qr-lang__select:focus-visible{ outline:2px solid var(--violet-glow); outline-offset:2px; }
+  .qr-lang__select option{ color:#111; background:#fff; }
+  .qr-loc{
+    display:none; align-items:center; gap:6px; max-width:60vw;
+    background:rgba(16,9,24,0.82); color:#EBD6FF;
+    border:1px solid rgba(226,180,255,0.24); border-radius:20px;
+    padding:6px 12px;
+    font-size:10px; letter-spacing:0.06em; text-transform:uppercase; line-height:1.2;
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    box-shadow:0 10px 30px -12px rgba(0,0,0,0.6);
+  }
+  .qr-loc.is-visible{ display:inline-flex; }
+  .qr-loc__dot{
+    width:5px; height:5px; border-radius:50%; flex:none;
+    background:var(--violet-glow); box-shadow:0 0 8px 1px var(--violet-glow);
+  }
+  @media (max-width:560px){
+    .qr-lang{ top:auto; bottom:calc(10px + var(--safe-bottom)); right:10px; gap:6px; }
+    .qr-lang__select{ font-size:10px; padding:6px 26px 6px 11px; }
+    .qr-loc{ font-size:9px; padding:5px 10px; max-width:72vw; }
+  }
+  @media print{ .qr-lang{ display:none; } }
+</style>
 <style>
   :root{
     --void:#0B0710;
@@ -79,7 +127,7 @@
   .hero-bg{
     position:relative;inset:auto;z-index:0;width:100%;
     aspect-ratio:1800 / 1400;
-    background:url('/assets/hero2.jpg') center center/cover no-repeat;
+    background:url('/assets/images/hero/hero2.jpg') center center/cover no-repeat;
   }
   /* Desktop only: shorten the box and anchor the crop to the bottom, so
      "cover" trims the empty sunroof/sky sliver off the top while the
@@ -218,7 +266,7 @@
     .hero-bg{
       position:relative;inset:auto;width:100%;
       aspect-ratio:864 / 1590;
-      background-image:url('/assets/mobileviewhero.jpg');
+      background-image:url('/assets/images/hero/mobileviewhero.jpg');
       background-position:center bottom;
       background-size:cover;
       background-color:#fff;
@@ -597,6 +645,8 @@
   .uvb-grid--pct .uvb-card--premium .uvb-card__label::after{ left:50%;transform:translateX(-50%); }
   .uvb-card--premium .uvb-card__stat{
     position:relative;z-index:1;width:100%;
+    margin-top:auto;                 /* pin the % to the card bottom so every stat aligns,
+                                        whether the label is one line or two */
     font-family:'Unbounded',sans-serif;font-weight:800;font-size:26px;line-height:1;letter-spacing:0.01em;
     color:#fff;
     text-shadow:0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(225,79,255,0.4);
@@ -1632,29 +1682,29 @@
   <div class="hero-bg" aria-hidden="true"></div>
 
   <div class="hero-top">
-    <a href="https://uv99.in" class="wordmark"><img src="/assets/logo.png" alt="UV99"></a>
-    <span class="pill">3-Year Warranty</span>
+    <a href="https://uv99.in" class="wordmark"><img src="/assets/images/logos/logo.png" alt="UV99"></a>
+    <span class="pill">3 ବର୍ଷର ୱାରେଣ୍ଟି</span>
   </div>
 
-  <p class="hero-tag">UV Rays Out. <span>Sunshine In.</span></p>
+  <p class="hero-tag">UV ରଶ୍ମି ବାହାରେ। <span>ଆରାମ ଭିତରେ।</span></p>
 
-  <a href="#videos" class="hero-watch" aria-label="Watch videos">
-    <span class="hero-watch__ic" aria-hidden="true">▶</span> Watch Videos
+  <a href="#videos" class="hero-watch" aria-label="ଭିଡିଓ ଦେଖନ୍ତୁ">
+    <span class="hero-watch__ic" aria-hidden="true">▶</span> <span>ଭିଡିଓ ଦେଖନ୍ତୁ</span>
   </a>
 </section>
 
 <!-- ================= PRODUCT VIDEO ================= -->
 <section class="section" id="videos" style="padding-bottom:16px">
   <div class="wrap reveal">
-    <div class="eyebrow-dark">See It In Action</div>
-    <h2 class="uvb-heading"><span class="uvb-grad">Problems</span></h2>
+    <div class="eyebrow-dark">କାର୍ଯ୍ୟରେ ଦେଖନ୍ତୁ</div>
+    <h2 class="uvb-heading"><span class="uvb-grad">ସମସ୍ୟାଗୁଡ଼ିକ</span></h2>
     <span class="uvb-heading__bar" aria-hidden="true"></span>
     <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
     <!-- ---- Story 1: the problem, in three parts ---- -->
     <div class="uvb-story uvb-story--hero" data-uvb-story>
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/c-oA9XR6c-4?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/QF6BqdnndRs?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
 
 
@@ -1662,22 +1712,22 @@
         <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon uvb-card__icon--eye" aria-hidden="true">👁</span>
-          <p class="uvb-card__title">Eye Strain</p>
+          <p class="uvb-card__title">ଆଖି ଉପରେ ଚାପ</p>
         </article>
         <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon uvb-card__icon--sun" aria-hidden="true">☀</span>
-          <p class="uvb-card__title">Tanning</p>
+          <p class="uvb-card__title">ଚର୍ମ କଳାପଡ଼ିବା</p>
         </article>
         <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon uvb-card__icon--seat" aria-hidden="true">🔥</span>
-          <p class="uvb-card__title">Skin Damage</p>
+          <p class="uvb-card__title">ଚର୍ମ କ୍ଷତି</p>
         </article>
         <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">🚗</span>
-          <p class="uvb-card__title">Interior Damage</p>
+          <p class="uvb-card__title">ଭିତର ଅଂଶ କ୍ଷତି</p>
         </article>
       </div>
 
@@ -1685,39 +1735,39 @@
 
     <!-- ---- Story 2: the fix, layered over the same footage ---- -->
     <div class="uvb-story" data-uvb-story>
-      <h2 class="uvb-heading">The <span class="uvb-grad">solution</span></h2>
+      <h2 class="uvb-heading"><span class="uvb-grad">ସମାଧାନ</span></h2>
       <span class="uvb-heading__bar" aria-hidden="true"></span>
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/GVbACM2Zhhw?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/BRiYAXQV5Mg?playsinline=1&rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
 
       <div class="uvb-grid">
         <article class="uvb-card">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">🛡</span>
-          <p class="uvb-card__title">Interior Protection</p>
+          <p class="uvb-card__title">ଭିତର ସୁରକ୍ଷା</p>
         </article>
         <article class="uvb-card">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">☀</span>
-          <p class="uvb-card__title">Skin Protection</p>
+          <p class="uvb-card__title">ଚର୍ମ ସୁରକ୍ଷା</p>
         </article>
         <article class="uvb-card">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">❄</span>
-          <p class="uvb-card__title">Enhanced Comfort</p>
+          <p class="uvb-card__title">ଅଧିକ ଆରାମ</p>
         </article>
         <article class="uvb-card">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">◐</span>
-          <p class="uvb-card__title">Glare Reduction</p>
+          <p class="uvb-card__title">ଝଲସା ହ୍ରାସ</p>
         </article>
         <article class="uvb-card">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">◎</span>
-          <p class="uvb-card__title">Optical Clarity</p>
+          <p class="uvb-card__title">ସ୍ପଷ୍ଟ ଦୃଶ୍ୟତା</p>
         </article>
       </div>
 
@@ -1725,12 +1775,12 @@
 
     <!-- ---- Story 3: the film in daily use ---- -->
     <div class="uvb-story" data-uvb-story>
-      <h2 class="uvb-heading">UV99 <span class="uvb-grad">Series</span></h2>
+      <h2 class="uvb-heading">UV99 <span class="uvb-grad">ସିରିଜ୍</span></h2>
       <span class="uvb-heading__bar" aria-hidden="true"></span>
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
       <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/IMu1kOATBQw?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/MAfSG6obnYs?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
     </div>
   </div>
@@ -1739,12 +1789,12 @@
 <!-- ================= RANGE (interactive tabs) ================= -->
 <section class="section" style="padding-top:8px">
   <div class="wrap reveal">
-    <div class="eyebrow-dark">The Range</div>
-    <h2>Pick your level<br>of protection</h2>
+    <div class="eyebrow-dark">ରେଞ୍ଜ</div>
+    <h2>ଆପଣଙ୍କ ସୁରକ୍ଷାର<br>ସ୍ତର ବାଛନ୍ତୁ</h2>
 
     <div class="tabs" role="tablist">
-      <div class="tab active" role="tab" data-target="panel-uv99">UV99 Series</div>
-      <div class="tab" role="tab" data-target="panel-pro">UV PRO Series</div>
+      <div class="tab active" role="tab" data-target="panel-uv99">UV99 ସିରିଜ୍</div>
+      <div class="tab" role="tab" data-target="panel-pro">UV PRO ସିରିଜ୍</div>
     </div>
 
     <div class="panel active" id="panel-uv99">
@@ -1756,11 +1806,11 @@
             <div class="specbar-track"><div class="specbar-fill" style="width:70%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-top"><span class="specbar-name">UV ଅଟକାଯାଇଛି</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">30%</span></div>
+            <div class="specbar-top"><span class="specbar-name">ଉତ୍ତାପ ହ୍ରାସ</span><span class="specbar-val mono">30%</span></div>
             <div class="specbar-track"><div class="specbar-fill" style="width:30%"></div></div>
           </div>
         </div>
@@ -1771,11 +1821,11 @@
             <div class="specbar-track"><div class="specbar-fill" style="width:47%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-top"><span class="specbar-name">UV ଅଟକାଯାଇଛି</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">35%</span></div>
+            <div class="specbar-top"><span class="specbar-name">ଉତ୍ତାପ ହ୍ରାସ</span><span class="specbar-val mono">35%</span></div>
             <div class="specbar-track"><div class="specbar-fill" style="width:35%"></div></div>
           </div>
         </div>
@@ -1791,11 +1841,11 @@
             <div class="specbar-track"><div class="specbar-fill" style="width:70%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-top"><span class="specbar-name">UV ଅଟକାଯାଇଛି</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">42%</span></div>
+            <div class="specbar-top"><span class="specbar-name">ଉତ୍ତାପ ହ୍ରାସ</span><span class="specbar-val mono">42%</span></div>
             <div class="specbar-track"><div class="specbar-fill" style="width:42%"></div></div>
           </div>
         </div>
@@ -1806,11 +1856,11 @@
             <div class="specbar-track"><div class="specbar-fill" style="width:51%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
+            <div class="specbar-top"><span class="specbar-name">UV ଅଟକାଯାଇଛି</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">50%</span></div>
+            <div class="specbar-top"><span class="specbar-name">ଉତ୍ତାପ ହ୍ରାସ</span><span class="specbar-val mono">50%</span></div>
             <div class="specbar-track"><div class="specbar-fill" style="width:50%"></div></div>
           </div>
         </div>
@@ -1818,7 +1868,7 @@
     </div>
 
     <div class="panel" id="panel-plus1">
-      <p class="desc">Our maximum spec — near-total UV block with the strongest infrared heat-rejection, layered over UV99 or UV99 PRO.</p>
+      <p class="desc">ଆମର ସର୍ବୋଚ୍ଚ ସ୍ପେକ୍ — ପ୍ରାୟ ସମ୍ପୂର୍ଣ୍ଣ UV ଅବରୋଧ ଏବଂ ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ଇନ୍‌ଫ୍ରାରେଡ୍ ଉତ୍ତାପ-ଅବରୋଧ, UV99 କିମ୍ବା UV99 PRO ଉପରେ ସ୍ତରୀକୃତ।</p>
       <div class="variant-grid">
         <div class="variant">
           <h4>UV99 +1</h4>
@@ -1827,15 +1877,15 @@
             <div class="specbar-track"><div class="specbar-fill" style="width:70%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">100%</span></div>
+            <div class="specbar-top"><span class="specbar-name">UV ଅଟକାଯାଇଛି</span><span class="specbar-val mono">100%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:100%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Infrared Rejection</span><span class="specbar-val mono">89%</span></div>
+            <div class="specbar-top"><span class="specbar-name">ଇନ୍‌ଫ୍ରାରେଡ୍ ଅଟକାଯାଇଛି</span><span class="specbar-val mono">89%</span></div>
             <div class="specbar-track"><div class="specbar-fill" style="width:89%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">42%</span></div>
+            <div class="specbar-top"><span class="specbar-name">ଉତ୍ତାପ ହ୍ରାସ</span><span class="specbar-val mono">42%</span></div>
             <div class="specbar-track"><div class="specbar-fill" style="width:42%"></div></div>
           </div>
         </div>
@@ -1848,33 +1898,33 @@
 <!-- ================= UV99 +1 — DEMO VIDEO ================= -->
 <section class="section" style="padding-top:8px">
   <div class="wrap reveal">
-    <h2 class="uvb-heading" style="text-align:center">Need the <span class="uvb-gold" data-premium-fx>premium<span class="uvb-gold__wipe" aria-hidden="true"></span><span class="uvb-gold__shine" aria-hidden="true">premium</span></span> option?<br>Go with <span class="uvb-grad">UV99 +1</span></h2>
+    <h2 class="uvb-heading" style="text-align:center"><span class="uvb-gold" data-premium-fx>ପ୍ରିମିୟମ୍<span class="uvb-gold__wipe" aria-hidden="true"></span><span class="uvb-gold__shine" aria-hidden="true">ପ୍ରିମିୟମ୍</span></span> ବିକଳ୍ପ ଦରକାର?<br>ବାଛନ୍ତୁ <span class="uvb-grad">UV99 +1</span></h2>
     <span class="uvb-heading__bar" aria-hidden="true" style="margin:2px auto 22px"></span>
     <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
     <div class="video-wrapper video-wrapper--gold">
-      <iframe src="https://www.youtube.com/embed/po2uTzsaJT8?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <iframe src="https://www.youtube.com/embed/cLFpNW8vE3w?rel=0&vq=hd1080&hd=1&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
 
     <div class="uvb-grid uvb-grid--pct">
       <article class="uvb-card uvb-card--premium">
         <span class="uvb-card__glow" aria-hidden="true"></span>
-        <p class="uvb-card__label">Visible Light Transmission</p>
+        <p class="uvb-card__label">ଦୃଶ୍ୟମାନ ଆଲୋକ ପ୍ରସାରଣ</p>
         <p class="uvb-card__stat"><span class="uvb-pct" data-count="70">0</span>%</p>
       </article>
       <article class="uvb-card uvb-card--premium">
         <span class="uvb-card__glow" aria-hidden="true"></span>
-        <p class="uvb-card__label">Ultra Violet Rejected</p>
+        <p class="uvb-card__label">ଅଲଟ୍ରା ଭାଇଲେଟ୍ ଅଟକାଯାଇଛି</p>
         <p class="uvb-card__stat"><span class="uvb-pct" data-count="100">0</span>%</p>
       </article>
       <article class="uvb-card uvb-card--premium">
         <span class="uvb-card__glow" aria-hidden="true"></span>
-        <p class="uvb-card__label">Infrared Rejected</p>
+        <p class="uvb-card__label">ଇନ୍‌ଫ୍ରାରେଡ୍ ଅଟକାଯାଇଛି</p>
         <p class="uvb-card__stat"><span class="uvb-pct" data-count="89">0</span>%</p>
       </article>
       <article class="uvb-card uvb-card--premium">
         <span class="uvb-card__glow" aria-hidden="true"></span>
-        <p class="uvb-card__label">Heat Rejection</p>
+        <p class="uvb-card__label">ଉତ୍ତାପ ହ୍ରାସ</p>
         <p class="uvb-card__stat"><span class="uvb-pct" data-count="54">0</span>%</p>
       </article>
     </div>
@@ -1956,26 +2006,26 @@
 <section class="hs" id="heatsim" data-state="none" aria-labelledby="hs-heading">
   <div class="hs-wrap reveal">
     <div class="hs-head">
-      <div class="eyebrow-dark">Interactive Demo</div>
-      <h2 id="hs-heading">Watch the film reject UV rays</h2>
+      <div class="eyebrow-dark">ଇଣ୍ଟରାକ୍ଟିଭ୍ ଡେମୋ</div>
+      <h2 id="hs-heading">ଫିଲ୍ମ୍ କିପରି UV ରଶ୍ମି ଅଟକାଏ ଦେଖନ୍ତୁ</h2>
     </div>
 
     <div class="hs-seg" role="group" aria-label="Window film selection">
       <!-- standalone: no film -->
       <button class="hs-seg__btn hs-seg__solo is-active" type="button" id="hs-tab-none"
-              aria-pressed="true" aria-controls="hs-stage-region" data-state="none">Without Film</button>
+              aria-pressed="true" aria-controls="hs-stage-region" data-state="none">ଫିଲ୍ମ୍ ବିନା</button>
 
       <!-- three series tabs; variant buttons are generated from FILM_DATA -->
       <div class="hs-seg__series" role="tablist" aria-label="Film series">
         <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
                 id="hs-series-uv99" data-series="uv99"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="0">UV99 Series</button>
+                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="0">UV99 ସିରିଜ୍</button>
         <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
                 id="hs-series-pro" data-series="pro"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">UV99 Pro Series</button>
+                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">UV99 ପ୍ରୋ ସିରିଜ୍</button>
         <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
                 id="hs-series-premium" data-series="premium"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">Premium Series</button>
+                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">ପ୍ରିମିୟମ୍ ସିରିଜ୍</button>
       </div>
 
       <!-- revealed variants for the active series only -->
@@ -1985,7 +2035,7 @@
     <div class="hs-grid">
       <div class="hs-stage-card" id="hs-stage-region" role="region" aria-label="Film effect visualisation" aria-live="polite" tabindex="0">
         <div class="hs-stage" data-state="none" role="img" aria-label="Cabin heat visualisation">
-          <img class="hs-photo" src="/assets/123.png" alt="" width="1689" height="931" loading="lazy" decoding="async">
+          <img class="hs-photo" src="/assets/images/hero/123.png" alt="" width="1689" height="931" loading="lazy" decoding="async">
           <svg class="hs-fx" viewBox="0 0 1690 931" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
               <radialGradient id="hs-glow-grad" cx="0.5" cy="0.5" r="0.5">
@@ -2060,34 +2110,34 @@
           <div class="uvp-badge" aria-hidden="true">
             <div class="uvp-badge__row">
               <span class="uvp-dot"></span>
-              <span class="uvp-badge__title">UV99 Protection</span>
+              <span class="uvp-badge__title">UV99 ସୁରକ୍ଷା</span>
             </div>
-            <div class="uvp-badge__big">99% UV Rejection</div>
-            <div class="uvp-badge__ind"><span class="uvp-ind__txt">UV Rays &rarr; Rejected</span></div>
+            <div class="uvp-badge__big">99% UV ଅବରୋଧ</div>
+            <div class="uvp-badge__ind"><span class="uvp-ind__txt">UV ରଶ୍ମି → ଅଟକାଯାଇଛି</span></div>
           </div>
         </div>
       </div>
 
       <div class="hs-panel">
         <div class="hs-cabin-read">
-          <div class="hs-cabin-label">Cabin temperature</div>
+          <div class="hs-cabin-label">କେବିନ୍ ତାପମାତ୍ରା</div>
           <div class="hs-cabin-temp"><span data-out="cabin">62</span><span class="deg">&deg;C</span></div>
         </div>
-        <span class="hs-mood" data-out="mood" data-state="none">Extremely hot</span>
+        <span class="hs-mood" data-out="mood" data-state="none">ଅତ୍ୟଧିକ ଗରମ</span>
         <div class="hs-divider"></div>
         <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">Exterior temperature</span><span class="hs-stat__val"><span data-out="exterior">48</span>&deg;C</span></div>
+          <div class="hs-stat__top"><span class="hs-stat__name">ବାହ୍ୟ ତାପମାତ୍ରା</span><span class="hs-stat__val"><span data-out="exterior">48</span>&deg;C</span></div>
         </div>
         <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">Heat rejected</span><span class="hs-stat__val"><span data-out="heat">0</span>%</span></div>
+          <div class="hs-stat__top"><span class="hs-stat__name">ଉତ୍ତାପ ଅଟକାଯାଇଛି</span><span class="hs-stat__val"><span data-out="heat">0</span>%</span></div>
           <div class="hs-bar"><div class="hs-bar__fill" data-bar="heat"></div></div>
         </div>
         <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">UV blocked</span><span class="hs-stat__val"><span data-out="uv">0</span>%</span></div>
+          <div class="hs-stat__top"><span class="hs-stat__name">UV ଅଟକାଯାଇଛି</span><span class="hs-stat__val"><span data-out="uv">0</span>%</span></div>
           <div class="hs-bar"><div class="hs-bar__fill" data-bar="uv"></div></div>
         </div>
         <div class="hs-stat" data-stat="infrared" hidden>
-          <div class="hs-stat__top"><span class="hs-stat__name">Infrared rejected <em class="hs-stat__badge">UV99 +1</em></span><span class="hs-stat__val"><span data-out="infrared">0</span>%</span></div>
+          <div class="hs-stat__top"><span class="hs-stat__name">ଇନ୍‌ଫ୍ରାରେଡ୍ ଅଟକାଯାଇଛି <em class="hs-stat__badge">UV99 +1</em></span><span class="hs-stat__val"><span data-out="infrared">0</span>%</span></div>
           <div class="hs-bar"><div class="hs-bar__fill is-cyan" data-bar="infrared"></div></div>
         </div>
       </div>
@@ -2100,10 +2150,10 @@
 <!-- ================= PRODUCT CUTOUT ================= -->
 <section class="section" style="padding-top:0">
   <div class="wrap reveal">
-    <img class="hs-sir__logo" src="/assets/logo.png" alt="UV99" loading="lazy" decoding="async">
+    <img class="hs-sir__logo" src="/assets/images/logos/logo.png" alt="UV99" loading="lazy" decoding="async">
   </div>
   <div class="wrap reveal hs-sir">
-    <img class="hs-sir__img" src="/assets/SIR-cutout.png" alt="UV99 window film packaging" loading="lazy" decoding="async">
+    <img class="hs-sir__img" src="/assets/images/products/SIR-cutout.png" alt="UV99 window film packaging" loading="lazy" decoding="async">
   </div>
 </section>
 
@@ -2115,9 +2165,9 @@
   <div class="wrap reveal">
     <div class="wnum">
       <span class="wnum-fig" data-count="3">0</span>
-      <span class="wnum-label">Years Warranty</span>
+      <span class="wnum-label">ବର୍ଷର ୱାରେଣ୍ଟି</span>
     </div>
-    <p>Covers bubbles, adhesive failures, and discoloration — with less than 10% drop in UVR/IRR performance guaranteed.</p>
+    <p>ବବୁଲ୍, ଆଠା ବିଫଳତା ଏବଂ ରଙ୍ଗ ବଦଳିବାକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ — UVR/IRR କାର୍ଯ୍ୟଦକ୍ଷତାରେ 10% ରୁ କମ୍ ହ୍ରାସର ଗ୍ୟାରେଣ୍ଟି ସହ।</p>
   </div>
 </section>
 
@@ -2126,21 +2176,77 @@
   <div class="contact-fx" aria-hidden="true"></div>
   <div class="contact-cut" aria-hidden="true"></div>
   <div class="wrap reveal">
-    <div class="kicker">You Scanned This For A Reason</div>
+    <div class="kicker">ଆପଣ ଏହାକୁ ଏକ କାରଣ ପାଇଁ ସ୍କାନ୍ କରିଛନ୍ତି</div>
     <h2 class="rays-head">
-      <span class="l"><span class="w" style="--d:.24s"><span>Let's</span></span> <span class="w" style="--d:.32s"><span>stop</span></span></span>
-      <span class="l"><span class="w" style="--d:.40s"><span>some</span></span> <span class="w accent" style="--d:.48s"><span>rays.</span></span></span>
+      <span class="l"><span class="w" style="--d:.24s"><span>ଆସ</span></span> <span class="w" style="--d:.32s"><span>କିଛି</span></span></span>
+      <span class="l"><span class="w" style="--d:.40s"><span>ରଶ୍ମି</span></span> <span class="w accent" style="--d:.48s"><span>ଅଟକାଇବା</span></span></span>
     </h2>
-    <p>DM us your car model or glass size — we'll tell you exactly which series fits and point you to your nearest installer.</p>
+    <p>ଆପଣଙ୍କ କାର୍ ମଡେଲ୍ କିମ୍ବା କାଚର ଆକାର ଆମକୁ DM କରନ୍ତୁ — କେଉଁ ସିରିଜ୍ ଉପଯୁକ୍ତ ତାହା କହିବୁ ଏବଂ ଆପଣଙ୍କ ନିକଟସ୍ଥ ଇନ୍‌ଷ୍ଟଲର୍‌କୁ ମାର୍ଗଦର୍ଶନ କରିବୁ।</p>
     <a class="handle-btn" href="https://instagram.com/uv99.in" target="_blank" rel="noopener">@uv99.in <span class="ar">→</span></a>
   </div>
 </section>
 
 <footer>
-  <p>UV99 Glazing — Harmful rays out, protection in</p>
-  <p>&copy; 2026 UV99. All rights reserved.</p>
+  <p>UV99 Glazing — କ୍ଷତିକାରକ ରଶ୍ମି ବାହାରେ, ସୁରକ୍ଷା ଭିତରେ</p>
+  <p>© 2026 UV99. ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ।</p>
 </footer>
 
+
+<script>
+/* ============================================================================
+   UV99 QR — language selector.
+   Self-contained in this file. English (/QR/) is the universal fallback:
+   any unmapped state / country / URL / GPS failure resolves to English.
+   Supported regional pages: /QR/hindi /QR/kannada /QR/odia /QR/telugu
+                             /QR/tamil /QR/malayalam
+   ============================================================================ */
+(function () {
+  'use strict';
+  var LANG  = 'odia';
+  var ORDER = ['en', 'hindi', 'kannada', 'odia', 'telugu', 'tamil', 'malayalam'];
+  var NAMES = { en:'English', hindi:'हिंदी', kannada:'ಕನ್ನಡ', odia:'ଓଡ଼ିଆ',
+                telugu:'తెలుగు', tamil:'தமிழ்', malayalam:'മലയാളം' };
+  var URLS  = { en:'/QR/', hindi:'/QR/hindi', kannada:'/QR/kannada', odia:'/QR/odia',
+                telugu:'/QR/telugu', tamil:'/QR/tamil', malayalam:'/QR/malayalam' };
+  var LANG_LABEL = "ଭାଷା";
+  var LOC_LABEL  = "ଚିହ୍ନଟ ହୋଇଥିବା ସ୍ଥାନ";
+
+  var wrap = document.createElement('div');
+  wrap.className = 'qr-lang';
+
+  /* Manual language <select> removed — a page is reached only by its own QR
+     code or by the GPS auto-redirect. The detected-location pill stays. */
+
+  var loc = document.createElement('div');
+  loc.className = 'qr-loc';
+  loc.innerHTML = '<span class="qr-loc__dot" aria-hidden="true"></span><span class="qr-loc__txt"></span>';
+
+  wrap.appendChild(loc);
+  (document.body || document.documentElement).appendChild(wrap);
+
+  /* Regional page: no GPS / language detection here (avoids redirect loops).
+     Only persist this language if it was already the stored choice or was
+     confirmed by GPS / an explicit dropdown pick on the base page. An
+     involuntary landing here (stale redirect, shared link, back button) must
+     NOT manufacture a sticky value — e.g. a Maharashtra visitor who somehow
+     reaches /QR/telugu should not get telugu pinned. */
+  try {
+    var _cur = localStorage.getItem('uv99_qr_lang');
+    var _ver = localStorage.getItem('uv99_qr_geo_verified');
+    if (_cur === LANG || _ver === LANG) {
+      localStorage.setItem('uv99_qr_lang', LANG);
+      localStorage.setItem('uv99_qr_geo_verified', LANG);
+    }
+  } catch (e) {}
+  try {
+    var st = sessionStorage.getItem('uv99_qr_state');
+    if (st) {
+      loc.querySelector('.qr-loc__txt').textContent = LOC_LABEL + ': ' + st;
+      loc.classList.add('is-visible');
+    }
+  } catch (e) {}
+})();
+</script>
 
 <script>
   // Tab switching
@@ -2155,9 +2261,12 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Split the warranty label into per-letter spans (stagger via --i)
+  // Split the warranty label into per-letter spans (stagger via --i).
+  // Skipped for the regional languages — splitting Indic grapheme clusters
+  // by code point orphans combining marks (dotted-circle artefacts); the
+  // label just fades in with its section instead.
   const wLabel = document.querySelector('.wnum-label');
-  if(wLabel){
+  if(wLabel && document.documentElement.lang === 'en'){
     const txt = wLabel.textContent.trim();
     wLabel.textContent = '';
     [...txt].forEach((ch,i)=>{
@@ -2357,35 +2466,35 @@
        There is no per-option car image — one immutable base photo is used
        for every state. -------------------------------------------------- */
     var FILM_DATA = {
-      none: { key:'none', label:'Without Film',
+      none: { key:'none', label:'ଫିଲ୍ମ୍ ବିନା',
               exterior:48, cabin:62, heatRejected:0, uvBlocked:0,
-              cabinState:'Extremely hot', raysIn:9, raysReflected:0, particles:14,
+              cabinState:'ଅତ୍ୟଧିକ ଗରମ', raysIn:9, raysReflected:0, particles:14,
               film:{ tint:'#233140', op:0, edge:'#b57be6', edgeOp:0 } },
       series: [
-        { id:'uv99', label:'UV99 Series', variants:[
+        { id:'uv99', label:'UV99 ସିରିଜ୍', variants:[
           { key:'uv50', label:'UV99 50',
             exterior:48, cabin:43, heatRejected:55, uvBlocked:99,
-            cabinState:'Comfortable', raysIn:4, raysReflected:6, particles:5,
+            cabinState:'ଆରାମଦାୟକ', raysIn:4, raysReflected:6, particles:5,
             film:{ tint:'#3a2550', op:0.07, edge:'#c86bff', edgeOp:0.22 } },
           { key:'uv70', label:'UV99 70',
             exterior:48, cabin:36, heatRejected:70, uvBlocked:99,
-            cabinState:'Noticeably cooler', raysIn:2, raysReflected:9, particles:0,
+            cabinState:'ଯଥେଷ୍ଟ ଥଣ୍ଡା', raysIn:2, raysReflected:9, particles:0,
             film:{ tint:'#3d2856', op:0.05, edge:'#cf7bff', edgeOp:0.20 } }
         ]},
-        { id:'pro', label:'UV99 Pro Series', variants:[
+        { id:'pro', label:'UV99 ପ୍ରୋ ସିରିଜ୍', variants:[
           { key:'pro50', label:'UV99 Pro 50',
             exterior:48, cabin:34, heatRejected:80, uvBlocked:99,
-            cabinState:'Cool and comfortable', raysIn:2, raysReflected:10, particles:0,
+            cabinState:'ଥଣ୍ଡା ଏବଂ ଆରାମଦାୟକ', raysIn:2, raysReflected:10, particles:0,
             film:{ tint:'#33224d', op:0.08, edge:'#b98bff', edgeOp:0.24 } },
           { key:'pro70', label:'UV99 Pro 70',
             exterior:48, cabin:32, heatRejected:88, uvBlocked:99,
-            cabinState:'Coolest cabin', raysIn:1, raysReflected:11, particles:0,
+            cabinState:'ସବୁଠାରୁ ଥଣ୍ଡା କେବିନ୍', raysIn:1, raysReflected:11, particles:0,
             film:{ tint:'#362552', op:0.055, edge:'#c29bff', edgeOp:0.20 } }
         ]},
-        { id:'premium', label:'Premium Series', variants:[
+        { id:'premium', label:'ପ୍ରିମିୟମ୍ ସିରିଜ୍', variants:[
           { key:'uvp1', label:'UV99 +1',
             exterior:48, cabin:30, heatRejected:93, uvBlocked:99, infrared:89,
-            cabinState:'Peak comfort', raysIn:1, raysReflected:11, particles:0,
+            cabinState:'ସର୍ବୋତ୍ତମ ଆରାମ', raysIn:1, raysReflected:11, particles:0,
             film:{ tint:'#2e2150', op:0.07, edge:'#c6a0ff', edgeOp:0.24 } }
         ]}
       ]
@@ -2568,7 +2677,7 @@
 
       /* "Without Film" shows 123.png; any selected film shows the calibrated base photo */
       if(photoEl){
-        var wantSrc = key === 'none' ? '/assets/123.png' : '/assets/new%20car.orig.png';
+        var wantSrc = key === 'none' ? '/assets/images/hero/123.png' : '/assets/images/hero/new%20car.orig.png';
         if(photoEl.getAttribute('src') !== wantSrc) photoEl.setAttribute('src', wantSrc);
       }
 
@@ -2599,7 +2708,7 @@
       } else if(out.infrared && out.infrared._raf){
         cancelAnimationFrame(out.infrared._raf); out.infrared._raf = 0;
       }
-      if(out.mood){ out.mood.textContent = cfg.cabinState || 'TODO'; out.mood.dataset.state = key; }
+      if(out.mood){ out.mood.textContent = (cfg.cabinState || 'TODO'); out.mood.dataset.state = key; }
 
       for(var r=0;r<rays.length;r++){
         rays[r].classList.remove('is-pass','is-reflect','is-off');
@@ -2782,14 +2891,14 @@
       var big = badge.querySelector('.uvp-badge__big');
       if(mode === 'pass'){
         badge.classList.add('is-open');
-        if(t) t.textContent = 'No Film';
-        if(big) big.textContent = 'UV Enters the Cabin';
-        if(badgeTxt) badgeTxt.textContent = 'UV Rays → Cabin';
+        if(t) t.textContent = 'ଫିଲ୍ମ୍ ନାହିଁ';
+        if(big) big.textContent = 'UV କେବିନ୍‌କୁ ପ୍ରବେଶ କରେ';
+        if(badgeTxt) badgeTxt.textContent = 'UV ରଶ୍ମି → କେବିନ୍';
       } else {
         badge.classList.remove('is-open');
-        if(t) t.textContent = 'UV99 Protection';
-        if(big) big.textContent = '99% UV Rejection';
-        if(badgeTxt) badgeTxt.textContent = 'UV Rays → Rejected';
+        if(t) t.textContent = 'UV99 ସୁରକ୍ଷା';
+        if(big) big.textContent = '99% UV ଅବରୋଧ';
+        if(badgeTxt) badgeTxt.textContent = 'UV ରଶ୍ମି → ଅଟକାଯାଇଛି';
       }
     }
     if(reduce) drawStatic();
@@ -3262,18 +3371,23 @@
     });
   }
 
-  /* ---- 3. unlock sound on first interaction ---- */
+  /* ---- 3. unlock sound on first interaction ----
+     Scrolling counts: the first wheel / touch / key / pointer gesture
+     unmutes the video that is (or becomes) in view, so scrolling down
+     the page plays each video WITH sound. `wheel` and `touchstart` are
+     real user-activation events, so the unMute that follows is allowed
+     by the browser autoplay policy. */
   function unlockSound(){
     if(soundUnlocked) return;
     soundUnlocked = true;
     if(inView){ cmd(inView, 'unMute'); cmd(inView, 'setVolume', [100]); }
-    window.removeEventListener('pointerdown', unlockSound);
-    window.removeEventListener('keydown', unlockSound);
-    window.removeEventListener('touchstart', unlockSound);
+    ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){
+      window.removeEventListener(evt, unlockSound);
+    });
   }
-  window.addEventListener('pointerdown', unlockSound, { passive:true });
-  window.addEventListener('keydown', unlockSound);
-  window.addEventListener('touchstart', unlockSound, { passive:true });
+  ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){
+    window.addEventListener(evt, unlockSound, { passive:true });
+  });
 })();
 </script>
 

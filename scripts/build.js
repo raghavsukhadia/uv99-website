@@ -5,8 +5,11 @@
 const fs = require("fs");
 const path = require("path");
 
-const root = __dirname;
-const htmlFiles = fs.readdirSync(root).filter((f) => f.endsWith(".html"));
+const root = path.join(__dirname, "..");
+const htmlFiles = [
+  ...fs.readdirSync(root).filter((f) => f.endsWith(".html")),
+  ...fs.readdirSync(path.join(root, "pages")).filter((f) => f.endsWith(".html")).map((f) => path.join("pages", f)),
+];
 
 if (htmlFiles.length === 0) {
   console.error("build: no .html pages found");

@@ -18,7 +18,7 @@
 .commsec__bg {
   position: absolute;
   inset: 0;
-  background: #000 url("/assets/CAR 10.png") no-repeat 82% center;
+  background: #000 url("/assets/images/sections/CAR 10.png") no-repeat 82% center;
   background-size: cover;
   transform: scale(1.04);
   animation: comm-pan 24s ease-in-out infinite alternate;

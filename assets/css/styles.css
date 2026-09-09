@@ -918,7 +918,7 @@ td:first-child { color: var(--plum); font-weight: 800; }
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: #000 url("/assets/layers.png") no-repeat 60% 50%;
+  background: #000 url("/assets/images/sections/layers.png") no-repeat 60% 50%;
   background-size: cover;
   /* give the render some punch so the panes read sharp, not washed out */
   filter: contrast(1.09) saturate(1.16) brightness(1.06);
@@ -1238,7 +1238,7 @@ td:first-child { color: var(--plum); font-weight: 800; }
   position: absolute;
   inset: 0;
   background-color: #08070c;                 /* fallback if the image is missing */
-  background-image: url("assets/about-bg-car.jpg");
+  background-image: url("/assets/images/backgrounds/about-bg-car.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -1,7 +1,7 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "node scripts/build.js",
-  "outputDirectory": ".",
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "directoryListing": false,
   "rewrites": [
     { "source": "/QR", "destination": "/pages/qr.html" },
     { "source": "/QR/", "destination": "/pages/qr.html" },

@@ -22,7 +22,7 @@
        If you swap the photo: update the <svg viewBox> AND re-trace the
        #fx-windshield <polygon> in the section markup to the new image's
        natural pixel size (see the comment beside the polygon).        */
-    sceneImage: 'assets/DEGREE.png',
+    sceneImage: '/assets/images/sections/DEGREE.png',
 
     /* key -> product.  ORDER here = pill order.  First key = default.
        vlt  = visible light transmission %

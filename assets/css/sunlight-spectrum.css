@@ -4,7 +4,7 @@
    An interactive point-of-view section: sunlight = UV + visible + IR.
    Picking a band re-lights the glazing-pane visualisation live.
 
-   Self-contained: this file + /sunlight-spectrum.js only. Reuses
+   Self-contained: this file + /assets/js/sunlight-spectrum.js only. Reuses
    the site's dark palette; every rule is namespaced `.sss`.
 
    Explicit layer order inside the simulator:
@@ -606,9 +606,9 @@
 
 /* =====================================================================
  * SPECTRUM LIGHTBOX — a card click opens its wavelength reference image
- *   uv       → /assets/UV.png
- *   visible  → /assets/RAINBOW.png
- *   infrared → /assets/HEAT.png
+ *   uv       → /assets/images/sections/UV.png
+ *   visible  → /assets/images/sections/RAINBOW.png
+ *   infrared → /assets/images/sections/HEAT.png
  * Built and controlled from sunlight-spectrum.js.
  * ===================================================================== */
 .sss__lightbox {
