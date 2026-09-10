@@ -15,104 +15,71 @@
 <link rel="preconnect" href="https://www.youtube.com">
 <link rel="preconnect" href="https://i.ytimg.com">
 <link rel="dns-prefetch" href="https://googlevideo.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-  /* Full-screen "detecting location" cover. Painted from <head> BEFORE <body>
-     renders, so a phone that scans /QR/ never sees the English page flash by
-     while geolocation resolves. Driven purely by a class on <html>. */
-  html.qr-detecting, html.qr-detecting body { overflow:hidden !important; }
-  html.qr-detecting::before{
-    content:"Detecting your location\2026";
-    position:fixed; inset:0; z-index:2147483000;
-    display:flex; align-items:center; justify-content:center; padding-top:64px;
-    background:#0B0710; color:#EBD6FF;
-    font:600 14px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    letter-spacing:.02em;
-  }
-  html.qr-detecting::after{
-    content:""; position:fixed; left:50%; top:calc(50% - 34px); margin-left:-13px;
-    width:26px; height:26px; border-radius:50%;
-    border:2px solid rgba(226,180,255,.25); border-top-color:#E14FFF;
-    z-index:2147483001; animation:qr-spin .8s linear infinite;
-  }
-  @keyframes qr-spin{ to{ transform:rotate(360deg); } }
-  @media (prefers-reduced-motion:reduce){ html.qr-detecting::after{ animation-duration:2.4s; } }
-</style>
 <script>
 /* ============================================================================
-   UV99 QR — mobile-first location → language redirect.  Runs IMMEDIATELY on
-   the base /QR/ URL, before the English page paints.
-
-     scan /QR/  →  "Detecting…" overlay  →  ask location  →  reverse-geocode
-                →  map Indian state → replace() to /QR/<lang>
-     any failure / denial / timeout / outside India  →  reveal English
-
-   Resolved once per browser SESSION (a fresh scan = new session = re-detect).
-   Add ?stay to the URL to force the English page and skip detection.
+   UV99 QR -- location -> language redirect. Fires the geolocation request
+   IMMEDIATELY on the base /QR/ URL, so the browser's own "Allow location"
+   prompt appears straight away (no loading screen). On "Allow" the page
+   redirects to the matching regional language; on deny / timeout / outside
+   India it simply stays on English.  Resolved once per browser SESSION
+   (a fresh scan = new session = asks again).  Add ?stay to skip detection.
    ============================================================================ */
 (function () {
   var path = location.pathname;
-  if (!/\/QR\/?$/i.test(path) && !/\/qr\.html$/i.test(path)) return;   // base URL only
+  if (!/\/QR\/?$/i.test(path) && !/\/qr\.html$/i.test(path)) return;
 
   var URLS = { en:'/QR/', hindi:'/QR/hindi', kannada:'/QR/kannada', odia:'/QR/odia',
                telugu:'/QR/telugu', tamil:'/QR/tamil', malayalam:'/QR/malayalam' };
   var STATE_LANG = {
-    'madhya pradesh':'hindi',
-    'karnataka':'kannada',
+    'madhya pradesh':'hindi', 'karnataka':'kannada',
     'odisha':'odia', 'orissa':'odia',
     'telangana':'telugu', 'andhra pradesh':'telugu',
-    'tamil nadu':'tamil',
-    'kerala':'malayalam'
-    /* Maharashtra + every other state / country / failure  →  English (absent on purpose) */
+    'tamil nadu':'tamil', 'kerala':'malayalam'
+    /* Maharashtra + every other state / country / failure -> English (absent on purpose) */
   };
-  var doc = document.documentElement;
   function ssGet(k){ try { return sessionStorage.getItem(k); } catch (e) { return null; } }
   function ssSet(k,v){ try { sessionStorage.setItem(k,v); } catch (e) {} }
 
-  if (/[?&]stay\b/i.test(location.search)) { ssSet('uv99_qr_geo','en'); return; }   // opt-out
+  if (/[?&]stay\b/i.test(location.search)) { ssSet('uv99_qr_geo','en'); return; }
 
-  var done = ssGet('uv99_qr_geo');                    // already resolved this session
+  var done = ssGet('uv99_qr_geo');
   if (done) { if (done !== 'en' && URLS[done]) location.replace(URLS[done]); return; }
 
-  if (!('geolocation' in navigator) || window.isSecureContext === false) {
-    ssSet('uv99_qr_geo','en'); return;                // no API / http:// → English, no overlay
-  }
+  if (!('geolocation' in navigator) || window.isSecureContext === false) { ssSet('uv99_qr_geo','en'); return; }
 
-  doc.classList.add('qr-detecting');                  // cover the page NOW
   var settled = false;
-  function reveal(){ settled = true; doc.classList.remove('qr-detecting'); }
-  function toEnglish(){ if (settled) return; ssSet('uv99_qr_geo','en'); reveal(); }
-  function toLang(lang, state){
-    if (settled) return;                              // a timeout already revealed English — don't jump late
+  function finishEnglish(){ if (settled) return; settled = true; ssSet('uv99_qr_geo','en'); }
+  function finishLang(lang, state){
+    if (settled) return;
+    settled = true;
     ssSet('uv99_qr_geo', lang);
     if (state) ssSet('uv99_qr_state', state);
-    if (lang !== 'en' && URLS[lang]) { settled = true; location.replace(URLS[lang]); }   // overlay stays through nav
-    else reveal();
+    if (lang !== 'en' && URLS[lang]) location.replace(URLS[lang]);
   }
-
-  var hardCap = setTimeout(toEnglish, 18000);         // never hang on a broken in-app webview
+  var cap = setTimeout(finishEnglish, 12000);
 
   navigator.geolocation.getCurrentPosition(function (pos) {
     var api = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' +
               encodeURIComponent(pos.coords.latitude) + '&longitude=' +
               encodeURIComponent(pos.coords.longitude) + '&localityLanguage=en';
     var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-    var fetchCap = setTimeout(function(){ if (ctrl) ctrl.abort(); clearTimeout(hardCap); toEnglish(); }, 8000);
+    var fc = setTimeout(function(){ if (ctrl) ctrl.abort(); clearTimeout(cap); finishEnglish(); }, 6000);
     fetch(api, ctrl ? { signal: ctrl.signal } : undefined)
       .then(function (r){ return r.json(); })
       .then(function (d){
-        clearTimeout(fetchCap); clearTimeout(hardCap);
+        clearTimeout(fc); clearTimeout(cap);
         var cc    = (d && d.countryCode ? String(d.countryCode) : '').trim().toUpperCase();
         var state = (d && d.principalSubdivision ? String(d.principalSubdivision) : '').trim();
         var lang  = (cc === 'IN') ? (STATE_LANG[state.toLowerCase()] || 'en') : 'en';
-        try { console.log('[UV99 QR geo] ' + (cc||'(none)') + ' → ' + (state||'(none)') + ' → ' + lang); } catch (e) {}
-        toLang(lang, state);
+        try { console.log('[UV99 QR geo] ' + (cc||'(none)') + ' -> ' + (state||'(none)') + ' -> ' + lang); } catch (e) {}
+        finishLang(lang, state);
       })
-      .catch(function (){ clearTimeout(fetchCap); clearTimeout(hardCap); toEnglish(); });
+      .catch(function (){ clearTimeout(fc); clearTimeout(cap); finishEnglish(); });
   }, function (){
-    clearTimeout(hardCap); toEnglish();               // denied / unavailable / timeout
-  }, { enableHighAccuracy:false, timeout:15000, maximumAge:300000 });
+    clearTimeout(cap); finishEnglish();
+  }, { enableHighAccuracy:false, timeout:10000, maximumAge:600000 });
 })();
 </script>
 
@@ -178,14 +145,16 @@
     --safe-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth;overflow-x:clip;}
   body{
     background:var(--paper);
     color:var(--ink);
     font-family:'Manrope',sans-serif;
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
+    overflow-x:clip;
+    overflow-x:hidden;   /* clip preferred; hidden = fallback for older engines */
+    max-width:100%;
   }
   h1,h2,h3,.display{font-family:'Unbounded',sans-serif;font-weight:700;letter-spacing:-0.01em;}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -226,7 +195,7 @@
   .hero-bg{
     position:relative;inset:auto;z-index:0;width:100%;
     aspect-ratio:1800 / 1400;
-    background:url('/assets/images/hero/hero2.jpg') center center/cover no-repeat;
+    background:url('/assets/images/hero/hero2.webp') center center/cover no-repeat;
   }
   /* Desktop only: shorten the box and anchor the crop to the bottom, so
      "cover" trims the empty sunroof/sky sliver off the top while the
@@ -365,7 +334,7 @@
     .hero-bg{
       position:relative;inset:auto;width:100%;
       aspect-ratio:864 / 1590;
-      background-image:url('/assets/images/hero/mobileviewhero.jpg');
+      background-image:url('/assets/images/hero/mobileviewhero.webp');
       background-position:center bottom;
       background-size:cover;
       background-color:#fff;
@@ -407,8 +376,10 @@
          small gap before the Watch Videos bar */
       margin:-215px 0 25px;
       padding:0 14px;
-      font-size:clamp(15px,5.6vw,23px);   /* scaled down + capped so the line never wraps */
-      white-space:nowrap;
+      max-width:100%;
+      font-size:clamp(15px,5.4vw,22px);   /* wraps to a 2nd line if the phrase is long, never overflows */
+      line-height:1.15;
+      overflow-wrap:break-word;
       letter-spacing:-0.02em;
       color:#fff;               /* back to white + shadow: it's over the photo again */
       text-shadow:0 2px 14px rgba(0,0,0,0.6),0 1px 3px rgba(0,0,0,0.55);
@@ -479,6 +450,32 @@
     width:100%;height:100%;display:block;
     border:none;
   }
+  /* lightweight click/scroll-to-load poster shown until the real player is built */
+  .video-wrapper .ytfacade{
+    position:absolute; inset:0; width:100%; height:100%;
+    display:block; padding:0; margin:0; border:0; cursor:pointer;
+    background:#0b0710; overflow:hidden; -webkit-tap-highlight-color:transparent;
+  }
+  .video-wrapper .ytfacade img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center; border:0;
+  }
+  .video-wrapper .ytfacade__play{
+    position:absolute; left:50%; top:50%; width:74px; height:52px;
+    margin:-26px 0 0 -37px; border-radius:14px;
+    background:rgba(18,10,26,.72); border:1px solid rgba(255,255,255,.28);
+    -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+    transition:background .2s ease, transform .2s ease;
+  }
+  .video-wrapper .ytfacade__play::after{
+    content:""; position:absolute; left:50%; top:50%;
+    margin:-10px 0 0 -6px; width:0; height:0;
+    border-style:solid; border-width:10px 0 10px 17px;
+    border-color:transparent transparent transparent #fff;
+  }
+  .video-wrapper .ytfacade:hover .ytfacade__play,
+  .video-wrapper .ytfacade:focus-visible .ytfacade__play{ background:#E14FFF; transform:scale(1.06); }
+  .video-wrapper--gold .ytfacade:hover .ytfacade__play{ background:#E8B923; }
   .video-points{
     list-style:none;margin:22px 0 4px;padding:0;
     display:grid;gap:12px;
@@ -1802,8 +1799,11 @@
 
     <!-- ---- Story 1: the problem, in three parts ---- -->
     <div class="uvb-story uvb-story--hero" data-uvb-story>
-      <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/yDkafywKRus?autoplay=1&rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="eager"></iframe>
+      <div class="video-wrapper" data-yt="yDkafywKRus" data-title="UV99 video 1">
+        <button class="ytfacade" type="button" aria-label="Play video">
+          <img src="https://i.ytimg.com/vi/yDkafywKRus/hqdefault.jpg" alt="" loading="lazy" decoding="async" width="480" height="360">
+          <span class="ytfacade__play" aria-hidden="true"></span>
+        </button>
       </div>
 
 
@@ -1838,8 +1838,11 @@
       <span class="uvb-heading__bar" aria-hidden="true"></span>
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-      <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/iABkMOM-ETA?playsinline=1&rel=0&mute=1&enablejsapi=1" title="UV99 video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="video-wrapper" data-yt="iABkMOM-ETA" data-title="UV99 video 1">
+        <button class="ytfacade" type="button" aria-label="Play video">
+          <img src="https://i.ytimg.com/vi/iABkMOM-ETA/hqdefault.jpg" alt="" loading="lazy" decoding="async" width="480" height="360">
+          <span class="ytfacade__play" aria-hidden="true"></span>
+        </button>
       </div>
 
       <div class="uvb-grid">
@@ -1878,8 +1881,11 @@
       <span class="uvb-heading__bar" aria-hidden="true"></span>
       <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-      <div class="video-wrapper">
-        <iframe src="https://www.youtube.com/embed/Cztjbxj07Lk?rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      <div class="video-wrapper" data-yt="Cztjbxj07Lk" data-title="UV99 video 3">
+        <button class="ytfacade" type="button" aria-label="Play video">
+          <img src="https://i.ytimg.com/vi/Cztjbxj07Lk/hqdefault.jpg" alt="" loading="lazy" decoding="async" width="480" height="360">
+          <span class="ytfacade__play" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -2001,9 +2007,12 @@
     <span class="uvb-heading__bar" aria-hidden="true" style="margin:2px auto 22px"></span>
     <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
-    <div class="video-wrapper video-wrapper--gold">
-      <iframe src="https://www.youtube.com/embed/OhsYymfl7x4?rel=0&mute=1&enablejsapi=1&playsinline=1" title="UV99 +1 video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-    </div>
+    <div class="video-wrapper video-wrapper--gold" data-yt="OhsYymfl7x4" data-title="UV99 +1 video">
+        <button class="ytfacade" type="button" aria-label="Play video">
+          <img src="https://i.ytimg.com/vi/OhsYymfl7x4/hqdefault.jpg" alt="" loading="lazy" decoding="async" width="480" height="360">
+          <span class="ytfacade__play" aria-hidden="true"></span>
+        </button>
+      </div>
 
     <div class="uvb-grid uvb-grid--pct">
       <article class="uvb-card uvb-card--premium">
@@ -2134,7 +2143,7 @@
     <div class="hs-grid">
       <div class="hs-stage-card" id="hs-stage-region" role="region" aria-label="Film effect visualisation" aria-live="polite" tabindex="0">
         <div class="hs-stage" data-state="none" role="img" aria-label="Cabin heat visualisation">
-          <img class="hs-photo" src="/assets/images/hero/123.png" alt="" width="1689" height="931" loading="lazy" decoding="async">
+          <img class="hs-photo" src="/assets/images/hero/123.webp" alt="" width="1400" height="788" loading="lazy" decoding="async">
           <svg class="hs-fx" viewBox="0 0 1690 931" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
               <radialGradient id="hs-glow-grad" cx="0.5" cy="0.5" r="0.5">
@@ -2252,7 +2261,7 @@
     <img class="hs-sir__logo" src="/assets/images/logos/logo.png" alt="UV99" loading="lazy" decoding="async">
   </div>
   <div class="wrap reveal hs-sir">
-    <img class="hs-sir__img" src="/assets/images/products/SIR-cutout.png" alt="UV99 window film packaging" loading="lazy" decoding="async">
+    <img class="hs-sir__img" src="/assets/images/products/SIR-cutout.webp" alt="UV99 window film packaging" loading="lazy" decoding="async">
   </div>
 </section>
 
@@ -2769,7 +2778,7 @@
 
       /* "Without Film" shows 123.png; any selected film shows the calibrated base photo */
       if(photoEl){
-        var wantSrc = key === 'none' ? '/assets/images/hero/123.png' : '/assets/images/hero/new%20car.orig.png';
+        var wantSrc = key === 'none' ? '/assets/images/hero/123.webp' : '/assets/images/hero/new-car.webp';
         if(photoEl.getAttribute('src') !== wantSrc) photoEl.setAttribute('src', wantSrc);
       }
 
@@ -3304,60 +3313,85 @@
    ============================================================ */
 (function(){
   var section  = document.getElementById('videos');
-  var wrappers = Array.prototype.slice.call(document.querySelectorAll('.video-wrapper'));
-  var frames   = wrappers
-    .map(function(w){ return w.querySelector('iframe[src*="youtube.com/embed"]'); })
-    .filter(Boolean);
-  if(!frames.length) return;
+  var wrappers = Array.prototype.slice.call(document.querySelectorAll('.video-wrapper[data-yt]'));
+  if(!wrappers.length) return;
 
   var soundUnlocked = false;
-  var inView = null;
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var current = null;
+  var reduce = false;
+  try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
 
   function cmd(frame, func, args){
     if(!frame || !frame.contentWindow) return;
-    frame.contentWindow.postMessage(
-      JSON.stringify({ event:'command', func:func, args:args || [] }), '*'
-    );
+    try { frame.contentWindow.postMessage(JSON.stringify({ event:'command', func:func, args:args || [] }), '*'); } catch(e){}
+  }
+  function frameOf(w){ return (w && w._frame) ? w._frame : null; }
+
+  /* Build the real YouTube player only when it's actually needed. A fresh
+     iframe created here (right after a scroll into view, or on a tap) honours
+     muted autoplay on mobile far more often than a postMessage to a
+     pre-loaded frame -- and until then the page only carried a ~15KB image. */
+  function ensure(w){
+    if(w._frame) return w._frame;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube.com/embed/' + w.getAttribute('data-yt') +
+            '?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1&modestbranding=1&iv_load_policy=3';
+    f.title = w.getAttribute('data-title') || 'UV99 video';
+    f.setAttribute('frameborder','0');
+    f.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    f.setAttribute('allowfullscreen','');
+    w.appendChild(f);
+    var facade = w.querySelector('.ytfacade');
+    if(facade){ setTimeout(function(){ if(facade.parentNode) facade.parentNode.removeChild(facade); }, 900); }
+    w._frame = f;
+    return f;
   }
 
-  function storyOf(frame){
-    var el = frame;
-    while(el && el !== section && !el.classList.contains('uvb-story')) el = el.parentElement;
-    return (el && el.classList.contains('uvb-story')) ? el : null;
+  function storyOf(w){
+    var el = w;
+    while(el && el !== section && !(el.classList && el.classList.contains('uvb-story'))) el = el.parentElement;
+    return (el && el.classList && el.classList.contains('uvb-story')) ? el : null;
   }
 
-  function play(frame){
-    inView = frame;
-    cmd(frame, 'seekTo', [0, true]);          // always from the beginning
-    cmd(frame, 'playVideo');
-    if(soundUnlocked){ cmd(frame, 'unMute'); cmd(frame, 'setVolume', [100]); }
-    var story = storyOf(frame);
+  function play(w, withSound){
+    current = w;
+    var f = ensure(w);
+    cmd(f, 'playVideo');
+    [500, 1400, 3000].forEach(function(ms){ setTimeout(function(){ if(current === w) cmd(f, 'playVideo'); }, ms); });
+    if(withSound || soundUnlocked){
+      soundUnlocked = true;
+      [300, 1200].forEach(function(ms){ setTimeout(function(){ cmd(f,'unMute'); cmd(f,'setVolume',[100]); }, ms); });
+    }
+    var story = storyOf(w);
     if(story){
-      Array.prototype.slice.call(document.querySelectorAll('.uvb-story.is-active')).forEach(function(s){
-        if(s !== story) s.classList.remove('is-active');
-      });
+      Array.prototype.slice.call(document.querySelectorAll('.uvb-story.is-active')).forEach(function(s){ if(s !== story) s.classList.remove('is-active'); });
       story.classList.add('is-active');
     }
   }
-  function pause(frame){
-    if(inView === frame) inView = null;
-    cmd(frame, 'pauseVideo');
-    var story = storyOf(frame);
+  function pause(w){
+    if(current === w) current = null;
+    cmd(frameOf(w), 'pauseVideo');
+    var story = storyOf(w);
     if(story) story.classList.remove('is-active');
   }
 
-  var programmatic = false, pgTimer = null;
-  function holdProgrammatic(ms){
-    programmatic = true;
-    if(pgTimer) clearTimeout(pgTimer);
-    pgTimer = setTimeout(function(){ programmatic = false; }, ms);
+  wrappers.forEach(function(w){
+    var facade = w.querySelector('.ytfacade');
+    if(facade) facade.addEventListener('click', function(){ play(w, true); });
+  });
+
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && e.intersectionRatio >= 0.6) play(e.target);
+        else pause(e.target);
+      });
+    }, { threshold:[0, 0.6] });
+    wrappers.forEach(function(w){ io.observe(w); });
   }
 
-  /* fast, snappy scroll that drops the target to the viewport centre
-     in ~320ms (much quicker than the browser's default smooth scroll).
-     While it runs, `programmatic` is held true so the snap logic and
-     nothing else fights it or bounces the page the other way. */
+  var programmatic = false, pgTimer = null;
+  function holdProgrammatic(ms){ programmatic = true; if(pgTimer) clearTimeout(pgTimer); pgTimer = setTimeout(function(){ programmatic = false; }, ms); }
   function quickScrollToCenter(el){
     var rect = el.getBoundingClientRect();
     var startY = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -3369,117 +3403,63 @@
     holdProgrammatic(dur + 220);
     (function step(now){
       var p = Math.min((now - t0) / dur, 1);
-      var e = 1 - Math.pow(1 - p, 3);            // ease-out cubic
+      var e = 1 - Math.pow(1 - p, 3);
       window.scrollTo(0, startY + (destY - startY) * e);
       if(p < 1) requestAnimationFrame(step);
     })(t0);
   }
-
-  if('IntersectionObserver' in window){
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting && e.intersectionRatio >= 0.6) play(e.target);
-        else pause(e.target);
-      });
-    }, { threshold:[0, 0.6] });
-    frames.forEach(function(f){ io.observe(f); });
-  } else {
-    frames.forEach(function(f){ cmd(f, 'playVideo'); });
-  }
-
-  /* NOTE: there is deliberately NO scroll-triggered auto-scrolling here.
-     A previous "snap to nearest video" listener re-centred a video every
-     time scrolling paused near one, which pulled the page upward on its
-     own. The page now keeps whatever scroll position the user chose;
-     only the explicit "Watch Videos" click below moves the viewport. */
-
-  /* ---- neutralise YouTube's "focus the player on PLAY" scroll ----
-     When a YouTube embed transitions to PLAYING (~1s after Play, once it
-     finishes buffering) it moves keyboard focus INTO the <iframe>. If the
-     player sits partly above the fold the browser scrolls it into view —
-     an unrequested upward jump of ~150px that also re-reveals the header.
-     We can't pass {preventScroll:true} to YouTube's internal focus call,
-     so we record the position the USER last scrolled to and restore it
-     the instant focus enters a video iframe. This is event-driven (fires
-     once per focus, not per frame) and touches nothing else. */
-  var userY = window.pageYOffset || 0;
-  var lastIframeFocusAt = 0;
-  // any genuine scroll intent refreshes the position we consider "the user's"
-  ['wheel','touchmove','keydown','pointerdown','scrollend'].forEach(function(evt){
-    window.addEventListener(evt, function(){ userY = window.pageYOffset || 0; }, { passive:true });
-  });
-  window.addEventListener('scroll', function(){
-    // trust every scroll except the ~half-second blip right after the
-    // iframe grabs focus (that one is corrected in the focusin handler)
-    if(Date.now() - lastIframeFocusAt > 700) userY = window.pageYOffset || 0;
-  }, { passive:true });
-  document.addEventListener('focusin', function(e){
-    if(frames.indexOf(e.target) === -1) return;
-    lastIframeFocusAt = Date.now();
-    var y = userY;
-    if((window.pageYOffset || 0) !== y) window.scrollTo(0, y);
-    // the browser's scroll-into-view can land a frame later than focusin
-    requestAnimationFrame(function(){
-      if((window.pageYOffset || 0) !== y) window.scrollTo(0, y);
-    });
-  }, true);
-
-  /* ---- "Watch Videos" ----
-     Scroll straight down to the first video and start it with sound.
-     We drive playback purely through the YouTube JS API (the iframes
-     already carry enablejsapi=1) — the iframe src is never rewritten,
-     because reloading an off-screen frame mid-scroll made the page jump. */
   function centerNow(el){
     var rect = el.getBoundingClientRect();
-    var y = (window.pageYOffset || document.documentElement.scrollTop || 0)
-          + rect.top + rect.height / 2 - window.innerHeight / 2;
+    var y = (window.pageYOffset || document.documentElement.scrollTop || 0) + rect.top + rect.height / 2 - window.innerHeight / 2;
     var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     window.scrollTo(0, Math.max(0, Math.min(y, maxY)));
   }
+
+  var userY = window.pageYOffset || 0;
+  var lastFocusAt = 0;
+  ['wheel','touchmove','keydown','pointerdown','scrollend'].forEach(function(evt){
+    window.addEventListener(evt, function(){ userY = window.pageYOffset || 0; }, { passive:true });
+  });
+  window.addEventListener('scroll', function(){ if(Date.now() - lastFocusAt > 700) userY = window.pageYOffset || 0; }, { passive:true });
+  document.addEventListener('focusin', function(e){
+    var t = e.target;
+    if(!t || t.tagName !== 'IFRAME' || !t.parentElement || !t.parentElement.classList.contains('video-wrapper')) return;
+    lastFocusAt = Date.now();
+    var y = userY;
+    if((window.pageYOffset || 0) !== y) window.scrollTo(0, y);
+    requestAnimationFrame(function(){ if((window.pageYOffset || 0) !== y) window.scrollTo(0, y); });
+  }, true);
 
   var watch = document.querySelector('.hero-watch');
   if(watch){
     watch.addEventListener('click', function(ev){
       ev.preventDefault();
       ev.stopPropagation();
-      if(watch.blur) watch.blur();           // no focused off-screen anchor to scroll back to
-      soundUnlocked = true;
-      var first = frames[0], target = wrappers[0];
+      if(watch.blur) watch.blur();
+      var target = wrappers[0];
       if(!target) return;
-      // settle any scroll-reveal transforms first so the target's
-      // measured position is final and nothing drifts afterwards
+      /* Build + start the player SYNCHRONOUSLY inside the tap. iOS only keeps
+         the user-activation on the fresh iframe if we do not defer this, and
+         that activation is what lets muted + playsinline autoplay run without
+         a second tap on the video. */
+      ensure(target);
+      play(target, true);
       var node = target;
-      while(node){
-        if(node.classList && node.classList.contains('reveal')) node.classList.add('in');
-        node = node.parentElement;
-      }
+      while(node){ if(node.classList && node.classList.contains('reveal')) node.classList.add('in'); node = node.parentElement; }
       quickScrollToCenter(target);
-      // lock the position after the reveal/transition would have settled,
-      // so the page can't creep or bounce back up
       setTimeout(function(){ holdProgrammatic(120); centerNow(target); }, 380);
       setTimeout(function(){ holdProgrammatic(120); centerNow(target); }, 780);
-      setTimeout(function(){ play(first); }, 240);
-      setTimeout(function(){ cmd(first,'unMute'); cmd(first,'setVolume',[100]); cmd(first,'playVideo'); }, 900);
+      setTimeout(function(){ if(current === target) cmd(frameOf(target), 'playVideo'); }, 700);
     });
   }
 
-  /* ---- 3. unlock sound on first interaction ----
-     Scrolling counts: the first wheel / touch / key / pointer gesture
-     unmutes the video that is (or becomes) in view, so scrolling down
-     the page plays each video WITH sound. `wheel` and `touchstart` are
-     real user-activation events, so the unMute that follows is allowed
-     by the browser autoplay policy. */
   function unlockSound(){
     if(soundUnlocked) return;
     soundUnlocked = true;
-    if(inView){ cmd(inView, 'unMute'); cmd(inView, 'setVolume', [100]); }
-    ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){
-      window.removeEventListener(evt, unlockSound);
-    });
+    if(current){ var f = frameOf(current); cmd(f,'playVideo'); cmd(f,'unMute'); cmd(f,'setVolume',[100]); }
+    ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){ window.removeEventListener(evt, unlockSound); });
   }
-  ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){
-    window.addEventListener(evt, unlockSound, { passive:true });
-  });
+  ['pointerdown','keydown','touchstart','touchmove','wheel'].forEach(function(evt){ window.addEventListener(evt, unlockSound, { passive:true }); });
 })();
 </script>
 
