@@ -17,71 +17,10 @@
 <link rel="dns-prefetch" href="https://googlevideo.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<script>
-/* ============================================================================
-   UV99 QR -- location -> language redirect. Fires the geolocation request
-   IMMEDIATELY on the base /QR/ URL, so the browser's own "Allow location"
-   prompt appears straight away (no loading screen). On "Allow" the page
-   redirects to the matching regional language; on deny / timeout / outside
-   India it simply stays on English.  Resolved once per browser SESSION
-   (a fresh scan = new session = asks again).  Add ?stay to skip detection.
-   ============================================================================ */
-(function () {
-  var path = location.pathname;
-  if (!/\/QR\/?$/i.test(path) && !/\/qr\.html$/i.test(path)) return;
-
-  var URLS = { en:'/QR/', hindi:'/QR/hindi', kannada:'/QR/kannada', odia:'/QR/odia',
-               telugu:'/QR/telugu', tamil:'/QR/tamil', malayalam:'/QR/malayalam' };
-  var STATE_LANG = {
-    'madhya pradesh':'hindi', 'karnataka':'kannada',
-    'odisha':'odia', 'orissa':'odia',
-    'telangana':'telugu', 'andhra pradesh':'telugu',
-    'tamil nadu':'tamil', 'kerala':'malayalam'
-    /* Maharashtra + every other state / country / failure -> English (absent on purpose) */
-  };
-  function ssGet(k){ try { return sessionStorage.getItem(k); } catch (e) { return null; } }
-  function ssSet(k,v){ try { sessionStorage.setItem(k,v); } catch (e) {} }
-
-  if (/[?&]stay\b/i.test(location.search)) { ssSet('uv99_qr_geo','en'); return; }
-
-  var done = ssGet('uv99_qr_geo');
-  if (done) { if (done !== 'en' && URLS[done]) location.replace(URLS[done]); return; }
-
-  if (!('geolocation' in navigator) || window.isSecureContext === false) { ssSet('uv99_qr_geo','en'); return; }
-
-  var settled = false;
-  function finishEnglish(){ if (settled) return; settled = true; ssSet('uv99_qr_geo','en'); }
-  function finishLang(lang, state){
-    if (settled) return;
-    settled = true;
-    ssSet('uv99_qr_geo', lang);
-    if (state) ssSet('uv99_qr_state', state);
-    if (lang !== 'en' && URLS[lang]) location.replace(URLS[lang]);
-  }
-  var cap = setTimeout(finishEnglish, 12000);
-
-  navigator.geolocation.getCurrentPosition(function (pos) {
-    var api = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' +
-              encodeURIComponent(pos.coords.latitude) + '&longitude=' +
-              encodeURIComponent(pos.coords.longitude) + '&localityLanguage=en';
-    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-    var fc = setTimeout(function(){ if (ctrl) ctrl.abort(); clearTimeout(cap); finishEnglish(); }, 6000);
-    fetch(api, ctrl ? { signal: ctrl.signal } : undefined)
-      .then(function (r){ return r.json(); })
-      .then(function (d){
-        clearTimeout(fc); clearTimeout(cap);
-        var cc    = (d && d.countryCode ? String(d.countryCode) : '').trim().toUpperCase();
-        var state = (d && d.principalSubdivision ? String(d.principalSubdivision) : '').trim();
-        var lang  = (cc === 'IN') ? (STATE_LANG[state.toLowerCase()] || 'en') : 'en';
-        try { console.log('[UV99 QR geo] ' + (cc||'(none)') + ' -> ' + (state||'(none)') + ' -> ' + lang); } catch (e) {}
-        finishLang(lang, state);
-      })
-      .catch(function (){ clearTimeout(fc); clearTimeout(cap); finishEnglish(); });
-  }, function (){
-    clearTimeout(cap); finishEnglish();
-  }, { enableHighAccuracy:false, timeout:10000, maximumAge:600000 });
-})();
-</script>
+<!-- UV99 QR — shared i18n / geolocation / language-control module.
+     Behaviour identical to /uv99+1/QR; see assets/js/qr-i18n.js. -->
+<script>window.__QR_I18N__ = { base:'/QR', lang:'en' };</script>
+<script src="/assets/js/qr-i18n.js"></script>
 
 <style id="qr-i18n-style">
   /* Language selector + detected-location indicator. Fixed to the top-right
@@ -1914,10 +1853,6 @@
             <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
           </div>
-          <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">30%</span></div>
-            <div class="specbar-track"><div class="specbar-fill" style="width:30%"></div></div>
-          </div>
         </div>
         <div class="variant">
           <h4>UV99 50</h4>
@@ -1928,10 +1863,6 @@
           <div class="specbar-row">
             <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
-          </div>
-          <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">35%</span></div>
-            <div class="specbar-track"><div class="specbar-fill" style="width:35%"></div></div>
           </div>
         </div>
       </div>
@@ -1949,10 +1880,6 @@
             <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
           </div>
-          <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">42%</span></div>
-            <div class="specbar-track"><div class="specbar-fill" style="width:42%"></div></div>
-          </div>
         </div>
         <div class="variant">
           <h4>UV PRO 50</h4>
@@ -1963,10 +1890,6 @@
           <div class="specbar-row">
             <div class="specbar-top"><span class="specbar-name">UV Rejected</span><span class="specbar-val mono">99%</span></div>
             <div class="specbar-track"><div class="specbar-fill uv" style="width:99%"></div></div>
-          </div>
-          <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">Heat Rejection</span><span class="specbar-val mono">50%</span></div>
-            <div class="specbar-track"><div class="specbar-fill" style="width:50%"></div></div>
           </div>
         </div>
       </div>
@@ -2039,221 +1962,7 @@
   </div>
 </section>
 
-<style id="uvp-style">
-  /* ===== UV99 — UV-radiation rejection overlay (canvas layer over the photo) ===== */
-  .hs-stage #hs-rays{ display:none; }          /* premium canvas beams replace the old SVG rays */
-  .hs-stage .hs-shimmer{ display:none; }        /* drop the old squiggle heat-shimmer */
-  .hs-stage #hs-particles{ display:none; }      /* single canvas ray only — no floating specks */
-  .uvp-canvas{
-    position:absolute; inset:0; width:100%; height:100%;
-    z-index:4; pointer-events:none; display:block;
-  }
-  .uvp-badge{
-    position:absolute; left:auto; right:6%; top:12%;
-    z-index:5; pointer-events:none;
-    display:flex; flex-direction:column; gap:5px;
-    padding:11px 15px 12px;
-    font-family:'Manrope',system-ui,-apple-system,sans-serif;
-    color:#fff;
-    background:linear-gradient(180deg, rgba(18,10,26,0.52), rgba(11,7,17,0.44));
-    border:1px solid rgba(226,180,255,0.24);
-    border-radius:13px;
-    -webkit-backdrop-filter:blur(11px) saturate(1.3);
-            backdrop-filter:blur(11px) saturate(1.3);
-    box-shadow:0 14px 40px -16px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.06);
-    transition:border-color .3s ease, box-shadow .3s ease;
-  }
-  .uvp-badge__row{ display:flex; align-items:center; gap:7px; }
-  .uvp-dot{
-    width:6px; height:6px; border-radius:50%;
-    background:#E14FFF; box-shadow:0 0 10px 2px rgba(225,79,255,0.9);
-    animation:uvp-pulse 2.4s ease-in-out infinite;
-  }
-  .uvp-badge__title{
-    font-size:10px; font-weight:700; letter-spacing:0.19em; text-transform:uppercase;
-    color:#e7c6ff;
-  }
-  .uvp-badge__big{
-    font-size:clamp(12px,1.5vw,14.5px); font-weight:800; letter-spacing:0.01em; color:#fff;
-  }
-  .uvp-badge__ind{
-    margin-top:1px;
-    font-family:'JetBrains Mono','Manrope',monospace;
-    font-size:9.5px; letter-spacing:0.13em; text-transform:uppercase;
-  }
-  .uvp-ind__txt{
-    color:rgba(255,255,255,0.62); white-space:nowrap;
-    transition:color .2s ease, text-shadow .2s ease;
-  }
-  .uvp-badge.is-hit{
-    border-color:rgba(124,255,196,0.5);
-    box-shadow:0 16px 46px -14px rgba(0,0,0,0.72), 0 0 22px -4px rgba(124,255,196,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
-  }
-  .uvp-badge.is-hit .uvp-ind__txt{ color:#7CFFC4; text-shadow:0 0 12px rgba(124,255,196,0.6); }
-  /* no film selected — warm "UV enters the cabin" warning treatment */
-  .uvp-badge.is-open{
-    border-color:rgba(255,120,90,0.42);
-    box-shadow:0 14px 40px -16px rgba(0,0,0,0.72), 0 0 20px -6px rgba(255,120,90,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
-  }
-  .uvp-badge.is-open .uvp-dot{ background:#FF6B3D; box-shadow:0 0 10px 2px rgba(255,107,61,0.9); }
-  .uvp-badge.is-open .uvp-badge__title{ color:#ffb9a0; }
-  .uvp-badge.is-open .uvp-ind__txt{ color:rgba(255,205,185,0.9); }
-  @keyframes uvp-pulse{ 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.78);} }
-  @media (max-width:560px){
-    .uvp-badge{ left:auto; right:4%; top:8%; padding:8px 11px 9px; border-radius:11px; gap:3px; }
-    .uvp-badge__title{ font-size:8.5px; letter-spacing:0.15em; }
-    .uvp-badge__ind{ font-size:8px; height:11px; }
-  }
-  @media (prefers-reduced-motion:reduce){
-    .uvp-dot{ animation:none; }
-    .uvp-badge,.uvp-badge__ind > span{ transition:none; }
-  }
-</style>
 
-<!-- ================= HEAT-REJECTION SIMULATOR ================= -->
-<section class="hs" id="heatsim" data-state="none" aria-labelledby="hs-heading">
-  <div class="hs-wrap reveal">
-    <div class="hs-head">
-      <div class="eyebrow-dark">Interactive Demo</div>
-      <h2 id="hs-heading">Watch the film reject UV rays</h2>
-    </div>
-
-    <div class="hs-seg" role="group" aria-label="Window film selection">
-      <!-- standalone: no film -->
-      <button class="hs-seg__btn hs-seg__solo is-active" type="button" id="hs-tab-none"
-              aria-pressed="true" aria-controls="hs-stage-region" data-state="none">Without Film</button>
-
-      <!-- three series tabs; variant buttons are generated from FILM_DATA -->
-      <div class="hs-seg__series" role="tablist" aria-label="Film series">
-        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
-                id="hs-series-uv99" data-series="uv99"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="0">UV99 Series</button>
-        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
-                id="hs-series-pro" data-series="pro"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">UV99 Pro Series</button>
-        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
-                id="hs-series-premium" data-series="premium"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="-1">Premium Series</button>
-      </div>
-
-      <!-- revealed variants for the active series only -->
-      <div class="hs-seg__variants" id="hs-variants" role="group" aria-label="Series variants"></div>
-    </div>
-
-    <div class="hs-grid">
-      <div class="hs-stage-card" id="hs-stage-region" role="region" aria-label="Film effect visualisation" aria-live="polite" tabindex="0">
-        <div class="hs-stage" data-state="none" role="img" aria-label="Cabin heat visualisation">
-          <img class="hs-photo" src="/assets/images/hero/123.webp" alt="" width="1400" height="788" loading="lazy" decoding="async">
-          <svg class="hs-fx" viewBox="0 0 1690 931" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <radialGradient id="hs-glow-grad" cx="0.5" cy="0.5" r="0.5">
-                <stop offset="0" stop-color="#FFC978" stop-opacity="0.5"/><stop offset="100%" stop-color="#FFC978" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="hs-ray-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#FFE1A0" stop-opacity="0"/><stop offset="35%" stop-color="#FFC061" stop-opacity="0.95"/><stop offset="100%" stop-color="#FF7A3C" stop-opacity="0.12"/>
-              </linearGradient>
-              <linearGradient id="hs-ray-violet" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#E7A8FF" stop-opacity="0"/><stop offset="40%" stop-color="#C86BFF" stop-opacity="0.9"/><stop offset="100%" stop-color="#7A3CFF" stop-opacity="0.1"/>
-              </linearGradient>
-              <!-- Windshield mask: one 4-sided perspective path, held safely
-                   inside the glass (clears roof, hood, A-pillars, mirror,
-                   doors and painted body). Shared by every film option and,
-                   because it lives in this viewBox, it scales with the photo. -->
-              <path id="hs-windshield"
-                    d="M245,590 Q352,486 552,334 Q780,316 990,362 L1084,546 Q652,622 245,590 Z"/>
-
-              <!-- Everything the film wipe touches is intersected with this
-                   glass shape, so nothing can ever paint on the car body. -->
-              <clipPath id="hs-glass-clip"><use href="#hs-windshield"/></clipPath>
-
-              <!-- Two sweeping bands. The OUTGOING film is clipped by
-                   #hs-wipe-cur (slides off to the right); the INCOMING film
-                   is clipped by #hs-wipe-next (slides in from the left).
-                   They stay perfectly complementary, so the boundary reads
-                   as a single coating front moving across the glass. -->
-              <clipPath id="hs-wipe-cur" clipPathUnits="userSpaceOnUse">
-                <rect class="hs-wipe-cur__r" x="0" y="0" width="1690" height="931"/>
-              </clipPath>
-              <clipPath id="hs-wipe-next" clipPathUnits="userSpaceOnUse">
-                <rect class="hs-wipe-next__r" x="0" y="0" width="1690" height="931"/>
-              </clipPath>
-
-              <linearGradient id="hs-seam-grad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-                <stop offset="0.5" stop-color="#fff" stop-opacity="1"/>
-                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-
-            <!-- sun glow, aligned to the photo's sun -->
-            <circle class="hs-glow" cx="120" cy="90" r="150" fill="url(#hs-glow-grad)"/>
-
-            <!-- Film overlay. Clipped to the glass shape as a whole, then the
-                 two tint layers are each clipped again by a sweeping band so a
-                 switch plays a fast surface wipe: old film off -> seam -> new
-                 film on. Nothing here can reach the car body or its paint. -->
-            <g class="hs-film-layer" clip-path="url(#hs-glass-clip)">
-              <use class="hs-film-cur"  href="#hs-windshield" clip-path="url(#hs-wipe-cur)"/>
-              <use class="hs-film-next" href="#hs-windshield" clip-path="url(#hs-wipe-next)"/>
-              <use class="hs-film-edge" href="#hs-windshield"/>
-              <rect class="hs-film-seam" x="0" y="0" width="42" height="931" fill="url(#hs-seam-grad)"/>
-            </g>
-
-            <!-- heat shimmer along the base of the glass / hood -->
-            <g class="hs-shimmer" fill="none" stroke-linecap="round">
-              <path d="M210,690 q40,-20 80,0 t80,0 t80,0 t80,0 t80,0 t80,0 t80,0 t80,0" stroke="rgba(255,150,90,0.55)" stroke-width="6"/>
-              <path d="M240,660 q40,-20 80,0 t80,0 t80,0 t80,0 t80,0 t80,0 t80,0" stroke="rgba(255,120,70,0.4)" stroke-width="5"/>
-              <path d="M280,632 q40,-18 80,0 t80,0 t80,0 t80,0 t80,0 t80,0" stroke="rgba(255,185,120,0.3)" stroke-width="4"/>
-            </g>
-
-            <!-- heat particles inside the cabin (populated by script) -->
-            <g id="hs-particles"></g>
-
-            <!-- animated sunlight rays (populated by script) -->
-            <g id="hs-rays" transform="translate(110 70)"></g>
-          </svg>
-
-          <!-- ===== UV radiation → window impact → rejection overlay ===== -->
-          <canvas class="uvp-canvas" aria-hidden="true"></canvas>
-          <div class="uvp-badge" aria-hidden="true">
-            <div class="uvp-badge__row">
-              <span class="uvp-dot"></span>
-              <span class="uvp-badge__title">UV99 Protection</span>
-            </div>
-            <div class="uvp-badge__big">99% UV Rejection</div>
-            <div class="uvp-badge__ind"><span class="uvp-ind__txt">UV Rays &rarr; Rejected</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hs-panel">
-        <div class="hs-cabin-read">
-          <div class="hs-cabin-label">Cabin temperature</div>
-          <div class="hs-cabin-temp"><span data-out="cabin">62</span><span class="deg">&deg;C</span></div>
-        </div>
-        <span class="hs-mood" data-out="mood" data-state="none">Extremely hot</span>
-        <div class="hs-divider"></div>
-        <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">Exterior temperature</span><span class="hs-stat__val"><span data-out="exterior">48</span>&deg;C</span></div>
-        </div>
-        <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">Heat rejected</span><span class="hs-stat__val"><span data-out="heat">0</span>%</span></div>
-          <div class="hs-bar"><div class="hs-bar__fill" data-bar="heat"></div></div>
-        </div>
-        <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">UV blocked</span><span class="hs-stat__val"><span data-out="uv">0</span>%</span></div>
-          <div class="hs-bar"><div class="hs-bar__fill" data-bar="uv"></div></div>
-        </div>
-        <div class="hs-stat" data-stat="infrared" hidden>
-          <div class="hs-stat__top"><span class="hs-stat__name">Infrared rejected <em class="hs-stat__badge">UV99 +1</em></span><span class="hs-stat__val"><span data-out="infrared">0</span>%</span></div>
-          <div class="hs-bar"><div class="hs-bar__fill is-cyan" data-bar="infrared"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <p class="hs-live" role="status" aria-live="polite"></p>
-  </div>
-</section>
 
 <!-- ================= PRODUCT CUTOUT ================= -->
 <section class="section" style="padding-top:0">
@@ -2290,7 +1999,6 @@
       <span class="l"><span class="w" style="--d:.40s"><span>some</span></span> <span class="w accent" style="--d:.48s"><span>rays.</span></span></span>
     </h2>
     <p>DM us your car model or glass size — we'll tell you exactly which series fits and point you to your nearest installer.</p>
-    <a class="handle-btn" href="https://instagram.com/uv99.in" target="_blank" rel="noopener">@uv99.in <span class="ar">→</span></a>
   </div>
 </section>
 
@@ -2300,54 +2008,8 @@
 </footer>
 
 
-<script>
-/* ============================================================================
-   UV99 QR — language selector + first-visit geolocation redirect.
-   Self-contained in this file. English (/QR/) is the universal fallback:
-   any unmapped state / country / URL / GPS failure resolves to English.
-   Supported regional pages: /QR/hindi /QR/kannada /QR/odia /QR/telugu
-                             /QR/tamil /QR/malayalam
-   ============================================================================ */
-(function () {
-  'use strict';
-  var LANG  = 'en';
-  var ORDER = ['en', 'hindi', 'kannada', 'odia', 'telugu', 'tamil', 'malayalam'];
-  var NAMES = { en:'English', hindi:'हिंदी', kannada:'ಕನ್ನಡ', odia:'ଓଡ଼ିଆ',
-                telugu:'తెలుగు', tamil:'தமிழ்', malayalam:'മലയാളം' };
-  var URLS  = { en:'/QR/', hindi:'/QR/hindi', kannada:'/QR/kannada', odia:'/QR/odia',
-                telugu:'/QR/telugu', tamil:'/QR/tamil', malayalam:'/QR/malayalam' };
-  var LANG_LABEL = "Language";
-  var LOC_LABEL  = "Detected Location";
-
-  var wrap = document.createElement('div');
-  wrap.className = 'qr-lang';
-
-  /* Manual language <select> removed — a page is reached only by its own QR
-     code or by the GPS auto-redirect below. The detected-location pill stays. */
-
-  var loc = document.createElement('div');
-  loc.className = 'qr-loc';
-  loc.innerHTML = '<span class="qr-loc__dot" aria-hidden="true"></span><span class="qr-loc__txt"></span>';
-
-  wrap.appendChild(loc);
-  (document.body || document.documentElement).appendChild(wrap);
-
-  /* ---- detected-location pill ----
-     Location detection + the language redirect now run in the <head> script
-     (so the correct regional page paints first, with no English flash on
-     mobile). All that's left here is to surface the detected Indian state in
-     the corner pill, when the <head> pass stored one this session. */
-  function showLoc(s){
-    if (!s) return;
-    loc.querySelector('.qr-loc__txt').textContent = LOC_LABEL + ': ' + s;
-    loc.classList.add('is-visible');
-  }
-  try {
-    var st = sessionStorage.getItem('uv99_qr_state');
-    if (st) showLoc(st);
-  } catch (e) {}
-})();
-</script>
+<!-- Language control + detected-location pill are rendered by
+     assets/js/qr-i18n.js (loaded in <head>). -->
 
 <script>
   // Tab switching
