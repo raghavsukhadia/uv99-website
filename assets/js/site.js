@@ -114,10 +114,10 @@
 
     /* Film data — names and descriptions reused verbatim from the product copy. */
     const films = [
-      { id: '70',    name: 'UV99 70',   image: DIR + 'simulator-uv99-70.webp',       description: 'Near-clear appearance · 70% visible light · 30% heat rejection' },
-      { id: '50',    name: 'UV99 50',   image: DIR + 'simulator-uv99-50.webp',       description: 'Balanced tint · 47% visible light · 35% heat rejection' },
-      { id: 'pro70', name: 'UV PRO 70', image: DIR + 'simulator-uv-pro-70.webp',     description: 'Near-clear, cooler tone · 70% visible light · 42% heat rejection' },
-      { id: 'pro50', name: 'UV PRO 50', image: DIR + 'simulator-uv-pro-50.webp',     description: 'Comfort tint · 51% visible light · 50% heat rejection' },
+      { id: '70',    name: 'UV99 70',   image: DIR + 'simulator-uv99-70.webp',       description: 'Near-clear appearance · 70% visible light · 99% UV rejection' },
+      { id: '50',    name: 'UV99 50',   image: DIR + 'simulator-uv99-50.webp',       description: 'Balanced tint · 47% visible light · 99% UV rejection' },
+      { id: 'pro70', name: 'UV PRO 70', image: DIR + 'simulator-uv-pro-70.webp',     description: 'Near-clear tone · 70% visible light · 99% UV rejection' },
+      { id: 'pro50', name: 'UV PRO 50', image: DIR + 'simulator-uv-pro-50.webp',     description: 'Balanced tint · 51% visible light · 99% UV rejection' },
       { id: 'plus',  name: 'UV99 +1',   image: DIR + 'simulator-uv99-plus-one.webp', description: 'Premium clear appearance · 70% visible light · 54% heat rejection' }
     ];
     const byId = Object.fromEntries(films.map((f) => [f.id, f]));

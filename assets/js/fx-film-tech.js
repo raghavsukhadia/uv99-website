@@ -31,11 +31,11 @@
        ir   = infrared rejection %           (omit if not published;
                                               its spec row + tile then hide) */
     films: {
-      film70: { label: '70',     vlt: 70, uv: 99,  heat: 30,         accent: '#8f4a9e', tag: 'Maximum clarity',         blurb: 'Clear protection that keeps the character of your factory glass.' },
-      film50: { label: '-50',    vlt: 47, uv: 99,  heat: 35,         accent: '#8f4a9e', tag: 'Balanced protection',     blurb: 'More glare control while everyday visibility stays easy.' },
-      pro70:  { label: 'PRO 70', vlt: 70, uv: 99,  heat: 42,         accent: '#d84f9a', tag: 'Clear heat comfort',      blurb: 'A clear appearance with meaningful heat relief for hot, bright drives.' },
-      pro50:  { label: 'PRO 50', vlt: 51, uv: 99,  heat: 50,         accent: '#d84f9a', tag: 'Comfort + glare control', blurb: 'A cooler, calmer cabin with balanced daylight visibility.' },
-      plus1:  { label: '+1',     vlt: 70, uv: 100, heat: 54, ir: 89, accent: '#e69418', tag: 'Advanced protection',     blurb: 'Full-band UV protection with the strongest cooling in the range.' }
+      film70: { label: '70',     vlt: 70, uv: 99,  heat: 0,          accent: '#8f4a9e', tag: 'Maximum clarity',         blurb: 'Clear protection that keeps the character of your factory glass.' },
+      film50: { label: '-50',    vlt: 47, uv: 99,  heat: 0,          accent: '#8f4a9e', tag: 'Balanced protection',     blurb: 'More glare control while everyday visibility stays easy.' },
+      pro70:  { label: 'PRO 70', vlt: 70, uv: 99,  heat: 0,          accent: '#d84f9a', tag: 'Clear protection',        blurb: 'A clear appearance with strong UV protection for bright drives.' },
+      pro50:  { label: 'PRO 50', vlt: 51, uv: 99,  heat: 0,          accent: '#d84f9a', tag: 'Glare control',           blurb: 'Balanced daylight visibility with strong glare control.' },
+      plus1:  { label: '+1',     vlt: 70, uv: 100, heat: 54, ir: 89, accent: '#e69418', tag: 'Advanced protection',     blurb: 'Full-band UV protection with the strongest heat rejection in the range.' }
     }
   };
 

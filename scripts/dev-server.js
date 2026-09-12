@@ -113,9 +113,11 @@ const server = http.createServer((req, res) => {
   let file = resolveFile(rewritten);
 
   // bare "/name" with no extension -> try "/name.html" (matches Vercel's
-  // clean-URL behaviour for the top-level pages)
+  // clean-URL behaviour for the top-level pages), re-running it through the
+  // rewrites so e.g. /films -> /films.html -> /pages/films.html
   if (!file && !path.extname(rewritten)) {
-    file = resolveFile(rewritten + ".html");
+    const withExt = rewritten + ".html";
+    file = resolveFile(applyRewrites(withExt)) || resolveFile(withExt);
   }
 
   if (!file) {

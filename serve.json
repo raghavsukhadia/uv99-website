@@ -3,13 +3,47 @@
   "trailingSlash": false,
   "directoryListing": false,
   "rewrites": [
-    { "source": "/uv99+1/QR", "destination": "/pages/uv99-plus-one-qr.html" },
-    { "source": "/uv99+1/QR/", "destination": "/pages/uv99-plus-one-qr.html" },
+    { "source": "/uv99-plus-one-qr.html", "destination": "/pages/uv99-plus-one-qr.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr.html" },
     { "source": "/uv99+1/qr", "destination": "/pages/uv99-plus-one-qr.html" },
     { "source": "/uv99+1/qr/", "destination": "/pages/uv99-plus-one-qr.html" },
-    { "source": "/uv99+1/:qr([Qq][Rr])/:lang(hindi|marathi|kannada|odia|telugu|tamil|malayalam)", "destination": "/pages/uv99-plus-one-qr.html" },
-    { "source": "/uv99+1/:qr([Qq][Rr])/:lang(hindi|marathi|kannada|odia|telugu|tamil|malayalam)/", "destination": "/pages/uv99-plus-one-qr.html" },
-    { "source": "/uv99-plus-one-qr.html", "destination": "/pages/uv99-plus-one-qr.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Hh][Ii][Nn][Dd][Ii])", "destination": "/pages/uv99-plus-one-qr-hindi.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Hh][Ii][Nn][Dd][Ii])/", "destination": "/pages/uv99-plus-one-qr-hindi.html" },
+    { "source": "/uv99+1/:lang([Hh][Ii][Nn][Dd][Ii])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr-hindi.html" },
+    { "source": "/uv99+1/:lang([Hh][Ii][Nn][Dd][Ii])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr-hindi.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Kk][Aa][Nn][Nn][Aa][Dd][Aa])", "destination": "/pages/uv99-plus-one-qr-kannada.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Kk][Aa][Nn][Nn][Aa][Dd][Aa])/", "destination": "/pages/uv99-plus-one-qr-kannada.html" },
+    { "source": "/uv99+1/:lang([Kk][Aa][Nn][Nn][Aa][Dd][Aa])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr-kannada.html" },
+    { "source": "/uv99+1/:lang([Kk][Aa][Nn][Nn][Aa][Dd][Aa])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr-kannada.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Oo][Dd][Ii][Aa])", "destination": "/pages/uv99-plus-one-qr-odia.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Oo][Dd][Ii][Aa])/", "destination": "/pages/uv99-plus-one-qr-odia.html" },
+    { "source": "/uv99+1/:lang([Oo][Dd][Ii][Aa])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr-odia.html" },
+    { "source": "/uv99+1/:lang([Oo][Dd][Ii][Aa])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr-odia.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Tt][Ee][Ll][Uu][Gg][Uu])", "destination": "/pages/uv99-plus-one-qr-telugu.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Tt][Ee][Ll][Uu][Gg][Uu])/", "destination": "/pages/uv99-plus-one-qr-telugu.html" },
+    { "source": "/uv99+1/:lang([Tt][Ee][Ll][Uu][Gg][Uu])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr-telugu.html" },
+    { "source": "/uv99+1/:lang([Tt][Ee][Ll][Uu][Gg][Uu])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr-telugu.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Tt][Aa][Mm][Ii][Ll])", "destination": "/pages/uv99-plus-one-qr-tamil.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Tt][Aa][Mm][Ii][Ll])/", "destination": "/pages/uv99-plus-one-qr-tamil.html" },
+    { "source": "/uv99+1/:lang([Tt][Aa][Mm][Ii][Ll])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr-tamil.html" },
+    { "source": "/uv99+1/:lang([Tt][Aa][Mm][Ii][Ll])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr-tamil.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Mm][Aa][Ll][Aa][Yy][Aa][Ll][Aa][Mm])", "destination": "/pages/uv99-plus-one-qr-malayalam.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Mm][Aa][Ll][Aa][Yy][Aa][Ll][Aa][Mm])/", "destination": "/pages/uv99-plus-one-qr-malayalam.html" },
+    { "source": "/uv99+1/:lang([Mm][Aa][Ll][Aa][Yy][Aa][Ll][Aa][Mm])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr-malayalam.html" },
+    { "source": "/uv99+1/:lang([Mm][Aa][Ll][Aa][Yy][Aa][Ll][Aa][Mm])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr-malayalam.html" },
+
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Mm][Aa][Rr][Aa][Tt][Hh][Ii])", "destination": "/pages/uv99-plus-one-qr.html" },
+    { "source": "/uv99+1/:qr([Qq][Rr])/:lang([Mm][Aa][Rr][Aa][Tt][Hh][Ii])/", "destination": "/pages/uv99-plus-one-qr.html" },
+    { "source": "/uv99+1/:lang([Mm][Aa][Rr][Aa][Tt][Hh][Ii])/:qr([Qq][Rr])", "destination": "/pages/uv99-plus-one-qr.html" },
+    { "source": "/uv99+1/:lang([Mm][Aa][Rr][Aa][Tt][Hh][Ii])/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr.html" },
+
     { "source": "/QR", "destination": "/pages/qr.html" },
     { "source": "/QR/", "destination": "/pages/qr.html" },
     { "source": "/qr", "destination": "/pages/qr.html" },

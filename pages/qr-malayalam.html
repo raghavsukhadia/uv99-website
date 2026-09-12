@@ -52,8 +52,12 @@
     font-size:10px; letter-spacing:0.06em; text-transform:uppercase; line-height:1.2;
     -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
     box-shadow:0 10px 30px -12px rgba(0,0,0,0.6);
+    opacity:0; transform:translateY(-6px);
+    transition:opacity .32s ease, transform .32s ease, display .32s allow-discrete;
   }
-  .qr-loc.is-visible{ display:inline-flex; }
+  .qr-loc.is-visible{ display:inline-flex; opacity:1; transform:translateY(0); }
+  @starting-style{ .qr-loc.is-visible{ opacity:0; transform:translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce){ .qr-loc{ transition:none; transform:none; } }
   .qr-loc__dot{
     width:5px; height:5px; border-radius:50%; flex:none;
     background:var(--violet-glow); box-shadow:0 0 8px 1px var(--violet-glow);
@@ -1912,8 +1916,8 @@
             <div class="specbar-track"><div class="specbar-fill" style="width:89%"></div></div>
           </div>
           <div class="specbar-row">
-            <div class="specbar-top"><span class="specbar-name">ചൂട് കുറയ്ക്കൽ</span><span class="specbar-val mono">42%</span></div>
-            <div class="specbar-track"><div class="specbar-fill" style="width:42%"></div></div>
+            <div class="specbar-top"><span class="specbar-name">ചൂട് കുറയ്ക്കൽ</span><span class="specbar-val mono">54%</span></div>
+            <div class="specbar-track"><div class="specbar-fill" style="width:54%"></div></div>
           </div>
         </div>
       </div>
@@ -2235,27 +2239,27 @@
       series: [
         { id:'uv99', label:'UV99 സീരീസ്', variants:[
           { key:'uv50', label:'UV99 50',
-            exterior:48, cabin:43, heatRejected:55, uvBlocked:99,
+            exterior:48, cabin:43, heatRejected:null, uvBlocked:99,
             cabinState:'സൗകര്യപ്രദം', raysIn:4, raysReflected:6, particles:5,
             film:{ tint:'#3a2550', op:0.07, edge:'#c86bff', edgeOp:0.22 } },
           { key:'uv70', label:'UV99 70',
-            exterior:48, cabin:36, heatRejected:70, uvBlocked:99,
+            exterior:48, cabin:36, heatRejected:null, uvBlocked:99,
             cabinState:'ശ്രദ്ധേയമായി തണുപ്പ്', raysIn:2, raysReflected:9, particles:0,
             film:{ tint:'#3d2856', op:0.05, edge:'#cf7bff', edgeOp:0.20 } }
         ]},
         { id:'pro', label:'UV99 പ്രോ സീരീസ്', variants:[
           { key:'pro50', label:'UV99 Pro 50',
-            exterior:48, cabin:34, heatRejected:80, uvBlocked:99,
+            exterior:48, cabin:34, heatRejected:null, uvBlocked:99,
             cabinState:'തണുപ്പും സൗകര്യപ്രദവും', raysIn:2, raysReflected:10, particles:0,
             film:{ tint:'#33224d', op:0.08, edge:'#b98bff', edgeOp:0.24 } },
           { key:'pro70', label:'UV99 Pro 70',
-            exterior:48, cabin:32, heatRejected:88, uvBlocked:99,
+            exterior:48, cabin:32, heatRejected:null, uvBlocked:99,
             cabinState:'ഏറ്റവും തണുത്ത ക്യാബിൻ', raysIn:1, raysReflected:11, particles:0,
             film:{ tint:'#362552', op:0.055, edge:'#c29bff', edgeOp:0.20 } }
         ]},
         { id:'premium', label:'പ്രീമിയം സീരീസ്', variants:[
           { key:'uvp1', label:'UV99 +1',
-            exterior:48, cabin:30, heatRejected:93, uvBlocked:99, infrared:89,
+            exterior:48, cabin:30, heatRejected:54, uvBlocked:99, infrared:89,
             cabinState:'പരമാവധി സൗകര്യം', raysIn:1, raysReflected:11, particles:0,
             film:{ tint:'#2e2150', op:0.07, edge:'#c6a0ff', edgeOp:0.24 } }
         ]}

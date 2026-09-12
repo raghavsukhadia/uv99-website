@@ -54,8 +54,12 @@
     font-size:10px; letter-spacing:0.06em; text-transform:uppercase; line-height:1.2;
     -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
     box-shadow:0 10px 30px -12px rgba(0,0,0,0.6);
+    opacity:0; transform:translateY(-6px);
+    transition:opacity .32s ease, transform .32s ease, display .32s allow-discrete;
   }
-  .qr-loc.is-visible{ display:inline-flex; }
+  .qr-loc.is-visible{ display:inline-flex; opacity:1; transform:translateY(0); }
+  @starting-style{ .qr-loc.is-visible{ opacity:0; transform:translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce){ .qr-loc{ transition:none; transform:none; } }
   .qr-loc__dot{
     width:5px; height:5px; border-radius:50%; flex:none;
     background:var(--violet-glow); box-shadow:0 0 8px 1px var(--violet-glow);
@@ -74,13 +78,18 @@
     --violet:#9B2BAE;
     --violet-deep:#3E0F49;
     --violet-glow:#E14FFF;
-    --paper:#F8F4FA;
-    --paper-2:#F0E9F3;
-    --ink:#160F1C;
-    --ink-soft:#6E6479;
-    --line:rgba(155,43,174,0.16);
-    --line-strong:rgba(155,43,174,0.32);
+    --paper:#0B0710;
+    --paper-2:#170D22;
+    --ink:#F8F4FA;
+    --ink-soft:rgba(248,244,250,0.62);
+    --line:rgba(225,79,255,0.18);
+    --line-strong:rgba(225,79,255,0.34);
+    --card-a:rgba(255,255,255,0.055);
+    --card-b:rgba(255,255,255,0.015);
     --uv:#FF3D5A;
+    --gold:#E8C77E;
+    --gold-soft:#F4E2B8;
+    --gold-deep:#9C7A38;
     --safe-top:env(safe-area-inset-top,0px);
     --safe-bottom:env(safe-area-inset-bottom,0px);
   }
@@ -277,7 +286,7 @@
       background-image:url('/assets/images/hero/mobileviewhero.webp');
       background-position:center bottom;
       background-size:cover;
-      background-color:#fff;
+      background-color:var(--void);
       /* the source photo is sharp — cover-scaling on high-DPR phones softens
          it slightly, so nudge contrast/saturation back up to restore the
          perceived clarity */
@@ -349,7 +358,7 @@
     border:1px solid var(--line-strong);
     border-radius:14px;
     padding:24px;
-    background:linear-gradient(160deg, #fff, var(--paper-2));
+    background:linear-gradient(160deg, var(--card-a), var(--card-b)), var(--paper-2);
     overflow:hidden;
   }
   .fade-strip{display:flex;align-items:flex-end;gap:6px;height:70px;margin-bottom:14px;}
@@ -374,8 +383,14 @@
     overflow:hidden;
     overflow-anchor:none;          /* this dynamic wrapper must never become a scroll anchor */
     background:var(--void);
-    /* thin frame + a soft, wide purple glow — never opaque enough to fight the player itself */
-    box-shadow:0 0 0 1px var(--line), 0 18px 50px -20px rgba(155,43,174,0.35), 0 0 60px -18px rgba(225,79,255,0.22);
+    /* premium two-tone frame: a fine gold hairline inside a soft violet glow —
+       never opaque enough to fight the player itself */
+    box-shadow:
+      0 0 0 1px rgba(232,185,35,0.28),
+      0 0 0 2px rgba(11,7,16,0.9),
+      0 0 0 3px var(--line),
+      0 22px 54px -22px rgba(155,43,174,0.4),
+      0 0 70px -20px rgba(225,79,255,0.24);
   }
   /* premium variant: warm gold glow for the flagship UV99+1 video */
   .video-wrapper--gold{
@@ -401,21 +416,30 @@
     object-fit:cover; object-position:center; border:0;
   }
   .video-wrapper .ytfacade__play{
-    position:absolute; left:50%; top:50%; width:74px; height:52px;
-    margin:-26px 0 0 -37px; border-radius:14px;
-    background:rgba(18,10,26,.72); border:1px solid rgba(255,255,255,.28);
+    position:absolute; left:50%; top:50%; width:68px; height:68px;
+    margin:-34px 0 0 -34px; border-radius:50%;
+    background:
+      radial-gradient(120% 120% at 30% 20%, rgba(232,185,35,0.22), transparent 60%),
+      rgba(18,10,26,.78);
+    border:1px solid rgba(232,185,35,0.4);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06) inset, 0 10px 30px -10px rgba(0,0,0,0.6), 0 0 26px -6px rgba(232,185,35,0.4);
     -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
-    transition:background .2s ease, transform .2s ease;
+    transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
   }
   .video-wrapper .ytfacade__play::after{
     content:""; position:absolute; left:50%; top:50%;
-    margin:-10px 0 0 -6px; width:0; height:0;
-    border-style:solid; border-width:10px 0 10px 17px;
+    margin:-9px 0 0 -6px; width:0; height:0;
+    border-style:solid; border-width:9px 0 9px 15px;
     border-color:transparent transparent transparent #fff;
   }
   .video-wrapper .ytfacade:hover .ytfacade__play,
-  .video-wrapper .ytfacade:focus-visible .ytfacade__play{ background:#E14FFF; transform:scale(1.06); }
-  .video-wrapper--gold .ytfacade:hover .ytfacade__play{ background:#E8B923; }
+  .video-wrapper .ytfacade:focus-visible .ytfacade__play{
+    background:radial-gradient(120% 120% at 30% 20%, rgba(232,185,35,0.35), transparent 60%), #E14FFF;
+    border-color:rgba(232,185,35,0.65);
+    transform:scale(1.06);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.1) inset, 0 12px 34px -10px rgba(0,0,0,0.65), 0 0 40px -6px rgba(232,185,35,0.6);
+  }
+  .video-wrapper--gold .ytfacade:hover .ytfacade__play{ background:radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.3), transparent 60%), #E8B923; }
   .video-points{
     list-style:none;margin:22px 0 4px;padding:0;
     display:grid;gap:12px;
@@ -536,35 +560,62 @@
   .uvb-gold{
     position:relative;
     display:inline-block;white-space:nowrap;
-    background:linear-gradient(90deg,#B8860B 0%,#E8B923 35%,#FFE9A8 50%,#E8B923 65%,#B8860B 100%);
-    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#E8B923;
-    text-shadow:0 0 12px rgba(232,185,35,0.35);
+    color:#E8B923;
+  }
+  /* modifier for longer phrases (e.g. the hero's "Premium Series.") that
+     need to wrap naturally instead of forcing one unbroken line */
+  .uvb-gold--wrap{ white-space:normal; }
+  /* the visible letters — a warm champagne-gold metallic gradient, always
+     shown at full legibility even before the animation runs */
+  .uvb-gold__text{
+    position:relative;z-index:2;display:inline-block;
+    background:linear-gradient(90deg,#8a6512 0%,#C99A2E 30%,#F3D998 50%,#C99A2E 70%,#8a6512 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    text-shadow:0 0 10px rgba(201,154,46,0.3);
   }
 
-  /* -- "premium" reveal: a glowing line wipes left→right, unmasking the
-     word, then a soft gold-white shine travels up through the letters.
-     Both children are position:absolute so they never affect layout / add
-     CLS — the word's own box size is unchanged throughout.
+  /* -- "premium" reveal: letters fade up into place, a glowing line then
+     sweeps left→right across them, a soft shine travels through the
+     letterforms, and a blurred duplicate of the word blooms briefly behind
+     them before settling to a quiet, permanent shine. All overlay layers
+     are position:absolute so none of this ever affects layout / adds CLS.
      No hidden-by-default state here on purpose: the word stays fully
-     visible via .uvb-gold's normal styling unless/until the script below
-     confirms GSAP + ScrollTrigger loaded and explicitly masks it right
-     before animating — so a blocked CDN or disabled JS never leaves
-     "premium" invisible. -- */
+     visible via .uvb-gold__text's normal styling unless/until the script
+     below confirms GSAP + ScrollTrigger loaded and explicitly hides the
+     letters right before animating — so a blocked CDN or disabled JS never
+     leaves "premium" invisible. -- */
   .uvb-gold__wipe{
-    position:absolute;top:-0.12em;bottom:-0.12em;left:0;width:2px;
+    position:absolute;top:-0.12em;bottom:-0.12em;left:0;width:2px;z-index:3;
     background:linear-gradient(180deg, transparent, #fff 35%, #FFE9A8 55%, #fff 70%, transparent);
     box-shadow:0 0 10px 2px rgba(255,233,168,0.85), 0 0 24px 6px rgba(255,255,255,0.45);
     opacity:0;pointer-events:none;
   }
   .uvb-gold__shine{
-    position:absolute;inset:0;
+    position:absolute;inset:0;z-index:3;
     background:linear-gradient(180deg, transparent 32%, rgba(255,250,230,0.95) 50%, transparent 68%);
     background-size:100% 260%;background-position:0 140%;background-repeat:no-repeat;
     -webkit-background-clip:text;background-clip:text;color:transparent;
     opacity:0;pointer-events:none;
   }
+  /* soft blurred duplicate of the word, used purely for the brief golden
+     bloom late in the animation — never sharp, never neon */
+  .uvb-gold__glow{
+    position:absolute;inset:0;z-index:1;
+    background:linear-gradient(90deg,#B8860B,#FFE9A8,#B8860B);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:blur(9px);
+    opacity:0;pointer-events:none;
+  }
+  /* tiny champagne sparkles that twinkle around the letters as the glow
+     settles — deliberately sparse and dim, never a particle-effect look */
+  .uvb-gold__sparkles{ position:absolute;inset:-6px;z-index:3;pointer-events:none; }
+  .uvb-gold__spark{
+    position:absolute;width:3px;height:3px;border-radius:50%;
+    background:#FFE9A8;box-shadow:0 0 6px 1px rgba(255,233,168,0.8);
+    opacity:0;
+  }
   @media (prefers-reduced-motion: reduce){
-    .uvb-gold__wipe,.uvb-gold__shine{ display:none; }
+    .uvb-gold__wipe,.uvb-gold__shine,.uvb-gold__glow,.uvb-gold__sparkles{ display:none; }
   }
   .uvb-heading__bar{
     display:block;width:38px;height:3px;margin:2px 0 0;border-radius:999px;
@@ -635,7 +686,7 @@
     display:flex;flex-direction:column;
     min-height:0;                 /* never forced tall — content decides height */
     padding:20px 18px;
-    background:linear-gradient(180deg, #fff, var(--paper-2));
+    background:linear-gradient(180deg, var(--card-a), var(--card-b)), var(--paper-2);
     border:1px solid var(--line);
     border-left:3px solid var(--violet);
     border-radius:20px;
@@ -721,6 +772,73 @@
     transition:transform .35s cubic-bezier(.16,1,.3,1), background .35s ease;
   }
   .uvb-card__arrow svg{ width:16px;height:16px; }
+
+  /* -- UV99+1-only: premium dark-glass treatment for the icon/title cards
+     ("Eye Strain" / "Tanning" / ...), so the very first section already
+     reads as flagship instead of the plain white cards used on /QR. Same
+     gold-on-dark language as .uvb-card--premium above, kept as its own
+     modifier since these cards show an icon + title, not a label + stat. -- */
+  .uvb-card--premium-icon{
+    overflow:hidden;
+    padding:26px 20px 22px;
+    border-radius:22px;
+    background:
+      radial-gradient(120% 90% at 20% 0%, rgba(225,79,255,0.22), transparent 55%),
+      linear-gradient(165deg, #1c1029 0%, #0b0710 74%);
+    border:1px solid rgba(232,185,35,0.28);
+    border-left:3px solid var(--violet-glow);
+    box-shadow:
+      0 20px 46px -26px rgba(155,43,174,0.55),
+      0 0 40px -18px rgba(225,79,255,0.28),
+      0 0 0 1px rgba(232,185,35,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    transition:transform .35s cubic-bezier(.16,1,.3,1), border-color .35s ease, box-shadow .35s ease;
+  }
+  .uvb-card--premium-icon::after{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(120deg, rgba(255,255,255,0.09) 0%, transparent 32%);
+  }
+  /* faint gold index number, top-right — same flagship language as the % cards */
+  .uvb-card--premium-icon .uvb-card__num{
+    position:absolute;top:16px;right:18px;z-index:1;
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:0.05em;color:rgba(232,185,35,0.4);
+  }
+  /* icon sits in a gold-ringed glass badge instead of floating bare */
+  .uvb-card--premium-icon .uvb-card__icon{
+    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    width:52px;height:52px;margin-bottom:16px;font-size:24px;
+    border-radius:16px;
+    background:linear-gradient(155deg, rgba(232,185,35,0.16), rgba(255,255,255,0.03));
+    border:1px solid rgba(232,185,35,0.35);
+    box-shadow:0 0 22px -8px rgba(225,79,255,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .uvb-card--premium-icon .uvb-card__title{
+    position:relative;z-index:1;color:#fff;
+    margin-bottom:6px;
+  }
+  .uvb-card--premium-icon .uvb-card__desc{
+    position:relative;z-index:1;
+    font-size:12.5px;line-height:1.55;color:rgba(255,255,255,0.55);
+  }
+  /* thin gold underline, same visual family as the premium % cards' label rule */
+  .uvb-card--premium-icon .uvb-card__title::after{
+    content:"";display:block;width:22px;height:2px;border-radius:999px;margin-top:8px;
+    background:linear-gradient(90deg,#B8860B,#FFE9A8,#B8860B);
+  }
+  @media (hover:hover){
+    .uvb-card--premium-icon:hover{
+      transform:translateY(-6px);
+      border-color:rgba(232,185,35,0.55);
+      box-shadow:
+        0 26px 54px -24px rgba(155,43,174,0.6),
+        0 0 46px -14px rgba(225,79,255,0.4),
+        0 0 0 1px rgba(232,185,35,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .uvb-card--premium-icon:hover .uvb-card__icon{ transform:scale(1.08); }
+  }
 
   /* -- premium % cards: staggered fade + slide-up as the section reveals -- */
   .uvb-grid--pct .uvb-card{
@@ -894,7 +1012,7 @@
     border:1px solid var(--line);
     border-radius:16px;
     padding:18px 18px;
-    background:linear-gradient(160deg, #fff 60%, var(--paper-2));
+    background:linear-gradient(160deg, var(--card-a) 60%, var(--card-b)), var(--paper-2);
     transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
     position:relative;
     overflow:hidden;
@@ -979,7 +1097,7 @@
     font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;font-weight:600;
     padding:12px 10px;border-radius:3px;
     border:1px solid var(--line-strong);
-    background:#fff;color:var(--ink-soft);
+    background:var(--paper-2);color:var(--ink-soft);
     cursor:pointer;
     transition:background .2s ease, color .2s ease, border-color .2s ease;
   }
@@ -996,7 +1114,7 @@
   .variant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
   @media (max-width:380px){ .variant-grid{grid-template-columns:1fr;} }
   .variant{
-    border:1px solid var(--line-strong);border-radius:10px;padding:16px;background:#fff;
+    border:1px solid var(--line-strong);border-radius:10px;padding:16px;background:var(--paper-2);
   }
   .variant h4{font-family:'Unbounded',sans-serif;font-weight:600;font-size:14px;margin-bottom:14px;}
 
@@ -1008,7 +1126,7 @@
   .specbar-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13.5px;}
   .specbar-track{
     height:6px;border-radius:3px;
-    background:repeating-linear-gradient(90deg, var(--paper-2) 0 3px, #fff 3px 6px);
+    background:repeating-linear-gradient(90deg, var(--paper-2) 0 3px, rgba(255,255,255,0.08) 3px 6px);
     border:1px solid var(--line);
     overflow:hidden;
     position:relative;
@@ -1202,7 +1320,7 @@
     display:flex;flex-direction:column;
     border-radius:16px;overflow:hidden;
     border:1px solid var(--line-strong);
-    background:linear-gradient(120deg,#fff,var(--paper-2));
+    background:linear-gradient(120deg, var(--card-a), var(--card-b)), var(--paper-2);
     box-shadow:0 20px 50px -34px rgba(155,43,174,0.42);
   }
   .cmp-summary > div{
@@ -1265,53 +1383,49 @@
   /* ================= WARRANTY ================= */
   .warranty-band{
     position:relative;overflow:hidden;isolation:isolate;
-    background:var(--void);color:#fff;padding:52px 0;text-align:center;
-    background-image:radial-gradient(ellipse 500px 300px at 50% 0%, rgba(155,43,174,0.35), transparent 70%);
+    background:var(--void);color:#fff;padding:44px 0 40px;text-align:center;
   }
   .warranty-band::before{
-    content:"";position:absolute;inset:-45% -15%;z-index:0;pointer-events:none;
-    background:conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(225,79,255,0.10) 40deg, transparent 110deg, transparent 220deg, rgba(155,43,174,0.08) 260deg, transparent 330deg);
-    opacity:0;transition:opacity .8s ease;
+    content:"";position:absolute;left:50%;top:6%;width:420px;height:420px;margin-left:-210px;z-index:0;pointer-events:none;
+    background:radial-gradient(circle, rgba(155,43,174,0.32), rgba(155,43,174,0.08) 55%, transparent 75%);
+    opacity:0;transition:opacity 1s ease;
   }
-  .warranty-band.in::before{opacity:1;animation:wSpin 22s linear infinite;}
-  @keyframes wSpin{to{transform:rotate(1turn);}}
-
-  .warranty-fx{
-    position:absolute;left:50%;top:40%;width:0;height:0;z-index:0;pointer-events:none;
-  }
-  .warranty-fx i{
-    position:absolute;left:50%;top:50%;width:140px;height:140px;margin:-70px 0 0 -70px;
-    border-radius:50%;border:1px solid rgba(225,79,255,0.45);opacity:0;
-  }
-  .warranty-band.in .warranty-fx i{animation:wRing 3.6s ease-out infinite;}
-  .warranty-band.in .warranty-fx i:nth-child(2){animation-delay:1.2s;}
-  .warranty-band.in .warranty-fx i:nth-child(3){animation-delay:2.4s;}
-  @keyframes wRing{
-    0%{transform:scale(.3);opacity:0;}
-    12%{opacity:.55;}
-    70%{opacity:0;}
-    100%{transform:scale(2.6);opacity:0;}
-  }
+  .warranty-band.in::before{opacity:1;}
 
   .warranty-band .wrap{position:relative;z-index:1;}
-  .wnum{line-height:1;}
+  .wnum{line-height:1;position:relative;display:inline-flex;align-items:center;justify-content:center;}
+  .wnum-ring{
+    position:absolute;left:50%;top:50%;width:118px;height:118px;margin:-59px 0 0 -59px;
+    border-radius:50%;border:1px solid rgba(255,255,255,0.16);pointer-events:none;
+    opacity:0;transform:scale(.85);transition:opacity .8s ease .2s, transform .8s cubic-bezier(.16,1,.3,1) .2s;
+  }
+  .wnum-ring::before{
+    content:"";position:absolute;inset:-1px;border-radius:50%;
+    border:1px solid transparent;
+    background:conic-gradient(from 0deg, transparent 0%, rgba(225,79,255,0.55) 12%, transparent 26%) border-box;
+    -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  .warranty-band.in .wnum-ring{opacity:1;transform:scale(1);animation:wRingSpin 16s linear infinite;}
+  @keyframes wRingSpin{to{transform:scale(1) rotate(1turn);}}
   .wnum-fig{
     display:inline-block;
-    font-family:'Unbounded',sans-serif;font-size:58px;font-weight:800;line-height:1;
-    color:var(--violet-glow);text-shadow:0 0 24px rgba(225,79,255,0.5);
+    font-family:'Unbounded',sans-serif;font-size:52px;font-weight:800;line-height:1;
+    color:#fff;text-shadow:0 0 22px rgba(225,79,255,0.45);
   }
   .warranty-band.in .wnum-fig{
-    animation:wPop .8s cubic-bezier(.2,1.5,.35,1) both, wGlow 2.6s ease-in-out .8s infinite alternate;
+    animation:wPop .8s cubic-bezier(.2,1.5,.35,1) both, wGlow 2.8s ease-in-out .8s infinite alternate;
   }
   @keyframes wPop{from{transform:scale(.4);opacity:0;filter:blur(6px);}to{transform:scale(1);opacity:1;filter:blur(0);}}
   @keyframes wGlow{
-    from{text-shadow:0 0 16px rgba(225,79,255,0.3);}
-    to{text-shadow:0 0 40px rgba(225,79,255,0.75), 0 0 80px rgba(225,79,255,0.22);}
+    from{text-shadow:0 0 14px rgba(225,79,255,0.28);}
+    to{text-shadow:0 0 32px rgba(225,79,255,0.6), 0 0 60px rgba(225,79,255,0.18);}
   }
   .wnum-label{
-    display:block;margin-top:10px;
-    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
-    letter-spacing:0.14em;text-transform:uppercase;color:#fff;
+    display:block;margin-top:12px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
+    letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.72);
   }
   .wnum-label span{display:inline-block;opacity:0;transform:translateY(9px);}
   .warranty-band.in .wnum-label span{
@@ -1320,38 +1434,51 @@
   }
   @keyframes wLetter{to{opacity:1;transform:translateY(0);}}
   .warranty-band p{
-    font-size:13px;color:rgba(255,255,255,0.65);margin:16px auto 0;max-width:320px;
+    font-size:12.5px;color:rgba(255,255,255,0.5);margin:14px auto 0;max-width:300px;
     opacity:0;transform:translateY(12px);
   }
   .warranty-band.in p{animation:wLetter .7s ease forwards .85s;}
 
+  /* thin premium divider between sections */
+  .lux-divider{
+    position:relative;height:1px;max-width:180px;margin:0 auto;
+    background:linear-gradient(90deg,transparent,rgba(232,199,126,0.55),transparent);
+  }
+
   /* ================= CONTACT ================= */
-  .contact-block{position:relative;overflow:hidden;isolation:isolate;padding:60px 0 0;text-align:center;}
-  .contact-fx{
-    position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
-    background:repeating-linear-gradient(118deg, transparent 0 24px, rgba(155,43,174,0.055) 24px 25px);
-    -webkit-mask:linear-gradient(180deg,transparent,#000 28%,#000 62%,transparent);
-            mask:linear-gradient(180deg,transparent,#000 28%,#000 62%,transparent);
-    transition:opacity .8s ease;
+  .contact-block{
+    position:relative;overflow:hidden;isolation:isolate;padding:56px 0 0;text-align:center;
+    background:
+      radial-gradient(ellipse 520px 320px at 50% 0%, rgba(155,43,174,0.14), transparent 70%),
+      var(--void);
   }
-  .contact-block.in .contact-fx{opacity:1;animation:rayShift 9s linear infinite;}
-  @keyframes rayShift{to{background-position:130px 0;}}
-  .contact-cut{
-    position:absolute;left:0;right:0;top:46%;height:1px;z-index:0;pointer-events:none;
-    background:linear-gradient(90deg,transparent,var(--violet-glow),transparent);
-    transform:scaleX(0);opacity:.55;
+  .contact-particles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .contact-particles i{
+    position:absolute;width:2px;height:2px;border-radius:50%;
+    background:rgba(232,199,126,0.55);box-shadow:0 0 6px rgba(232,199,126,0.6);
+    opacity:0;
   }
-  .contact-block.in .contact-cut{animation:cutIn 1s cubic-bezier(.16,1,.3,1) forwards .15s;}
-  @keyframes cutIn{to{transform:scaleX(1);}}
+  .contact-block.in .contact-particles i{animation:floatUp linear infinite;opacity:1;}
+  .contact-particles i:nth-child(1){left:14%;bottom:-10%;animation-duration:12s;animation-delay:.2s;}
+  .contact-particles i:nth-child(2){left:32%;bottom:-10%;animation-duration:15s;animation-delay:2.4s;}
+  .contact-particles i:nth-child(3){left:52%;bottom:-10%;animation-duration:11s;animation-delay:1.1s;}
+  .contact-particles i:nth-child(4){left:68%;bottom:-10%;animation-duration:16s;animation-delay:3.6s;}
+  .contact-particles i:nth-child(5){left:83%;bottom:-10%;animation-duration:13s;animation-delay:.8s;}
+  @keyframes floatUp{
+    0%{transform:translateY(0);opacity:0;}
+    10%{opacity:.7;}
+    90%{opacity:.35;}
+    100%{transform:translateY(-360px);opacity:0;}
+  }
 
   .contact-block .wrap{position:relative;z-index:1;}
   .contact-block .kicker{
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--violet);
-    letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(255,255,255,0.4);
+    letter-spacing:0.2em;text-transform:uppercase;margin-bottom:16px;
     opacity:0;transform:translateY(14px);
   }
   .contact-block.in .kicker{animation:cRise .6s ease forwards .15s;}
-  .contact-block h2{font-size:28px;margin-bottom:16px;}
+  .contact-block h2{font-size:30px;margin-bottom:18px;}
   .rays-head .l{display:block;}
   .rays-head .w{
     display:inline-block;overflow:hidden;vertical-align:bottom;
@@ -1363,62 +1490,73 @@
     animation-delay:var(--d,.24s);
   }
   @keyframes wordUp{to{transform:translateY(0);}}
-  .rays-head .accent > span{color:var(--violet-glow);}
-  .contact-block.in .rays-head .accent > span{
-    animation:wordUp .7s cubic-bezier(.16,1,.3,1) forwards, raysGlow 2.4s ease-in-out 1.3s infinite alternate;
-    animation-delay:var(--d,.48s), 1.3s;
+  .rays-head .accent{
+    position:relative;
+    background:linear-gradient(100deg, var(--gold-deep) 0%, var(--gold-soft) 35%, var(--gold) 50%, var(--gold-soft) 65%, var(--gold-deep) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
   }
-  @keyframes raysGlow{from{text-shadow:0 0 0 transparent;}to{text-shadow:0 0 22px rgba(225,79,255,0.55);}}
+  .contact-block.in .rays-head .accent{
+    animation:goldSweep 6s ease-in-out 1.4s infinite;
+  }
+  .contact-block.in .rays-head .accent > span{
+    animation:wordUp .7s cubic-bezier(.16,1,.3,1) forwards;
+    animation-delay:var(--d,.48s);
+  }
+  @keyframes goldSweep{
+    0%,40%{background-position:100% 0;}
+    70%,100%{background-position:0% 0;}
+  }
   .contact-block p{
-    color:var(--ink-soft);font-size:14px;max-width:340px;margin:0 auto 26px;
+    color:var(--ink-soft);font-size:13.5px;line-height:1.7;max-width:320px;margin:0 auto 28px;
     opacity:0;transform:translateY(14px);
   }
   .contact-block.in p{animation:cRise .6s ease forwards .6s;}
   @keyframes cRise{to{opacity:1;transform:translateY(0);}}
+
   .handle-btn{
     position:relative;overflow:hidden;
     display:inline-flex;align-items:center;gap:10px;
-    border:1px solid var(--line-strong);border-radius:30px;
-    padding:12px 22px;font-family:'Unbounded',sans-serif;font-weight:600;font-size:14px;
+    border:1px solid rgba(232,199,126,0.4);border-radius:4px;background:rgba(255,255,255,0.02);
+    padding:13px 26px;font-family:'Unbounded',sans-serif;font-weight:600;font-size:12.5px;
+    letter-spacing:0.04em;color:var(--gold-soft);
     opacity:0;transform:translateY(14px);
-    transition:border-color .2s ease, background .2s ease, box-shadow .25s ease;
+    transition:border-color .25s ease, background .25s ease, box-shadow .3s ease;
   }
   .contact-block.in .handle-btn{animation:cRise .6s ease forwards .78s;}
   .handle-btn::after{
     content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
-    background:linear-gradient(90deg,transparent,rgba(155,43,174,0.18),transparent);
+    background:linear-gradient(90deg,transparent,rgba(232,199,126,0.14),transparent);
     transform:skewX(-20deg);
   }
-  .contact-block.in .handle-btn::after{animation:sheen 3.6s ease-in-out 2s infinite;}
+  .contact-block.in .handle-btn::after{animation:sheen 4.2s ease-in-out 2.4s infinite;}
   @keyframes sheen{0%{left:-60%;}55%,100%{left:135%;}}
-  .handle-btn:hover{border-color:var(--violet);background:var(--paper-2);box-shadow:0 8px 24px -10px rgba(155,43,174,0.4);}
+  .handle-btn:hover{border-color:rgba(232,199,126,0.75);background:rgba(232,199,126,0.06);box-shadow:0 8px 26px -10px rgba(232,199,126,0.3);}
   .handle-btn .ar{display:inline-block;transition:transform .2s ease;}
   .handle-btn:hover .ar{transform:translateX(4px);}
-  .contact-block.in .handle-btn .ar{animation:arNudge 2.4s ease-in-out 1.6s infinite;}
-  @keyframes arNudge{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
+
+  .contact-foot-space{height:56px;}
 
   @media (prefers-reduced-motion: reduce){
-    .warranty-band::before,.warranty-fx{display:none;}
     .warranty-band.in .wnum-fig,
+    .warranty-band.in .wnum-ring,
     .warranty-band.in .wnum-label span,
     .warranty-band.in p,
-    .contact-block.in .contact-fx,
-    .contact-block.in .contact-cut,
+    .contact-block.in .contact-particles i,
     .contact-block.in .kicker,
     .contact-block.in p,
     .contact-block.in .handle-btn,
     .contact-block.in .handle-btn::after,
-    .contact-block.in .handle-btn .ar,
     .contact-block.in .rays-head .w > span,
-    .contact-block.in .rays-head .accent > span{animation:none;}
-    .wnum-fig,.wnum-label span,.warranty-band p,
+    .contact-block.in .rays-head .accent{animation:none;}
+    .wnum-fig,.wnum-ring,.wnum-label span,.warranty-band p,
     .contact-block .kicker,.contact-block p,.handle-btn{opacity:1;transform:none;}
     .rays-head .w > span{transform:none;}
-    .contact-cut{transform:scaleX(1);}
+    .contact-particles i{display:none;}
   }
 
-  footer{padding:34px 0 calc(40px + var(--safe-bottom));text-align:center;}
-  footer p{color:var(--ink-soft);font-size:11px;}
+  footer{padding:22px 0 calc(28px + var(--safe-bottom));text-align:center;}
+  footer p{color:rgba(255,255,255,0.28);font-size:10px;}
 
   /* ================= HEAT-REJECTION SIMULATOR ================= */
   .hs{
@@ -1455,7 +1593,7 @@
     font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
     letter-spacing:0.06em;text-transform:uppercase;
     padding:13px 16px;border-radius:4px;cursor:pointer;
-    background:#fff;
+    background:var(--paper-2);
     border:1px solid var(--line-strong);
     color:var(--ink-soft);
     transition:background .25s ease,border-color .25s ease,color .25s ease,box-shadow .25s ease;
@@ -1497,7 +1635,7 @@
   }
   .hs-stage-card{
     position:relative;border-radius:20px;overflow:hidden;padding:10px;
-    background:linear-gradient(160deg,#fff,var(--paper-2));
+    background:linear-gradient(160deg, var(--card-a), var(--card-b)), var(--paper-2);
     border:1px solid var(--line);
     box-shadow:0 24px 50px -34px rgba(155,43,174,0.28);
   }
@@ -1520,7 +1658,7 @@
   .hs-panel{
     display:flex;flex-direction:column;gap:15px;
     border-radius:20px;padding:24px;
-    background:linear-gradient(180deg,#fff,var(--paper-2));
+    background:linear-gradient(180deg, var(--card-a), var(--card-b)), var(--paper-2);
     border:1px solid var(--line);
     box-shadow:0 24px 50px -34px rgba(155,43,174,0.25);
   }
@@ -1535,12 +1673,12 @@
     transition:color .9s ease, text-shadow .9s ease;
   }
   .hs-cabin-temp .deg{font-size:0.4em;margin-top:0.55em;color:var(--ink-soft);}
-  .hs[data-state="none"] .hs-cabin-temp{color:#D63A12;text-shadow:0 0 26px rgba(214,58,18,0.22);}
-  .hs[data-state="uv50"] .hs-cabin-temp{color:#7A3FD6;text-shadow:0 0 26px rgba(122,63,214,0.2);}
-  .hs[data-state="uv70"] .hs-cabin-temp{color:#1E7C9C;text-shadow:0 0 26px rgba(30,124,156,0.2);}
-  .hs[data-state="pro50"] .hs-cabin-temp{color:#186F8C;text-shadow:0 0 26px rgba(24,111,140,0.22);}
-  .hs[data-state="pro70"] .hs-cabin-temp{color:#136185;text-shadow:0 0 28px rgba(19,97,133,0.24);}
-  .hs[data-state="uvp1"] .hs-cabin-temp{color:#0E5273;text-shadow:0 0 28px rgba(14,82,115,0.26);}
+  .hs[data-state="none"] .hs-cabin-temp{color:#FF6A47;text-shadow:0 0 26px rgba(255,106,71,0.4);}
+  .hs[data-state="uv50"] .hs-cabin-temp{color:#B389FF;text-shadow:0 0 26px rgba(179,137,255,0.4);}
+  .hs[data-state="uv70"] .hs-cabin-temp{color:#4CD3F0;text-shadow:0 0 26px rgba(76,211,240,0.35);}
+  .hs[data-state="pro50"] .hs-cabin-temp{color:#2FC6EA;text-shadow:0 0 26px rgba(47,198,234,0.38);}
+  .hs[data-state="pro70"] .hs-cabin-temp{color:#1DB8E4;text-shadow:0 0 28px rgba(29,184,228,0.42);}
+  .hs[data-state="uvp1"] .hs-cabin-temp{color:#12C7FF;text-shadow:0 0 28px rgba(18,199,255,0.46);}
 
   .hs-mood{
     align-self:flex-start;
@@ -1549,12 +1687,12 @@
     padding:6px 12px;border-radius:20px;border:1px solid transparent;
     transition:background .6s ease,color .6s ease,border-color .6s ease;
   }
-  .hs-mood[data-state="none"]{background:rgba(214,58,18,0.12);color:#C13A16;border-color:rgba(214,58,18,0.35);}
-  .hs-mood[data-state="uv50"]{background:rgba(122,63,214,0.12);color:#6B34C0;border-color:rgba(122,63,214,0.32);}
-  .hs-mood[data-state="uv70"]{background:rgba(30,124,156,0.12);color:#1E7C9C;border-color:rgba(30,124,156,0.32);}
-  .hs-mood[data-state="pro50"]{background:rgba(24,111,140,0.12);color:#186F8C;border-color:rgba(24,111,140,0.34);}
-  .hs-mood[data-state="pro70"]{background:rgba(19,97,133,0.12);color:#136185;border-color:rgba(19,97,133,0.36);}
-  .hs-mood[data-state="uvp1"]{background:rgba(14,82,115,0.12);color:#0E5273;border-color:rgba(14,82,115,0.38);}
+  .hs-mood[data-state="none"]{background:rgba(255,106,71,0.14);color:#FF8A6B;border-color:rgba(255,106,71,0.4);}
+  .hs-mood[data-state="uv50"]{background:rgba(179,137,255,0.14);color:#C6A8FF;border-color:rgba(179,137,255,0.38);}
+  .hs-mood[data-state="uv70"]{background:rgba(76,211,240,0.14);color:#7EE0F5;border-color:rgba(76,211,240,0.38);}
+  .hs-mood[data-state="pro50"]{background:rgba(47,198,234,0.14);color:#6FDBF3;border-color:rgba(47,198,234,0.4);}
+  .hs-mood[data-state="pro70"]{background:rgba(29,184,228,0.14);color:#5FD4F0;border-color:rgba(29,184,228,0.42);}
+  .hs-mood[data-state="uvp1"]{background:rgba(18,199,255,0.16);color:#63DBFF;border-color:rgba(18,199,255,0.45);}
 
   .hs-divider{height:1px;background:var(--line);margin:1px 0;}
   .hs-stat__top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
@@ -1581,6 +1719,27 @@
   }
   .hs-bar__fill.is-cyan{background:linear-gradient(90deg,#1E86A8,#3FBFDD);}
   .hs-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-soft);line-height:1.5;margin-top:2px;}
+
+  /* -- live rejection-% cards inside the simulator panel: same premium card
+     grid used for the static UV99+1 figures above, always 2-up (the panel
+     itself is already narrow) and shown immediately — no scroll-reveal here
+     since these numbers update live as the visitor switches film. -- */
+  .hs-pctgrid{
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:12px;margin-top:2px;
+  }
+  .hs-pctgrid.uvb-grid{ margin-top:2px; }
+  .hs-pctgrid .uvb-card{
+    padding:16px 14px;opacity:1;transform:none;transition:border-color .35s ease, box-shadow .35s ease;
+  }
+  .hs-pctgrid .uvb-card__label{ font-size:10px;margin-bottom:12px; }
+  .hs-pctgrid .uvb-card__stat{ font-size:22px; }
+  .hs-pctgrid .hs-stat__badge{ display:block;margin:6px 0 0; }
+  /* .uvb-card sets display:flex, which otherwise beats the [hidden]
+     attribute (same specificity, author rule always wins over the UA
+     stylesheet) — without this, switching to "Without Film" left the
+     UV99+1-only cards visibly stuck on their last percentage. */
+  .hs-pctgrid .uvb-card[hidden]{ display:none; }
   .hs-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 
   /* ---- photo overlay: interactive scene states ---- */
@@ -1722,7 +1881,7 @@
     <span class="pill">3-Year Warranty</span>
   </div>
 
-  <p class="hero-tag">UV99<span>+1</span> — Premium Series.</p>
+  <p class="hero-tag">UV99<span>+1</span> — <span class="uvb-gold uvb-gold--wrap" data-premium-fx><span class="uvb-gold__glow" aria-hidden="true">Premium Series.</span><span class="uvb-gold__text">Premium Series.</span><span class="uvb-gold__wipe" aria-hidden="true"></span><span class="uvb-gold__shine" aria-hidden="true">Premium Series.</span><span class="uvb-gold__sparkles" aria-hidden="true"></span></span></p>
 
   <a href="#heatsim" class="hero-watch" aria-label="Watch the film reject UV rays">
     <span class="hero-watch__ic" aria-hidden="true">▶</span> <span>Watch The Film</span>
@@ -1748,23 +1907,27 @@
 
 
       <div class="uvb-grid">
-        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+        <article class="uvb-card uvb-card--premium-icon" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__num" aria-hidden="true">01</span>
           <span class="uvb-card__icon uvb-card__icon--eye" aria-hidden="true">👁</span>
           <p class="uvb-card__title">Eye Strain</p>
         </article>
-        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+        <article class="uvb-card uvb-card--premium-icon" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__num" aria-hidden="true">02</span>
           <span class="uvb-card__icon uvb-card__icon--sun" aria-hidden="true">☀</span>
           <p class="uvb-card__title">Tanning</p>
         </article>
-        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+        <article class="uvb-card uvb-card--premium-icon" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__num" aria-hidden="true">03</span>
           <span class="uvb-card__icon uvb-card__icon--seat" aria-hidden="true">🔥</span>
           <p class="uvb-card__title">Skin Damage</p>
         </article>
-        <article class="uvb-card" data-uvb-card tabindex="0" role="button" aria-pressed="false">
+        <article class="uvb-card uvb-card--premium-icon" data-uvb-card tabindex="0" role="button" aria-pressed="false">
           <span class="uvb-card__glow" aria-hidden="true"></span>
+          <span class="uvb-card__num" aria-hidden="true">04</span>
           <span class="uvb-card__icon" aria-hidden="true">🚗</span>
           <p class="uvb-card__title">Interior Damage</p>
         </article>
@@ -1786,27 +1949,27 @@
       </div>
 
       <div class="uvb-grid">
-        <article class="uvb-card">
+        <article class="uvb-card uvb-card--premium-icon">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">🛡</span>
           <p class="uvb-card__title">Interior Protection</p>
         </article>
-        <article class="uvb-card">
+        <article class="uvb-card uvb-card--premium-icon">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">☀</span>
           <p class="uvb-card__title">Skin Protection</p>
         </article>
-        <article class="uvb-card">
+        <article class="uvb-card uvb-card--premium-icon">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">❄</span>
           <p class="uvb-card__title">Enhanced Comfort</p>
         </article>
-        <article class="uvb-card">
+        <article class="uvb-card uvb-card--premium-icon">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">◐</span>
           <p class="uvb-card__title">Glare Reduction</p>
         </article>
-        <article class="uvb-card">
+        <article class="uvb-card uvb-card--premium-icon">
           <span class="uvb-card__glow" aria-hidden="true"></span>
           <span class="uvb-card__icon" aria-hidden="true">◎</span>
           <p class="uvb-card__title">Optical Clarity</p>
@@ -1821,7 +1984,7 @@
 <!-- ================= UV99 +1 — DEMO VIDEO ================= -->
 <section class="section" style="padding-top:8px">
   <div class="wrap reveal">
-    <h2 class="uvb-heading" style="text-align:center">See <span class="uvb-gold" data-premium-fx>premium<span class="uvb-gold__wipe" aria-hidden="true"></span><span class="uvb-gold__shine" aria-hidden="true">premium</span></span> protection<br>in <span class="uvb-grad">UV99 +1</span></h2>
+    <h2 class="uvb-heading" style="text-align:center">See <span class="uvb-gold" data-premium-fx><span class="uvb-gold__glow" aria-hidden="true">premium</span><span class="uvb-gold__text">premium</span><span class="uvb-gold__wipe" aria-hidden="true"></span><span class="uvb-gold__shine" aria-hidden="true">premium</span><span class="uvb-gold__sparkles" aria-hidden="true"></span></span> protection<br>in <span class="uvb-grad">UV99 +1</span></h2>
     <span class="uvb-heading__bar" aria-hidden="true" style="margin:2px auto 22px"></span>
     <svg class="uvb-heading__arrow uvb-heading__arrow--anim" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 4v13M5 11l7 7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 
@@ -1882,6 +2045,15 @@
             backdrop-filter:blur(11px) saturate(1.3);
     box-shadow:0 14px 40px -16px rgba(0,0,0,0.72), inset 0 1px 0 rgba(255,255,255,0.06);
     transition:border-color .3s ease, box-shadow .3s ease;
+  }
+  /* this badge overlays a continuously-redrawn canvas (UV-ray animation);
+     a heavy backdrop blur re-sampled every frame is costly on mobile GPUs,
+     so lighten it on small screens where the effect is least visible anyway */
+  @media (max-width:640px){
+    .uvp-badge{
+      -webkit-backdrop-filter:blur(4px) saturate(1.15);
+              backdrop-filter:blur(4px) saturate(1.15);
+    }
   }
   .uvp-badge__row{ display:flex; align-items:center; gap:7px; }
   .uvp-dot{
@@ -1955,14 +2127,8 @@
       <button class="hs-seg__btn hs-seg__solo is-active" type="button" id="hs-tab-none"
               aria-pressed="true" aria-controls="hs-stage-region" data-state="none">Without Film</button>
 
-      <!-- three series tabs; variant buttons are generated from FILM_DATA -->
-      <div class="hs-seg__series" role="tablist" aria-label="Film series">
-        <button class="hs-seg__btn hs-seg__seriesbtn" type="button" role="tab"
-                id="hs-series-premium" data-series="premium"
-                aria-selected="false" aria-expanded="false" aria-controls="hs-variants" tabindex="0">Premium Series — UV99+1</button>
-      </div>
-
-      <!-- revealed variants for the active series only -->
+      <!-- only one series exists here, so its variant button is shown directly
+           instead of behind a "Premium Series — UV99+1" tab -->
       <div class="hs-seg__variants" id="hs-variants" role="group" aria-label="Series variants"></div>
     </div>
 
@@ -2046,7 +2212,7 @@
               <span class="uvp-dot"></span>
               <span class="uvp-badge__title">UV99 Protection</span>
             </div>
-            <div class="uvp-badge__big">99% UV Rejection</div>
+            <div class="uvp-badge__big">100% UV Rejection</div>
             <div class="uvp-badge__ind"><span class="uvp-ind__txt">UV Rays &rarr; Rejected</span></div>
           </div>
         </div>
@@ -2062,17 +2228,27 @@
         <div class="hs-stat">
           <div class="hs-stat__top"><span class="hs-stat__name">Exterior temperature</span><span class="hs-stat__val"><span data-out="exterior">48</span>&deg;C</span></div>
         </div>
-        <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">Heat rejected</span><span class="hs-stat__val"><span data-out="heat">0</span>%</span></div>
-          <div class="hs-bar"><div class="hs-bar__fill" data-bar="heat"></div></div>
-        </div>
-        <div class="hs-stat">
-          <div class="hs-stat__top"><span class="hs-stat__name">UV blocked</span><span class="hs-stat__val"><span data-out="uv">0</span>%</span></div>
-          <div class="hs-bar"><div class="hs-bar__fill" data-bar="uv"></div></div>
-        </div>
-        <div class="hs-stat" data-stat="infrared" hidden>
-          <div class="hs-stat__top"><span class="hs-stat__name">Infrared rejected <em class="hs-stat__badge">UV99 +1</em></span><span class="hs-stat__val"><span data-out="infrared">0</span>%</span></div>
-          <div class="hs-bar"><div class="hs-bar__fill is-cyan" data-bar="infrared"></div></div>
+        <div class="uvb-grid uvb-grid--pct hs-pctgrid">
+          <article class="uvb-card uvb-card--premium">
+            <span class="uvb-card__glow" aria-hidden="true"></span>
+            <p class="uvb-card__label">Heat Rejected</p>
+            <p class="uvb-card__stat"><span data-out="heat">0</span>%</p>
+          </article>
+          <article class="uvb-card uvb-card--premium">
+            <span class="uvb-card__glow" aria-hidden="true"></span>
+            <p class="uvb-card__label">UV Blocked</p>
+            <p class="uvb-card__stat"><span data-out="uv">0</span>%</p>
+          </article>
+          <article class="uvb-card uvb-card--premium" data-stat="infrared" hidden>
+            <span class="uvb-card__glow" aria-hidden="true"></span>
+            <p class="uvb-card__label">Infrared Rejected</p>
+            <p class="uvb-card__stat"><span data-out="infrared">0</span>%</p>
+          </article>
+          <article class="uvb-card uvb-card--premium" data-stat="vlt" hidden>
+            <span class="uvb-card__glow" aria-hidden="true"></span>
+            <p class="uvb-card__label">Visible Light Transmission</p>
+            <p class="uvb-card__stat"><span data-out="vlt">0</span>%</p>
+          </article>
         </div>
       </div>
     </div>
@@ -2095,28 +2271,32 @@
 
 <!-- ================= WARRANTY ================= -->
 <section class="warranty-band" id="warranty">
-  <div class="warranty-fx" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="wrap reveal">
     <div class="wnum">
+      <span class="wnum-ring" aria-hidden="true"></span>
       <span class="wnum-fig" data-count="3">0</span>
-      <span class="wnum-label">Years Warranty</span>
     </div>
+    <span class="wnum-label">Years Warranty</span>
     <p>Covers bubbles, adhesive failures, and discoloration — with less than 10% drop in UVR/IRR performance guaranteed.</p>
   </div>
 </section>
 
+<div class="lux-divider" aria-hidden="true"></div>
+
 <!-- ================= CONTACT ================= -->
 <section class="contact-block" id="contact">
-  <div class="contact-fx" aria-hidden="true"></div>
-  <div class="contact-cut" aria-hidden="true"></div>
+  <div class="contact-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap reveal">
     <div class="kicker">You Scanned This For A Reason</div>
     <h2 class="rays-head">
       <span class="l"><span class="w" style="--d:.24s"><span>Let's</span></span> <span class="w" style="--d:.32s"><span>stop</span></span></span>
-      <span class="l"><span class="w" style="--d:.40s"><span>some</span></span> <span class="w accent" style="--d:.48s"><span>rays.</span></span></span>
+      <span class="l"><span class="w accent" style="--d:.40s"><span>some</span></span> <span class="w accent" style="--d:.48s"><span>rays.</span></span></span>
     </h2>
-    <p>DM us your car model or glass size — we'll tell you exactly which series fits and point you to your nearest installer.</p>
+    <p>DM us your car model or glass size — we'll tell you
+    exactly which series fits and point you to your
+    nearest installer.</p>
   </div>
+  <div class="contact-foot-space"></div>
 </section>
 
 <footer>
@@ -2347,13 +2527,13 @@
        for every state. -------------------------------------------------- */
     var FILM_DATA = {
       none: { key:'none', label:'Without Film',
-              exterior:48, cabin:62, heatRejected:0, uvBlocked:0,
+              exterior:48, cabin:54, heatRejected:0, uvBlocked:0, infrared:0, vlt:0,
               cabinState:'Extremely hot', raysIn:9, raysReflected:0, particles:14,
               film:{ tint:'#233140', op:0, edge:'#b57be6', edgeOp:0 } },
       series: [
         { id:'premium', label:'Premium Series', variants:[
           { key:'uvp1', label:'UV99 +1',
-            exterior:48, cabin:30, heatRejected:93, uvBlocked:99, infrared:89,
+            exterior:48, cabin:30, heatRejected:54, uvBlocked:100, infrared:89, vlt:70,
             cabinState:'Peak comfort', raysIn:1, raysReflected:11, particles:0,
             film:{ tint:'#2e2150', op:0.07, edge:'#c6a0ff', edgeOp:0.24 } }
         ]}
@@ -2382,12 +2562,15 @@
     var uvBar    = root.querySelector('[data-bar="uv"]');
     var irBar    = root.querySelector('[data-bar="infrared"]');
     var irRow    = root.querySelector('[data-stat="infrared"]');
+    var vltBar   = root.querySelector('[data-bar="vlt"]');
+    var vltRow   = root.querySelector('[data-stat="vlt"]');
     var out = {
       cabin:    root.querySelector('[data-out="cabin"]'),
       exterior: root.querySelector('[data-out="exterior"]'),
       heat:     root.querySelector('[data-out="heat"]'),
       uv:       root.querySelector('[data-out="uv"]'),
       infrared: root.querySelector('[data-out="infrared"]'),
+      vlt:      root.querySelector('[data-out="vlt"]'),
       mood:     root.querySelector('[data-out="mood"]')
     };
 
@@ -2568,6 +2751,15 @@
       } else if(out.infrared && out.infrared._raf){
         cancelAnimationFrame(out.infrared._raf); out.infrared._raf = 0;
       }
+      // Visible light transmission — shown alongside infrared for the UV99 +1 film.
+      var vltVal = typeof cfg.vlt === 'number' ? cfg.vlt : null;
+      if(vltRow) vltRow.hidden = vltVal == null;
+      if(vltVal != null){
+        showStat(out.vlt, vltVal);
+        if(vltBar) vltBar.style.transform = 'scaleX(' + (vltVal / 100) + ')';
+      } else if(out.vlt && out.vlt._raf){
+        cancelAnimationFrame(out.vlt._raf); out.vlt._raf = 0;
+      }
       if(out.mood){ out.mood.textContent = (cfg.cabinState || 'TODO'); out.mood.dataset.state = key; }
 
       for(var r=0;r<rays.length;r++){
@@ -2639,7 +2831,7 @@
     }
 
     function onVariantKey(e){
-      if(e.key === 'Escape'){ closeSeries(true); return; }
+      if(e.key === 'Escape'){ soloBtn.click(); return; }
       var vbtns = Array.prototype.slice.call(variantsWrap.querySelectorAll('.hs-seg__variant'));
       var idx = vbtns.indexOf(e.currentTarget), next = null;
       if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % vbtns.length;
@@ -2675,10 +2867,12 @@
       }
     }
 
-    // Standalone "Without Film": close any open series, restore untreated glass.
+    // Standalone "Without Film": restore untreated glass. The single
+    // "UV99 +1" variant button stays visible — there's no series tab to
+    // reopen it, so we never collapse the variants row here.
     soloBtn.addEventListener('click', function(){
-      closeSeries(false);
       setState('none', false);
+      syncVariantPressed();
     });
 
     // Series tabs: roving-tabindex tablist; click / Enter / Space toggles the reveal.
@@ -2707,8 +2901,11 @@
       });
     });
 
-    // Default: "Without Film" selected, no series open, no variants shown.
+    // Default: "Without Film" selected. Only one series exists (premium), so
+    // its variant button ("UV99 +1") is shown right away, permanently open —
+    // there's no series tab to click since we removed it.
     setState('none', false);
+    openSeries('premium', false);
   })();
 </script>
 
@@ -2757,7 +2954,7 @@
       } else {
         badge.classList.remove('is-open');
         if(t) t.textContent = 'UV99 Protection';
-        if(big) big.textContent = '99% UV Rejection';
+        if(big) big.textContent = '100% UV Rejection';
         if(badgeTxt) badgeTxt.textContent = 'UV Rays → Rejected';
       }
     }
@@ -3277,8 +3474,8 @@
      ScrollTrigger fail to load or the visitor prefers reduced motion. -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var word = document.querySelector('[data-premium-fx]');
-  if (!word) return;
+  var words = document.querySelectorAll('[data-premium-fx]');
+  if (!words.length) return;
 
   var reduce = false;
   try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
@@ -3287,34 +3484,93 @@ document.addEventListener('DOMContentLoaded', function () {
   var gsap = window.gsap;
   gsap.registerPlugin(window.ScrollTrigger);
 
-  var line  = word.querySelector('.uvb-gold__wipe');
-  var shine = word.querySelector('.uvb-gold__shine');
+  // Same reveal — letters in, gold sweep, brief bloom + sparkle, settle —
+  // built independently for every "premium" phrase on the page (the
+  // "See premium protection" heading, the hero's "Premium Series.", …),
+  // each with its own timeline and its own scroll trigger.
+  words.forEach(function (word) {
+
+  var textEl  = word.querySelector('.uvb-gold__text');
+  var glow    = word.querySelector('.uvb-gold__glow');
+  var line    = word.querySelector('.uvb-gold__wipe');
+  var shine   = word.querySelector('.uvb-gold__shine');
+  var sparkBox = word.querySelector('.uvb-gold__sparkles');
   var section = word.closest('section');
 
-  // Mask the word only now, right before building the timeline that will
-  // unmask it — if anything above bailed out, "premium" was never hidden.
-  gsap.set(word, { clipPath: 'inset(0 100% 0 -0.1em)' });
-  gsap.set(line, { opacity: 0, x: 0 });
-  gsap.set(shine, { opacity: 0, backgroundPositionY: '140%' });
+  // A handful of sparkle dots scattered along the word, seeded once.
+  var SPARK_COUNT = 6;
+  var sparks = [];
+  for (var i = 0; i < SPARK_COUNT; i++) {
+    var sp = document.createElement('span');
+    sp.className = 'uvb-gold__spark';
+    sp.style.left = (6 + Math.random() * 88) + '%';
+    sp.style.top  = (Math.random() * 100) + '%';
+    sparkBox.appendChild(sp);
+    sparks.push(sp);
+  }
+
+  // Everything starts hidden only now, right before building the timeline
+  // that reveals it — if anything above bailed out, "premium" was never
+  // masked and stays fully visible.
+  gsap.set(word,   { clipPath: 'inset(0 100% 0 -0.1em)' });
+  gsap.set(textEl, { filter: 'blur(4px)' });
+  gsap.set(line,   { opacity: 0, x: 0 });
+  gsap.set(shine,  { opacity: 0, backgroundPositionY: '140%' });
+  gsap.set(glow,   { opacity: 0 });
+  gsap.set(sparks, { opacity: 0, scale: 0.4 });
+
+  // Phase budget mirrors the 0–20 / 20–70 / 70–90 / 90–100% spec, scaled
+  // onto a ~2.2s cinematic run — deliberate, not flashy.
+  var TOTAL = 2.2;
+  var appearEnd    = TOTAL * 0.20;   // letters settle into place
+  var sweepEnd     = TOTAL * 0.70;   // gold light sweeps across
+  var intensifyEnd = TOTAL * 0.90;   // glow blooms slightly
+  // 90–100%: bloom eases back to a quiet, permanent shine
 
   var tl = gsap.timeline({
     paused: true,
-    defaults: { ease: 'power3.out' },
     onComplete: function () {
-      // final state: fully revealed, glow layers spent — clean and static
+      // final state: word fully in place, sweep/spark layers spent, only
+      // the word's own quiet gradient + a faint steady glow remain
       gsap.set(word, { clipPath: 'inset(0 0% 0 -0.1em)' });
+      gsap.set(textEl, { clearProps: 'filter' });
       gsap.set([line, shine], { opacity: 0 });
+      gsap.set(sparks, { opacity: 0 });
     }
   });
 
   var w = word.offsetWidth;
-  tl.set(line, { opacity: 1 })
-    .to(line, { x: w + 6, duration: 0.5 }, 0)
-    .to(word, { clipPath: 'inset(0 0% 0 -0.1em)', duration: 0.5 }, 0)
-    .to(line, { opacity: 0, duration: 0.18 }, 0.42)
-    .to(shine, { backgroundPositionY: '-60%', opacity: 1, duration: 0.65, ease: 'power2.out' }, 0.4)
-    .to(shine, { opacity: 0, duration: 0.35, ease: 'power2.out' }, 1.05);
-  // total run ≈ 1.4s, within the 1.2–1.6s target
+
+  // 0–20%: the word softly appears, left to right
+  tl.to(word, {
+    clipPath: 'inset(0 0% 0 -0.1em)',
+    duration: appearEnd, ease: 'power2.out'
+  }, 0)
+  .to(textEl, { filter: 'blur(0px)', duration: appearEnd, ease: 'power2.out' }, 0);
+
+  // 20–70%: a glowing line sweeps left→right, a soft shine travels up
+  // through the letterforms right behind it
+  tl.set(line, { opacity: 1 }, appearEnd)
+    .to(line, { x: w + 6, duration: sweepEnd - appearEnd, ease: 'power2.inOut' }, appearEnd)
+    .to(line, { opacity: 0, duration: 0.16 }, sweepEnd - 0.16)
+    .to(shine, {
+      backgroundPositionY: '-60%', opacity: 1,
+      duration: sweepEnd - appearEnd, ease: 'power2.out'
+    }, appearEnd);
+
+  // 70–90%: glow intensifies slightly, sparkles twinkle awake
+  tl.to(glow, { opacity: 0.55, duration: intensifyEnd - sweepEnd, ease: 'power2.out' }, sweepEnd)
+    .to(shine, { opacity: 0, duration: intensifyEnd - sweepEnd, ease: 'power2.out' }, sweepEnd)
+    .to(sparks, {
+      opacity: 1, scale: 1,
+      duration: (intensifyEnd - sweepEnd) * 0.6,
+      stagger: { each: (intensifyEnd - sweepEnd) * 0.5 / SPARK_COUNT, from: 'random' },
+      ease: 'power1.out'
+    }, sweepEnd);
+
+  // 90–100%: settles into a subtle, permanent premium shine
+  tl.to(glow, { opacity: 0.24, duration: TOTAL - intensifyEnd, ease: 'power2.out' }, intensifyEnd)
+    .to(sparks, { opacity: 0, duration: TOTAL - intensifyEnd, ease: 'power1.in' }, intensifyEnd);
 
   window.ScrollTrigger.create({
     trigger: section || word,
@@ -3322,6 +3578,8 @@ document.addEventListener('DOMContentLoaded', function () {
     once: true,
     onEnter: function () { tl.play(); }
   });
+
+  }); // end words.forEach
 });
 </script>
 
