@@ -1591,7 +1591,7 @@ td:first-child { color: var(--plum); font-weight: 800; }
   .footer-cols { grid-template-columns: 1fr; gap: 34px; }
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
   .form { padding: 22px; }
-  .manifesto { padding: 30px; }
+  .manifesto { padding: 30px 30px clamp(210px, 56vw, 300px); }
   .product-hero { padding-bottom: 90px; }
   .film-sheets { min-height: 280px; }
   .film-sheet { width: 155px; height: 225px; }
@@ -2573,21 +2573,50 @@ td:first-child { color: var(--plum); font-weight: 800; }
 @media (max-width: 1160px) { .about-hero { margin-top: -70px; padding-top: 132px; } }
 @media (max-width: 980px) {
   /* Copy flows from the top — no tall centred box that strands the
-     text in the middle of a dark band on phones. */
-  .about-hero__inner { min-height: 0; display: block; }
-  .about-hero__media { width: 100%; }
+     text in the middle of a dark band on phones.
+
+     The car photo used to stay position:absolute, stretched to the
+     height of .about-hero__inner — but .about-hero__inner is set to
+     min-height:0/display:block right above, so with nothing else
+     giving .about-hero a tall box, the "canvas" the absolute image
+     was drawn into collapsed to roughly the height of the text alone.
+     The image was still there, just squeezed into a sliver behind the
+     copy and mostly painted over by its own dark scrim — effectively
+     invisible. Fix: take the image out of absolute positioning on
+     mobile and lay it out as a normal block *after* the text, with
+     its own aspect-ratio (not a fixed px height) so it always has a
+     real, visible size regardless of how tall the copy block is. */
+  .about-hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .about-hero__inner { order: 1; min-height: 0; display: block; }
+  .about-hero__media {
+    order: 2;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin-top: 32px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
   .about-hero__media img {
-    object-position: 62% 38%;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 72%, transparent 100%);
-            mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 72%, transparent 100%);
+    position: static;
+    object-position: 58% 42%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 92%, transparent 100%);
+            mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 92%, transparent 100%);
     -webkit-mask-composite: source-over;
             mask-composite: add;
-    opacity: .24;
+    opacity: 1;
   }
+  /* the image no longer sits behind any text, so the scrim only needs
+     to be a soft edge vignette that blends it into the hero background,
+     not a near-opaque cover protecting readability */
   .about-hero__media::after {
     background:
-      linear-gradient(180deg, rgba(5, 3, 8, .82), rgba(5, 3, 8, .78) 55%, rgba(5, 3, 8, .88)),
-      radial-gradient(60% 45% at 50% 30%, rgba(143, 74, 158, .2), transparent 72%);
+      linear-gradient(180deg, rgba(5, 3, 8, .5) 0%, transparent 20% 80%, rgba(5, 3, 8, .55) 100%),
+      radial-gradient(65% 55% at 50% 40%, rgba(143, 74, 158, .16), transparent 75%);
   }
   .about-hero__copy { max-width: none; }
 }
