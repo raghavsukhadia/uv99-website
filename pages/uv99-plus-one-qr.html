@@ -565,6 +565,22 @@
   /* modifier for longer phrases (e.g. the hero's "Premium Series.") that
      need to wrap naturally instead of forcing one unbroken line */
   .uvb-gold--wrap{ white-space:normal; }
+  /* soft, feathered aubergine-violet halo behind the phrase — no hard
+     edges, no pill shape; a blurred radial glow sitting behind the text */
+  .uvb-gold--wrap::before{
+    content:"";
+    position:absolute;
+    inset:-0.8em -1.3em;
+    z-index:1;
+    background:radial-gradient(ellipse 70% 85% at center,
+      rgba(58,15,77,0.92) 0%,
+      rgba(58,15,77,0.85) 35%,
+      rgba(122,44,145,0.55) 58%,
+      rgba(122,44,145,0.22) 75%,
+      transparent 92%);
+    filter:blur(10px);
+    pointer-events:none;
+  }
   /* the visible letters — a warm champagne-gold metallic gradient, always
      shown at full legibility even before the animation runs */
   .uvb-gold__text{

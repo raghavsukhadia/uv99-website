@@ -4,6 +4,7 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>UV99 Glazing — Harmful rays out, protection in</title>
   <meta name="description" content="Automotive glazing that blocks up to 99% of harmful UV while preserving a clear, confident view.">
+  <link rel="canonical" href="https://uv99.in/">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
@@ -34,7 +35,11 @@
     .upo-hero::after { content: ""; position: absolute; left: var(--rail-w); top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.06); pointer-events: none; z-index: 4; }
     .lp-rail-note { position: absolute; left: clamp(14px, 2vw, 26px); bottom: clamp(24px, 5vh, 54px); z-index: 4; margin: 0; font-size: 12px; line-height: 1.4; color: rgba(255,255,255,.5); pointer-events: none; }
     @media (max-width: 900px) {
-      .upo-hero { margin-top: -70px; }
+      /* style.css already sets min-height:auto for the stacked mobile hero,
+         but this block's unscoped min-height:max(86vh,720px) above loads
+         after it and wins — forcing a tall empty box under the short
+         mobile content. Re-assert auto here so mobile isn't stretched. */
+      .upo-hero { margin-top: -70px; min-height: auto; }
       .upo-hero::after, .lp-rail-note { display: none; }
       /* the giant vertical "UV99" watermark collapses to a few stray glyphs
          beside the logo on a phone — drop it */
@@ -187,7 +192,7 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header"><div class="nav-shell"><a class="brand" href="/index.html" aria-label="UV99 Glazing home"><img class="brand__logo" src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing"></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span><span></span></button><nav class="nav-links" id="nav-links" aria-label="Primary navigation"><a href="/index.html" aria-current="page">Home</a><a href="/films.html">Products</a><a href="/warranty.html">Warranty</a><a href="/faq-contact.html">FAQ &amp; Contact</a><a href="/about.html">About</a><a class="nav-cta" href="/faq-contact.html#contact">Book installation</a></nav></div></header>
+  <header class="site-header"><div class="nav-shell"><a class="brand" href="/" aria-label="UV99 Glazing home"><img class="brand__logo" src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing"></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span></span><span></span><span></span></button><nav class="nav-links" id="nav-links" aria-label="Primary navigation"><a href="/films.html">Products</a><a href="/about.html">About</a><a href="/warranty.html">Warranty</a><a href="/faq-contact.html">FAQ &amp; Contact</a></nav></div></header>
   <main id="main">
     <section class="upo-hero" id="overview">
       <div class="upo-watermark" aria-hidden="true"><span>UV99</span></div>
@@ -235,7 +240,6 @@
             <span>Explore UV99 Films</span>
             <svg class="upo-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <a class="upo-textlink" href="/about.html">See the technology</a>
         </div>
 
         <!-- data-countup groups the counters so they share one progress and
@@ -357,7 +361,7 @@
             </div>
             <h3>Protect people</h3>
             <p>Reduce everyday exposure to the UV-A and UV-B that reaches through side and rear glass.</p>
-            <figure class="card__media"><img src="/assets/images/sections/CAR2.png" alt="Driver behind a UV99-tinted side window as UV light is turned away" loading="lazy" decoding="async"></figure>
+            <figure class="card__media"><img src="/assets/images/hero/rangerover.png" alt="Driver behind a UV99-tinted side window as UV light is turned away" loading="lazy" decoding="async"></figure>
           </article>
           <article class="card" data-reveal>
             <div class="card__top">
@@ -366,7 +370,7 @@
             </div>
             <h3>Preserve interiors</h3>
             <p>Help slow fading, cracking and material ageing across dashboards, leather and trim.</p>
-            <figure class="card__media"><img src="/assets/images/sections/NEWCAR.png" alt="Black sedan with UV99 window film packaging, protecting the cabin interior from sun damage" loading="lazy" decoding="async"></figure>
+            <figure class="card__media"><img src="/assets/images/hero/CARINTERIOR.png" alt="Black sedan with UV99 window film packaging, protecting the cabin interior from sun damage" loading="lazy" decoding="async"></figure>
           </article>
           <article class="card" data-reveal>
             <div class="card__top">
@@ -375,7 +379,7 @@
             </div>
             <h3>Drive in comfort</h3>
             <p>Choose extra glare rejection without settling for a hazy or mirrored finish.</p>
-            <figure class="card__media"><img src="/assets/images/sections/CAR4.png" alt="Glare softened off a UV99-treated windscreen" loading="lazy" decoding="async"></figure>
+            <figure class="card__media"><img src="/assets/images/hero/withuv99.png" alt="Glare softened off a UV99-treated windscreen" loading="lazy" decoding="async"></figure>
           </article>
         </div>
 
@@ -507,7 +511,7 @@
     </section>
     <section class="dark-cta"><div class="wrap dark-cta__in"><div data-reveal><h2>Find the right film for your car.</h2><p>Tell us how, when and where you drive. We’ll help narrow the choice.</p></div><a class="button button--light" href="/faq-contact.html#contact" data-reveal>Start an enquiry</a></div></section>
   </main>
-  <footer class="site-footer" data-reveal><div class="wrap"><div class="footer-cols"><div class="footer-brand" data-reveal><a class="brand" href="/index.html" aria-label="UV99 Glazing home"><img class="brand__logo" src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing"></a><p class="footer-about">Harmful rays out, protection in. Automotive glazing engineered on advanced UV rejection and nano-ceramic film technology.</p><ul class="footer-contact"><li><a href="tel:+91">+91</a></li><li>Service centre address available on request</li></ul><p class="footer-social-label">Follow us</p><ul class="footer-social"><li><a href="https://www.instagram.com/uv99.in/" target="_blank" rel="noopener" aria-label="UV99 on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li><li><a href="https://www.facebook.com/profile.php?id=61591502420683" target="_blank" rel="noopener" aria-label="UV99 on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H17V3.6c-.3-.04-1.3-.13-2.47-.13-2.44 0-4.11 1.49-4.11 4.22V9.9H7.7V13h2.72v8h3.08Z"/></svg></a></li><li><a href="https://www.youtube.com/@UV99Glazing" target="_blank" rel="noopener" aria-label="UV99 on YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 0 0 1.95-1.97A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58ZM9.75 15.5v-7l6 3.5-6 3.5Z"/></svg></a></li></ul></div><nav class="footer-nav" data-reveal aria-label="Products"><h3>Products</h3><ul><li><a href="/films.html">Window Film</a></li><li><a href="/uv99-plus-one.html">UV99 +1</a></li><li><a href="/films.html#simulator">Tint Simulator</a></li><li><a href="/films.html#selector">Compare &amp; Configure</a></li></ul></nav><nav class="footer-nav" data-reveal aria-label="Ownership"><h3>Ownership</h3><ul><li><a href="/warranty.html">Warranty</a></li><li><a href="/warranty.html#care">Film Care</a></li><li><a href="/faq-contact.html#contact">Contact</a></li></ul></nav><nav class="footer-nav" data-reveal aria-label="Company"><h3>Company</h3><ul><li><a href="/about.html">Our Journey</a></li><li><a href="/faq-contact.html#faq">FAQ</a></li><li><a href="/faq-contact.html#contact">Become a Dealer</a></li></ul></nav></div><div class="footer-bottom" data-reveal><span>&copy; <span data-year></span> UV99 Glazing. All rights reserved.</span><nav class="footer-legal" aria-label="Legal"><a href="/terms.html">Terms &amp; Conditions</a><a href="/privacy.html">Privacy Policy</a><a href="/disclaimer.html">Disclaimer</a><a href="/faq-contact.html#contact">Contact</a></nav></div></div></footer>
+  <footer class="site-footer" data-reveal><div class="wrap"><div class="footer-cols"><div class="footer-brand" data-reveal><a class="brand" href="/" aria-label="UV99 Glazing home"><img class="brand__logo" src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing"></a><p class="footer-about">Harmful rays out, protection in. Automotive glazing engineered on advanced UV rejection and nano-ceramic film technology.</p><ul class="footer-contact"><li><a href="tel:+91">+91</a></li><li>32/33, Mayfair, Near AIR, Congress Nagar, Nagpur - 440012, Maharashtra</li></ul><p class="footer-social-label">Follow us</p><ul class="footer-social"><li><a href="https://www.instagram.com/uv99.in/" target="_blank" rel="noopener" aria-label="UV99 on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li><li><a href="https://www.facebook.com/profile.php?id=61591502420683" target="_blank" rel="noopener" aria-label="UV99 on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H17V3.6c-.3-.04-1.3-.13-2.47-.13-2.44 0-4.11 1.49-4.11 4.22V9.9H7.7V13h2.72v8h3.08Z"/></svg></a></li><li><a href="https://www.youtube.com/@UV99Glazing" target="_blank" rel="noopener" aria-label="UV99 on YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 0 0 1.95-1.97A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58ZM9.75 15.5v-7l6 3.5-6 3.5Z"/></svg></a></li></ul></div><nav class="footer-nav" data-reveal aria-label="Products"><h3>Products</h3><ul><li><a href="/films.html">Window Film</a></li><li><a href="/uv99-plus-one.html">UV99 +1</a></li><li><a href="/films.html#simulator">Tint Simulator</a></li><li><a href="/films.html#selector">Compare &amp; Configure</a></li></ul></nav><nav class="footer-nav" data-reveal aria-label="Ownership"><h3>Ownership</h3><ul><li><a href="/warranty.html">Warranty</a></li><li><a href="/warranty.html#care">Film Care</a></li><li><a href="/faq-contact.html#contact">Contact</a></li></ul></nav><nav class="footer-nav" data-reveal aria-label="Company"><h3>Company</h3><ul><li><a href="/faq-contact.html#faq">FAQ</a></li><li><a href="/faq-contact.html#contact">Become a Dealer</a></li></ul></nav></div><div class="footer-bottom" data-reveal><span>&copy; <span data-year></span> UV99 Glazing. All rights reserved.</span><nav class="footer-legal" aria-label="Legal"><a href="/terms.html">Terms &amp; Conditions</a><a href="/privacy.html">Privacy Policy</a><a href="/disclaimer.html">Disclaimer</a><a href="/faq-contact.html#contact">Contact</a></nav></div></div></footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="/assets/js/site.js" defer></script>

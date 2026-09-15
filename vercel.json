@@ -2,6 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "node scripts/build.js",
   "outputDirectory": ".",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.uv99.in" }],
+      "destination": "https://uv99.in/:path*",
+      "statusCode": 301
+    },
+    { "source": "/index.html", "destination": "/", "statusCode": 301 }
+  ],
   "rewrites": [
     { "source": "/uv99-plus-one-qr.html", "destination": "/pages/uv99-plus-one-qr.html" },
     { "source": "/:seg(uv99\\+1|uv99%2B1|uv99-plus-one|uv99plus1)/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr.html" },

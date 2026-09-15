@@ -961,8 +961,9 @@ td:first-child { color: var(--plum); font-weight: 800; }
     background: linear-gradient(180deg,
       #050409 0%,
       rgba(5,4,10,.9) 34%,
-      rgba(5,4,10,.35) 62%,
-      rgba(5,4,10,0) 84%);
+      rgba(5,4,10,.72) 62%,
+      rgba(5,4,10,.3) 82%,
+      rgba(5,4,10,0) 100%);
   }
   .manifesto blockquote,
   .manifesto p { max-width: none; }
@@ -2035,7 +2036,9 @@ td:first-child { color: var(--plum); font-weight: 800; }
   position: relative;
   overflow: hidden;
   margin-top: -78px;
-  padding: 150px 0 92px;
+  /* top padding matches the shared hero rhythm (films/about/warranty) so the
+     breadcrumb starts at the same position on every page */
+  padding: 94px 0 92px;
   color: #fff;
   background:
     radial-gradient(1100px 720px at 80% 46%, rgba(96, 42, 128, .38), transparent 62%),
@@ -2056,7 +2059,9 @@ td:first-child { color: var(--plum); font-weight: 800; }
   z-index: 1;
   display: grid;
   grid-template-columns: 42% 58%;
-  align-items: center;
+  /* top-align, not centre — keeps the breadcrumb/heading start position
+     fixed regardless of unused space below, matching the other heroes */
+  align-items: start;
   gap: clamp(28px, 5vw, 72px);
   min-height: min(74vh, 700px);
 }
@@ -2443,7 +2448,9 @@ td:first-child { color: var(--plum); font-weight: 800; }
   isolation: isolate;
   overflow: hidden;
   margin-top: -78px;
-  padding: 150px 0 96px;
+  /* top padding matches the shared hero rhythm (films/faq/warranty) so the
+     breadcrumb starts at the same position on every page */
+  padding: 94px 0 96px;
   color: #fff;
   background:
     radial-gradient(1000px 680px at 74% 42%, rgba(96, 42, 128, .34), transparent 62%),
@@ -2497,7 +2504,9 @@ td:first-child { color: var(--plum); font-weight: 800; }
   z-index: 1;
   min-height: min(62vh, 540px);
   display: flex;
-  align-items: center;
+  /* top-align, not centre — keeps the breadcrumb/heading start position
+     fixed regardless of unused space below, matching the other heroes */
+  align-items: flex-start;
 }
 .about-hero__copy { max-width: 640px; }
 .about-hero__copy .crumb { margin-bottom: 22px; }
@@ -4248,13 +4257,19 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  /* vertically centre the text/CTA/stat-card column so it lines up with the
+     car artwork, which is centred independently via top:50% below */
+  justify-content: center;
   /* the shared .site-header is a transparent sticky bar (78px); pull the hero
      up under it like index.html does, so the artwork bleeds behind the nav */
   margin-top: -78px;
-  min-height: clamp(600px, 100vh, 780px);
+  /* hug the content instead of forcing a near-full-viewport box — a taller
+     fixed height than the text/cards need left a hollow band of empty
+     background under them */
+  min-height: clamp(560px, 84vh, 680px);
   /* horizontal gutter matches .wrap — min(1180px, 100% - 40px) centred —
      so the hero content lines up with "See the film do its job." below */
-  padding: 94px max(20px, calc((100% - 1180px) / 2)) 0;
+  padding: 94px max(20px, calc((100% - 1180px) / 2)) 48px;
   background: var(--fh-bg);
   color: var(--fh-text);
 }
@@ -4276,7 +4291,8 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
 /* ---------- right-side composition (old.png) ------------------- */
 .fh-hero__visual {
   position: absolute;
-  right: 7%;
+  /* nudged right (was 7%) so the car doesn't sit under the headline/CTA text */
+  right: 1%;
   top: 50%;
   width: 68%;
   max-width: 1040px;
@@ -4291,12 +4307,15 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
   object-fit: cover;
   object-position: center;
   /* the product photo is a full-bleed studio shot — feather every edge so
-     its dark ground dissolves into the section instead of showing a box */
+     its dark ground dissolves into the section instead of showing a box.
+     The left fade is extended (was 9%) so the car body stays translucent
+     through the zone the headline/CTA text sits over, instead of the
+     solid hood/headlight showing through under the copy. */
   -webkit-mask-image:
-    linear-gradient(to right, transparent 0, #000 9%, #000 90%, transparent 100%),
+    linear-gradient(to right, transparent 0, #000 36%, #000 90%, transparent 100%),
     linear-gradient(to bottom, transparent 0, #000 10%, #000 88%, transparent 100%);
           mask-image:
-    linear-gradient(to right, transparent 0, #000 9%, #000 90%, transparent 100%),
+    linear-gradient(to right, transparent 0, #000 36%, #000 90%, transparent 100%),
     linear-gradient(to bottom, transparent 0, #000 10%, #000 88%, transparent 100%);
   -webkit-mask-composite: source-in;
           mask-composite: intersect;
@@ -4356,8 +4375,8 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
 .fh-line > span { display: block; white-space: nowrap; }
 .fh-hero__body {
   margin: 0 0 18px;
-  max-width: 500px;
-  font-size: 19px;
+  max-width: 420px;
+  font-size: 16px;
   line-height: 1.58;
   color: var(--fh-sub);
 }
@@ -4489,53 +4508,12 @@ html.fh-anim .fh-card:nth-child(3) { animation: fh-rise .6s cubic-bezier(.16, 1,
 }
 
 /* =====================================================================
-   RESPONSIVE - below 1000px the hero un-stacks into a normal column.
+   RESPONSIVE - below 1300px the hero stacks into a normal column instead
+   of overlapping the car photo with the headline/CTA text — at in-between
+   desktop widths there isn't room for both side by side without the car
+   showing through under the copy.
    ===================================================================== */
-@media (max-width: 1060px) {
-  .fh-hero__visual { width: 62%; }
-  .fh-hero__content { width: min(460px, 100%); }
-  .fh-card { width: 150px; }
-}
-
-@media (max-width: 1000px) {
-  .fh-header__in { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 74px; }
-  .fh-nav {
-    position: fixed;
-    inset: 74px 0 auto;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 12px 20px 22px;
-    background: rgba(8, 6, 12, .97);
-    border-bottom: 1px solid var(--fh-card-brd);
-    backdrop-filter: blur(16px);
-    transform: translateY(-8px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity .22s ease, transform .22s ease, visibility .22s;
-  }
-  .fh-header.is-open .fh-nav { opacity: 1; visibility: visible; transform: none; }
-  .fh-nav a { padding: 14px 6px; font-size: 16px; border-bottom: 1px solid rgba(255, 255, 255, .06); }
-  .fh-nav a::after { display: none; }
-  .fh-cta { height: 40px; padding: 0 16px; font-size: 13.5px; }
-  .fh-logo { margin-right: auto; }
-  .fh-burger {
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 42px; height: 42px;
-    order: 3;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-  }
-  .fh-cta { order: 2; }
-  .fh-burger span { display: block; width: 22px; height: 2px; margin-inline: auto; background: #fff; border-radius: 2px; transition: .2s; }
-  .fh-header.is-open .fh-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .fh-header.is-open .fh-burger span:nth-child(2) { opacity: 0; }
-  .fh-header.is-open .fh-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
+@media (max-width: 1300px) {
   .fh-hero {
     min-height: 0;
     padding-top: 92px;
@@ -4577,6 +4555,46 @@ html.fh-anim .fh-card:nth-child(3) { animation: fh-rise .6s cubic-bezier(.16, 1,
     gap: 12px;
   }
   .fh-card { width: auto; min-height: 0; }
+}
+
+@media (max-width: 1000px) {
+  .fh-header__in { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 74px; }
+  .fh-nav {
+    position: fixed;
+    inset: 74px 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 12px 20px 22px;
+    background: rgba(8, 6, 12, .97);
+    border-bottom: 1px solid var(--fh-card-brd);
+    backdrop-filter: blur(16px);
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .22s ease, transform .22s ease, visibility .22s;
+  }
+  .fh-header.is-open .fh-nav { opacity: 1; visibility: visible; transform: none; }
+  .fh-nav a { padding: 14px 6px; font-size: 16px; border-bottom: 1px solid rgba(255, 255, 255, .06); }
+  .fh-nav a::after { display: none; }
+  .fh-cta { height: 40px; padding: 0 16px; font-size: 13.5px; }
+  .fh-logo { margin-right: auto; }
+  .fh-burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px; height: 42px;
+    order: 3;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .fh-cta { order: 2; }
+  .fh-burger span { display: block; width: 22px; height: 2px; margin-inline: auto; background: #fff; border-radius: 2px; transition: .2s; }
+  .fh-header.is-open .fh-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .fh-header.is-open .fh-burger span:nth-child(2) { opacity: 0; }
+  .fh-header.is-open .fh-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 }
 
 @media (max-width: 560px) {
