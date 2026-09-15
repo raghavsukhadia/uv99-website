@@ -419,70 +419,23 @@
 }
 .sss__spectrum-inner {
   position: relative;
-  display: grid;
-  grid-template-columns: 74px 1fr;
-  gap: clamp(12px, 1.4vw, 18px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(20px, 3vw, 32px);
   height: 100%;
   min-height: 320px;
 }
 
-/* left column — tick labels + vertical bar */
-.sss__scalecol { position: relative; }
-.sss__ticks { position: absolute; inset: 0; }
-.sss__tick {
-  position: absolute; right: 44px;
-  transform: translateY(-50%);
-  text-align: right; white-space: nowrap;
-  font: 700 11px/1.2 Montserrat, Inter, Arial, sans-serif;
-  color: rgba(255, 255, 255, .78);
-}
-.sss__bar {
-  position: absolute;
-  top: 0; bottom: 0; right: 0;
-  width: 32px;
-  border-radius: 16px;
-  background: linear-gradient(to bottom,
-    #7c3aed 0%, #a855f7 12%, #6366f1 24%, #3b82f6 34%,
-    #22d3ee 44%, #22c55e 56%, #eab308 68%, #f97316 80%,
-    #ef4444 90%, #7f1d1d 100%);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .1), 0 0 26px -6px rgba(160, 90, 255, .5);
-}
-.sss__marker {
-  position: absolute;
-  left: 50%; top: 22%;
-  width: 22px; height: 22px;
-  margin: -11px 0 0 -11px;
-  border-radius: 50%;
-  background: #fff;
-  border: 3px solid var(--sss-accent);
-  box-shadow: 0 0 0 4px var(--sss-accent-soft), 0 0 18px var(--sss-accent);
-  transition: top .42s var(--ease), border-color .38s var(--ease), box-shadow .38s var(--ease);
-}
-.sss__bracket {
-  position: absolute;
-  left: -7px; right: -7px;
-  top: 0; height: 22%;
-  border: 2px solid var(--sss-accent);
-  border-radius: 9px;
-  box-shadow: 0 0 20px -2px var(--sss-accent), 0 0 0 4px var(--sss-accent-soft) inset;
-  transition: top .42s var(--ease), height .42s var(--ease),
-              border-color .38s var(--ease), box-shadow .38s var(--ease);
-  pointer-events: none;
-}
-
-/* right column — three wavelength descriptions, aligned to their band */
+/* wavelength descriptions — one per band, stacked in normal flow now that
+   the tick/bar scale column has been removed */
 .sss__legend { position: relative; }
 .sss__leg {
-  position: absolute;
-  left: 0; right: 0;
-  transform: translateY(-50%);
   padding-left: 14px;
   border-left: 2px solid var(--leg-accent, #fff);
   transition: opacity .32s var(--ease);
 }
-.sss__leg[data-band="uv"]       { top: 11%; }
-.sss__leg[data-band="visible"]  { top: 48%; }
-.sss__leg[data-band="infrared"] { top: 87%; }
+.sss__leg + .sss__leg { margin-top: clamp(20px, 3vw, 32px); }
 .sss__leg.is-dim { opacity: .48; }
 .sss__leg-range { font: 700 11px/1 Montserrat, Inter, Arial, sans-serif; letter-spacing: .05em; color: var(--leg-accent, #fff); opacity: .85; }
 .sss__leg-name  { margin: 6px 0 6px; font: 800 16px/1.1 Montserrat, Inter, Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--leg-accent, #fff); transition: color .32s var(--ease); }

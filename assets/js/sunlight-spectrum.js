@@ -48,8 +48,7 @@
     ticks: [
       { label: '280 nm',        pos: 2  },
       { label: '400 nm',        pos: 22 },
-      { label: '780 nm',        pos: 74 },
-      { label: 'Beyond 780 nm', pos: 97 }
+      { label: '780 nm',        pos: 74 }
     ],
 
     bands: {
@@ -254,9 +253,11 @@
     if (film) film.style.background = band.filmTint;
 
     /* spectrum marker + bracket */
-    marker.style.top = band.marker + '%';
-    bracket.style.top = band.bracket[0] + '%';
-    bracket.style.height = (band.bracket[1] - band.bracket[0]) + '%';
+    if (marker) marker.style.top = band.marker + '%';
+    if (bracket) {
+      bracket.style.top = band.bracket[0] + '%';
+      bracket.style.height = (band.bracket[1] - band.bracket[0]) + '%';
+    }
 
     /* legend emphasis */
     ORDER.forEach(function (k) {
