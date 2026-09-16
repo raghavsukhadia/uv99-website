@@ -30,22 +30,9 @@
 
   <!-- ============ LEFT NAV RAIL ============ -->
   <header class="upo-rail">
-    <a class="upo-rail__logo" href="/" aria-label="UV99+1 home" data-animate>
+    <a class="upo-rail__logo" href="/" aria-label="UV99+1 home">
       <img src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing" width="210" height="96">
     </a>
-
-    <nav class="upo-rail__nav" id="upo-rail-nav" aria-label="Section navigation">
-      <a href="#overview" class="is-active" data-nav>Overview</a>
-      <a href="#technology" data-nav>Technology</a>
-      <a href="#performance" data-nav>Performance</a>
-      <a href="#installers" data-nav>Installers</a>
-    </nav>
-
-    <button class="upo-rail__menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="upo-rail-nav" data-animate>
-      <span></span><span></span><span></span>
-    </button>
-
-    <p class="upo-rail__note" data-animate>Protection engineered<br>for a cooler cabin.</p>
   </header>
 
   <main>
@@ -59,25 +46,11 @@
     <div class="upo-stage" aria-hidden="true">
       <div class="upo-stage__scene" data-animate>
         <div class="upo-stage__frame">
-          <img class="upo-stage__plate" src="/assets/images/hero/uv99-plus-one-stage.png"
-               alt="" width="1376" height="768" fetchpriority="high" decoding="async">
-          <img class="upo-stage__ring" src="/assets/images/hero/uv99-plus-one-stage.png"
-               alt="" width="1376" height="768" aria-hidden="true" decoding="async">
+          <video class="upo-stage__plate" src="/assets/video/uv99+1video.mp4"
+                 autoplay muted playsinline aria-hidden="true"></video>
           <span class="upo-stage__turntable" aria-hidden="true"><span class="upo-stage__turntable-spin"></span></span>
           <span class="upo-stage__spark"></span>
           <span class="upo-stage__glow"></span>
-
-          <div class="upo-product-slot">
-            <div class="upo-product" data-animate>
-              <div class="upo-product__par">
-                <div class="upo-product__lift">
-                  <img class="upo-product__photo" src="/assets/images/products/UV99+1.png" alt="UV99 +1 premium nano-ceramic window film packaging." decoding="async">
-                </div>
-              </div>
-              <span class="upo-product__shadow" aria-hidden="true"></span>
-              <span class="upo-product__reflection"></span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -100,24 +73,86 @@
           <span>Discover UV99&#8202;+1</span>
           <svg class="upo-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <a class="upo-textlink" href="/assets/uv99-plus-one-specs.pdf">Download Specifications</a>
       </div>
-
-      <dl class="upo-stats" data-animate>
-        <div class="upo-stat">
-          <dd class="upo-stat__value" data-count="100" data-suffix="%">100%</dd>
-          <dt class="upo-stat__label">UVA &amp; UVB</dt>
-        </div>
-        <div class="upo-stat">
-          <dd class="upo-stat__value" data-count="89" data-suffix="%">89%</dd>
-          <dt class="upo-stat__label">Infrared<br>Rejection</dt>
-        </div>
-        <div class="upo-stat">
-          <dd class="upo-stat__value" data-count="54" data-suffix="%">54%</dd>
-          <dt class="upo-stat__label">Heat<br>Rejection</dt>
-        </div>
-      </dl>
     </div>
+  </section>
+
+  <!-- ============ HERO STATS (kept off the video itself) ============ -->
+  <div class="upo-hero-stats">
+    <dl class="upo-stats" data-animate>
+      <div class="upo-stat">
+        <dd class="upo-stat__value" data-count="100" data-suffix="%">100%</dd>
+        <dt class="upo-stat__label">UVA &amp; UVB</dt>
+      </div>
+      <div class="upo-stat">
+        <dd class="upo-stat__value" data-count="89" data-suffix="%">89%</dd>
+        <dt class="upo-stat__label">Infrared<br>Rejection</dt>
+      </div>
+      <div class="upo-stat">
+        <dd class="upo-stat__value" data-count="54" data-suffix="%">54%</dd>
+        <dt class="upo-stat__label">Heat<br>Rejection</dt>
+      </div>
+      <div class="upo-stat">
+        <dd class="upo-stat__value" data-count="70" data-suffix="%">70%</dd>
+        <dt class="upo-stat__label">Visible Light<br>Transmission</dt>
+      </div>
+    </dl>
+  </div>
+
+  <!-- ============ MOBILE QUICK-GLANCE SUMMARY (phones only) ============ -->
+  <section class="upo-mobile-summary" id="mobile-summary">
+    <p class="upo-kicker" data-reveal>Harmful rays out, protection in</p>
+    <h2 class="upo-mobile-summary__title" data-reveal>Advanced UV Protection.<br>Extra Cooling.</h2>
+    <p class="upo-mobile-summary__lede" data-reveal>
+      Blocks harmful ultraviolet rays and reduces infrared heat &mdash; while preserving exceptional optical clarity.
+    </p>
+
+    <ul class="upo-mobile-summary__list" data-reveal>
+      <li>
+        <span class="upo-mobile-summary__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.6"/><path d="M12 3.4v2.5M12 18.1v2.5M3.4 12h2.5M18.1 12h2.5M5.95 5.95 7.7 7.7M16.3 16.3l1.75 1.75M18.05 5.95 16.3 7.7M7.7 16.3l-1.75 1.75"/></svg></span>
+        <div>
+          <h3>100% UVA &amp; UVB Protection</h3>
+          <p>Blocks harmful ultraviolet radiation across the UVA and UVB spectrum.</p>
+        </div>
+      </li>
+      <li>
+        <span class="upo-mobile-summary__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5.2c0 4.6 3 8.4 7 9.8 4-1.4 7-5.2 7-9.8V6l-7-3Z"/></svg></span>
+        <div>
+          <h3>UVA400 Protective Shield</h3>
+          <p>Comprehensive UV protection through wavelengths of up to 400 nanometers.</p>
+        </div>
+      </li>
+      <li>
+        <span class="upo-mobile-summary__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6.2 7.4v5.1l-3.6 1.8v-6.9L4 5Z"/></svg></span>
+        <div>
+          <h3>HEV Light Filtration</h3>
+          <p>Filters high-energy violet light for more complete solar protection.</p>
+        </div>
+      </li>
+      <li>
+        <span class="upo-mobile-summary__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.2a1.5 1.5 0 0 0-3 0v8.4a4 4 0 1 0 3 0V4.2Z"/><circle cx="12" cy="17.4" r="1.3" fill="currentColor" stroke="none"/></svg></span>
+        <div>
+          <h3>Nano-Ceramic Heat Rejection</h3>
+          <p>A high-density ceramic core reduces solar heat without metallic materials.</p>
+        </div>
+      </li>
+      <li>
+        <span class="upo-mobile-summary__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2c.62 4.9 2.28 6.56 7 7-4.72.44-6.38 2.1-7 7-.62-4.9-2.28-6.56-7-7 4.72-.44 6.38-2.1 7-7Z"/></svg></span>
+        <div>
+          <h3>Exceptional Optical Clarity</h3>
+          <p>Preserves a clear, natural view while delivering advanced solar protection.</p>
+        </div>
+      </li>
+      <li>
+        <span class="upo-mobile-summary__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.5v6c0 4.6 3.2 8.4 7.5 10 4.3-1.6 7.5-5.4 7.5-10v-6L12 2.5Z"/><path d="M8 10.6 12 8.8l4 1.8"/><path d="M8 13.8 12 12l4 1.8"/></svg></span>
+        <div>
+          <h3>Lasting Interior Protection</h3>
+          <p>Helps protect occupants, upholstery, and finishes from prolonged solar exposure.</p>
+        </div>
+      </li>
+    </ul>
+
+    <p class="upo-mobile-summary__banner" data-reveal>Experience 100% UVA &amp; UVB protection with 54% total heat rejection.</p>
   </section>
 
   <!-- ============ BOTTOM MEDIA STRIP (continuation of the hero) ============ -->
@@ -125,70 +160,204 @@
     <div class="upo-strip__rail"></div>
     <figure class="upo-strip__panel upo-strip__panel--film" data-reveal>
       <div class="upo-strip__tex"></div>
-      <figcaption>Nano-ceramic matrix</figcaption>
     </figure>
     <figure class="upo-strip__panel upo-strip__panel--edge" data-reveal>
       <div class="upo-strip__rim"></div>
-      <figcaption>Optical-grade edge</figcaption>
     </figure>
   </section>
 
-  <!-- ============ TECHNOLOGY ============ -->
-  <section class="upo-section" id="technology">
-    <p class="upo-kicker" data-reveal>Nano-ceramic technology</p>
-    <h2 class="upo-section__title" data-reveal>A multilayer ceramic matrix,<br>tuned to the light you don&rsquo;t want.</h2>
-    <p class="upo-section__copy" data-reveal>
-      UV99+1 stacks non-metallic ceramic nanoparticles into a spectrally selective film. Ultraviolet and
-      infrared energy are absorbed and re-radiated outward; visible light passes through almost untouched.
-      No dyes to fade, no metals to corrode or block signal.
+  <!-- ============ GLAZING ARCHITECTURE ============ -->
+  <section class="upo-section upo-tech" id="technology">
+    <div class="upo-tech__copy">
+      <h2 class="upo-section__title" data-reveal>A multilayer ceramic matrix, tuned to the light you don&rsquo;t want.</h2>
+      <p class="upo-lockup" data-reveal>
+        <span class="upo-lockup__badge">UV99+1</span>
+        <span class="upo-lockup__divider" aria-hidden="true"></span>
+        <span class="upo-lockup__label">Nano-Ceramic Technology</span>
+      </p>
+    </div>
+
+    <p class="upo-tech__lede" data-reveal>
+      Advanced non-metallic ceramic layers reject damaging ultraviolet and infrared energy while preserving
+      exceptional optical clarity.
     </p>
+
+    <div class="upo-tech__visual">
+      <div class="upo-layers" data-reveal>
+        <div class="upo-layers__frame">
+          <span class="upo-layers__glow" aria-hidden="true"></span>
+          <img class="upo-layers__img" src="/assets/images/hero/layers.png" alt="Exploded view of the five UV99+1 glazing film layers, stacked from the protective hardcoat down to the precision bonding layer" width="1672" height="941" loading="lazy">
+        </div>
+        <ol class="upo-layer-callouts">
+          <li class="upo-layer-callout" data-layer="1">
+            <span class="upo-layer-callout__num">01</span>
+            <span class="upo-layer-callout__name">Protective Hardcoat</span>
+          </li>
+          <li class="upo-layer-callout" data-layer="2">
+            <span class="upo-layer-callout__num">02</span>
+            <span class="upo-layer-callout__name">Optical Clarity Layer</span>
+          </li>
+          <li class="upo-layer-callout" data-layer="3">
+            <span class="upo-layer-callout__num">03</span>
+            <span class="upo-layer-callout__name">UVA400 Protective Shield</span>
+          </li>
+          <li class="upo-layer-callout" data-layer="4">
+            <span class="upo-layer-callout__num">04</span>
+            <span class="upo-layer-callout__name">High-Density Nano-Ceramic Core</span>
+          </li>
+          <li class="upo-layer-callout" data-layer="5">
+            <span class="upo-layer-callout__num">05</span>
+            <span class="upo-layer-callout__name">Precision Bonding Layer</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+
     <ul class="upo-specs" data-reveal>
       <li><b>ADVANCED</b><span>Nano-ceramic construction</span></li>
-      <li><b><span class="upo-num" data-count="280">280</span>&ndash;<span class="upo-num" data-count="400">400</span><i>nm</i></b><span>Full UV block range</span></li>
-      <li><b>&lt;<span class="upo-num" data-count="1" data-suffix="%">1%</span></b><span>Haze &amp; optical distortion</span></li>
-      <li><b>NON-METAL</b><span>Signal-safe, corrosion-free</span></li>
+      <li><b><span class="upo-num" data-count="280">280</span>&ndash;<span class="upo-num" data-count="400">400</span><i>nm</i></b><span>Comprehensive UV range</span></li>
+      <li><b><span class="upo-num" data-count="100" data-suffix="%">100%</span></b><span>UVA &amp; UVB protection</span></li>
+      <li><b>NON-METALLIC</b><span>Signal-friendly performance</span></li>
     </ul>
   </section>
 
-  <!-- ============ PERFORMANCE ============ -->
-  <section class="upo-section upo-section--perf" id="performance">
-    <p class="upo-kicker" data-reveal>Measured performance</p>
-    <h2 class="upo-section__title" data-reveal>Every figure verified<br>on the spectrophotometer.</h2>
-    <div class="upo-perf" data-reveal>
-      <div class="upo-perf__item">
-        <span class="upo-perf__num" data-count="100" data-suffix="%">100%</span>
-        <span class="upo-perf__label">UV Rejection</span>
-        <span class="upo-perf__bar"><i style="--v:100%"></i></span>
-      </div>
-      <div class="upo-perf__item">
-        <span class="upo-perf__num" data-count="89" data-suffix="%">89%</span>
-        <span class="upo-perf__label">Infrared Rejection</span>
-        <span class="upo-perf__bar"><i style="--v:89%"></i></span>
-      </div>
-      <div class="upo-perf__item">
-        <span class="upo-perf__num" data-count="54" data-suffix="%">54%</span>
-        <span class="upo-perf__label">Total Heat Rejection</span>
-        <span class="upo-perf__bar"><i style="--v:54%"></i></span>
-      </div>
-      <div class="upo-perf__item">
-        <span class="upo-perf__num" data-count="70" data-suffix="%">70%</span>
-        <span class="upo-perf__label">Visible Light Transmission</span>
-        <span class="upo-perf__bar"><i style="--v:70%"></i></span>
-      </div>
-    </div>
+  <!-- ============ ARCHITECTURE ============ -->
+  <section class="upo-section upo-arch" id="architecture">
+    <h2 class="upo-section__title" data-reveal>The architecture of UV99+1 glazing</h2>
+    <p class="upo-arch__lede" data-reveal>Advanced protection, engineered layer by layer.</p>
+    <p class="upo-section__copy" data-reveal>
+      UV99+1 combines precision manufacturing with advanced optical materials to deliver exceptional
+      protection, comfort, clarity, and durability.
+    </p>
+
+    <ul class="upo-features" data-reveal>
+      <li>
+        <h3>100% UVA &amp; UVB Protection</h3>
+        <p>Blocks harmful ultraviolet radiation across the UVA and UVB spectrum.</p>
+      </li>
+      <li>
+        <h3>UVA400 Protective Shield</h3>
+        <p>Provides comprehensive ultraviolet protection through wavelengths of up to 400 nanometers.</p>
+      </li>
+      <li>
+        <h3>HEV Light Filtration</h3>
+        <p>Filters high-energy violet light near the UVA400 range for more complete solar protection.</p>
+      </li>
+      <li>
+        <h3>Nano-Ceramic Heat Rejection</h3>
+        <p>A high-density ceramic core reduces solar heat without relying on metallic materials.</p>
+      </li>
+      <li>
+        <h3>Exceptional Optical Clarity</h3>
+        <p>Preserves a clear, natural view while delivering advanced solar protection.</p>
+      </li>
+      <li>
+        <h3>Lasting Interior Protection</h3>
+        <p>Helps protect occupants, upholstery, finishes, and valuable materials from prolonged solar exposure.</p>
+      </li>
+    </ul>
   </section>
 
-  <!-- ============ CTA / INSTALLERS ============ -->
-  <section class="upo-cta" id="installers">
-    <div class="upo-cta__inner" data-reveal>
-      <h2>Fitted only by certified<br>UV99+1 installers.</h2>
-      <p>Precision-cut, heat-formed and inspected. Backed by a written performance warranty.</p>
+  <!-- ============ UVA400 SHIELD ============ -->
+  <section class="upo-section upo-uva" id="uva400">
+    <div class="upo-uva__copy">
+      <p class="upo-kicker upo-uva__kicker" data-reveal>
+        <span class="upo-uva__kicker-num">03</span>
+        <span class="upo-uva__kicker-divider" aria-hidden="true"></span>
+        <span>UVA400 Protective Shield</span>
+      </p>
+      <p class="upo-uva__figure" data-reveal><span>400</span><i>nm</i></p>
+      <h2 class="upo-uva__title" data-reveal>UVA400 Protective Shield</h2>
+      <p class="upo-section__copy" data-reveal>
+        UV99+1&rsquo;s exclusive UVA400 Protective Shield is engineered to block 100% of harmful ultraviolet
+        radiation up to 400 nanometers. This comprehensive protection blocks 100% of UVA and UVB rays while
+        also filtering high-energy violet (HEV) light near the UVA400 nm range.
+      </p>
     </div>
+
+    <div class="upo-uva__spectrum" data-reveal>
+      <div class="upo-uva__bands">
+        <div class="upo-uva__band"><b>UV-C</b><span>200&ndash;280nm</span></div>
+        <div class="upo-uva__band"><b>UV-B</b><span>280&ndash;315nm</span></div>
+        <div class="upo-uva__band"><b>UVA</b><span>315&ndash;400nm</span></div>
+        <div class="upo-uva__band"><b>HEV</b><span>400&ndash;500nm</span></div>
+      </div>
+      <div class="upo-uva__bar">
+        <svg class="upo-uva__wave" viewBox="0 0 220 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="M0 20 C 6 8, 13 8, 19 20 S 32 32, 38 20 S 51 8, 57 20 S 70 32, 76 20 S 89 8, 95 20 S 108 32, 114 20 S 127 8, 133 20 S 146 32, 152 20 S 165 8, 171 20 S 184 32, 190 20 S 203 8, 209 20" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.4" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <span class="upo-uva__marker" aria-hidden="true"></span>
+      </div>
+      <div class="upo-uva__shield">
+        <span class="upo-uva__shield-arrow" aria-hidden="true"></span>
+        <p class="upo-uva__shield-label">UVA400 Shield</p>
+        <p class="upo-uva__shield-sub">100% blocked<br><span>(UVA + UVB + HEV)</span></p>
+      </div>
+    </div>
+
+    <figure class="upo-uva__banner" data-reveal>
+      <img src="/assets/images/hero/bottom.png" alt="UV rays striking a car windshield and being deflected away by the UVA400 Protective Shield" width="1672" height="941" loading="lazy">
+    </figure>
   </section>
 
-  <footer class="upo-foot">
-    <span>&copy; <span data-year>2026</span> UV99+1 &middot; Nano-ceramic automotive window film</span>
-    <span>Published values are QC averages and may vary by batch &plusmn;5%.</span>
+  <footer class="site-footer" data-reveal>
+    <div class="wrap">
+      <div class="footer-cols">
+        <div class="footer-brand" data-reveal>
+          <a class="brand" href="/" aria-label="UV99 Glazing home">
+            <img class="brand__logo" src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing">
+          </a>
+          <p class="footer-about">Harmful rays out, protection in. Automotive glazing engineered on advanced UV rejection and nano-ceramic film technology.</p>
+          <ul class="footer-contact">
+            <li>32/33, Mayfair, Near AIR, Congress Nagar, Nagpur - 440012, Maharashtra</li>
+          </ul>
+          <p class="footer-social-label">Follow us</p>
+          <ul class="footer-social">
+            <li><a href="https://www.instagram.com/uv99.in/" target="_blank" rel="noopener" aria-label="UV99 on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a></li>
+            <li><a href="https://www.facebook.com/profile.php?id=61591502420683" target="_blank" rel="noopener" aria-label="UV99 on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H17V3.6c-.3-.04-1.3-.13-2.47-.13-2.44 0-4.11 1.49-4.11 4.22V9.9H7.7V13h2.72v8h3.08Z"/></svg></a></li>
+            <li><a href="https://www.youtube.com/@UV99Glazing" target="_blank" rel="noopener" aria-label="UV99 on YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 0 0 1.95-1.97A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58ZM9.75 15.5v-7l6 3.5-6 3.5Z"/></svg></a></li>
+          </ul>
+        </div>
+        <nav class="footer-nav" data-reveal aria-label="Products">
+          <h3>Products</h3>
+          <ul>
+            <li><a href="/films.html">Window Film</a></li>
+            <li><a href="/films.html#simulator">Tint Simulator</a></li>
+            <li><a href="/films.html#selector">Compare &amp; Configure</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-nav" data-reveal aria-label="UV99+1">
+          <h3>UV99+1</h3>
+          <ul>
+            <li><a href="/uv99-plus-one.html">UV99 +1</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-nav" data-reveal aria-label="Ownership">
+          <h3>Ownership</h3>
+          <ul>
+            <li><a href="/warranty.html">Warranty</a></li>
+            <li><a href="/warranty.html#care">Film Care</a></li>
+            <li><a href="/faq-contact.html#contact">Contact</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-nav" data-reveal aria-label="Company">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="/faq-contact.html#faq">FAQ</a></li>
+            <li><a href="/faq-contact.html#contact">Become a Dealer</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom" data-reveal>
+        <span>&copy; <span data-year>2026</span> UV99 Glazing. All rights reserved.</span>
+        <nav class="footer-legal" aria-label="Legal">
+          <a href="/terms.html">Terms &amp; Conditions</a>
+          <a href="/privacy.html">Privacy Policy</a>
+          <a href="/disclaimer.html">Disclaimer</a>
+          <a href="/faq-contact.html#contact">Contact</a>
+        </nav>
+      </div>
+    </div>
   </footer>
   </main>
 

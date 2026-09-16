@@ -1143,9 +1143,9 @@ td:first-child { color: var(--plum); font-weight: 800; }
 .dark-cta p { margin: 0; color: rgba(255,255,255,.68); }
 
 /* ---------- site footer — reference layout: brand + contact block on the
-   left, three link columns on the right, legal bar underneath ---------- */
+   left, four link columns on the right, legal bar underneath ---------- */
 .site-footer { position: relative; overflow: hidden; padding: 72px 0 28px; color: rgba(255,255,255,.55); font-size: 14px; }
-.footer-cols { display: grid; grid-template-columns: 1.7fr .8fr .8fr .8fr; gap: 48px; }
+.footer-cols { display: grid; grid-template-columns: 1.5fr .7fr .7fr .7fr .7fr; gap: 48px; }
 
 /* top divider — faint static rule + a purple light that sweeps across it
    when the footer scrolls into view. Rides the site-wide [data-reveal]
@@ -3095,7 +3095,8 @@ body { background: #000 !important; }
 .footer-cols > [data-reveal]:nth-child(2) { transition-delay: .12s; }
 .footer-cols > [data-reveal]:nth-child(3) { transition-delay: .20s; }
 .footer-cols > [data-reveal]:nth-child(4) { transition-delay: .28s; }
-.footer-bottom[data-reveal] { transition-delay: .34s; }
+.footer-cols > [data-reveal]:nth-child(5) { transition-delay: .34s; }
+.footer-bottom[data-reveal] { transition-delay: .4s; }
 
 @media (prefers-reduced-motion: reduce) {
   .dark-cta__in > [data-reveal],
@@ -3521,6 +3522,17 @@ body { background: #000 !important; }
 .uvx-cost__card p { margin: 0; color: var(--muted); font-size: 13.5px; }
 @media (max-width: 900px) { .uvx-cost__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 520px) { .uvx-cost__grid { grid-template-columns: 1fr; } }
+.uvx-cost__video {
+  display: block;
+  width: 100%;
+  max-height: 640px;
+  border-radius: var(--radius);
+  box-shadow: 0 30px 80px -40px rgba(0,0,0,.8);
+  object-fit: cover;
+}
+@media (min-width: 901px) {
+  .uvx-cost__video { max-width: 720px; max-height: 420px; margin-inline: auto; }
+}
 
 /* =====================================================================
    PRODUCTS HERO — cinematic premium elevation
@@ -4283,6 +4295,12 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
 
 /* ---------- hero shell ------------------------------------------- */
 .fh-hero {
+  /* the intended box height — kept in a variable so the car artwork below
+     can centre against this fixed target instead of the *rendered* height,
+     which can grow taller than this on laptops where the headline/body
+     text wraps to more lines (narrower or shorter viewports), silently
+     dragging the car down with it */
+  --fh-h: clamp(560px, 84vh, 680px);
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -4297,7 +4315,7 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
   /* hug the content instead of forcing a near-full-viewport box — a taller
      fixed height than the text/cards need left a hollow band of empty
      background under them */
-  min-height: clamp(560px, 84vh, 680px);
+  min-height: var(--fh-h);
   /* horizontal gutter matches .wrap — min(1180px, 100% - 40px) centred —
      so the hero content lines up with "See the film do its job." below */
   padding: 94px max(20px, calc((100% - 1180px) / 2)) 48px;
@@ -4324,7 +4342,10 @@ body:has(.product-hero) .site-header:not(.is-stuck) .nav-links a[aria-current="p
   position: absolute;
   /* nudged right (was 7%) so the car doesn't sit under the headline/CTA text */
   right: 1%;
-  top: 50%;
+  /* centred against the hero's *intended* height (--fh-h), not its rendered
+     height — pins the car in place even if the text column above grows
+     taller than --fh-h on a shorter/narrower viewport */
+  top: calc(94px + (var(--fh-h) - 94px - 48px) / 2);
   width: 68%;
   max-width: 1040px;
   aspect-ratio: 1848 / 851;

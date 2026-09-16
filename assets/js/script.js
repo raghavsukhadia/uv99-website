@@ -231,6 +231,16 @@
   gsap.set('[data-animate]', { opacity: 0 });
   gsap.set('[data-reveal]', { opacity: 0, y: 34 });
   setHeroStart();
+
+  /* Hero copy/stats start hidden and stay that way until the video's car
+     has actually stopped (see the video-gated reveal below) — set once,
+     not inside setHeroStart(), so a later chrome replay never re-hides
+     content that has already been revealed. */
+  gsap.set(headlineSpans, { opacity: 0, yPercent: 100 });
+  gsap.set(['.upo-hero__lede', '.upo-hero__actions'], { opacity: 0, y: 18 });
+  gsap.set('.upo-stats', { opacity: 0 });
+  gsap.set(statItems, { opacity: 0, y: 16 });
+
   docEl.classList.remove('upo-anim');
 
   /* Hero-only pre-animation state — safe to call again for every replay. */
@@ -238,26 +248,20 @@
     gsap.set('.upo-stage__scene', { opacity: 0, scale: 0.94, transformOrigin: '50% 58%' });
     gsap.set(platformBits, { opacity: 0 });
     gsap.set('.upo-product', { opacity: 0, y: 52 });
-    gsap.set(headlineSpans, { opacity: 0, yPercent: 100 });
-    gsap.set('.upo-rail__logo', { opacity: 0, y: -8 });
     gsap.set(railNavLinks, { opacity: 0, x: -14 });
     gsap.set(['.upo-rail__menu', '.upo-rail__note'], { opacity: 0, y: 8 });
     gsap.set('.upo-watermark', { opacity: 0 });
-    gsap.set('.upo-hero__lede', { opacity: 0, y: 18 });
-    gsap.set('.upo-hero__actions', { opacity: 0, y: 16 });
-    gsap.set('.upo-stats', { opacity: 0 });
-    gsap.set(statItems, { opacity: 0, y: 16 });
   }
 
-  /* Build the cinematic entrance. Timings (seconds) follow the brief:
+  /* Build the CHROME-ONLY entrance (stage backdrop, rail, watermark,
+     platform lights). Timings (seconds):
        background artwork    0.00 – 1.00
        platform / glass      0.25 – 1.15   (staggered)
        product rises 52px    0.50 – 1.35
-       headline line reveal  0.80 – 1.55   (from overflow mask)
-       description           1.10 – 1.65
-       buttons               1.25 – 1.75
-       statistic containers  1.45 – 1.95   (staggered)
-       number counting       1.55 – 3.05   (rAF, 1500ms)                    */
+     The hero copy (headline/description/buttons/stats) is deliberately
+     NOT part of this timeline — it is revealed separately, once, by
+     playContentReveal() below, gated on the stage video's real playback
+     position rather than a fixed delay. */
   function buildIntro() {
     var tl = gsap.timeline({
       defaults: { ease: PREMIUM, duration: 0.8 },
@@ -269,8 +273,7 @@
     tl.to('.upo-stage__scene', { opacity: 1, scale: 1, duration: 1.0 }, 0);
 
     /* left rail chrome — quiet, early, never competing with the hero */
-    tl.to('.upo-rail__logo', { opacity: 1, y: 0, duration: 0.6 }, 0.08)
-      .to(railNavLinks, { opacity: 1, x: 0, duration: 0.5, stagger: 0.06 }, 0.18)
+    tl.to(railNavLinks, { opacity: 1, x: 0, duration: 0.5, stagger: 0.06 }, 0.18)
       .to(['.upo-rail__menu', '.upo-rail__note'], { opacity: 1, y: 0, duration: 0.5, stagger: 0.08 }, 0.24)
       .to('.upo-watermark', { opacity: 1, duration: 1.0 }, 0.12);
 
@@ -282,22 +285,63 @@
     /* 4 — central product rises ~52px into position while fading in */
     tl.to('.upo-product', { opacity: 1, y: 0, duration: 0.85 }, 0.5);
 
-    /* 5 — headline reveals line by line out of its overflow-hidden mask */
-    tl.to(headlineSpans, { opacity: 1, yPercent: 0, duration: 0.6, stagger: 0.09 }, 0.8);
-
-    /* 6 — description fades upward */
-    tl.to('.upo-hero__lede', { opacity: 1, y: 0, duration: 0.55 }, 1.1);
-
-    /* 7 — buttons + secondary link */
-    tl.to('.upo-hero__actions', { opacity: 1, y: 0, duration: 0.5 }, 1.25);
-
-    /* 8 — statistics reveal last, then the numbers count up */
-    tl.to('.upo-stats', { opacity: 1, duration: 0.45 }, 1.45)
-      .to(statItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, 1.45)
-      .call(function () { if (heroCounters) heroCounters.start(); }, null, 1.55);
+    tl.call(function () { revealPerfSequence(); }, null, 1.4);
 
     return tl;
   }
+
+  /* ---------- hero copy reveal: gated on the video's REAL stopped state ----------
+     .upo-stage__plate (the hero video) drives a car in once (plays through,
+     no loop) over 5.04s. Measured via frame-difference analysis of the
+     actual asset (not a guess): motion falls from >3 to <1 (mean abs luma
+     diff per pixel) between t=4.42s and t=4.50s, i.e. the car is genuinely
+     stopped by t=4.5s. Hero copy stays hidden until the video's currentTime
+     actually crosses that point, then reveals once, sequentially. */
+  var CAR_STOPPED_AT = 4.5;   // seconds into the clip — measured, see above
+  var contentRevealed = false;
+
+  function playContentReveal() {
+    if (contentRevealed) return;
+    contentRevealed = true;
+
+    /* Guarantee the backdrop is already visible even in the edge case where
+       this fires before the hero has scrolled into view (the video autoplays
+       independent of scroll position). Idempotent if the chrome intro has
+       already finished, which is the case in the normal above-the-fold path. */
+    if (introTl) introTl.kill();
+    playing = false;
+    gsap.set('.upo-stage__scene', { opacity: 1, scale: 1 });
+    gsap.set(platformBits, { clearProps: 'opacity' });
+    gsap.set('.upo-product', { opacity: 1, y: 0 });
+    gsap.set(['.upo-rail__menu', '.upo-rail__note'], { opacity: 1, y: 0 });
+    gsap.set(railNavLinks, { opacity: 1, x: 0 });
+    gsap.set('.upo-watermark', { opacity: 1 });
+
+    var tl = gsap.timeline({ defaults: { ease: PREMIUM, duration: 0.7 } });
+    tl.to(headlineSpans, { opacity: 1, yPercent: 0, duration: 0.6, stagger: 0.09 }, 0)
+      .to('.upo-hero__lede', { opacity: 1, y: 0, duration: 0.55 }, 0.45)
+      .to('.upo-hero__actions', { opacity: 1, y: 0, duration: 0.5 }, 0.75)
+      .to('.upo-stats', { opacity: 1, duration: 0.4 }, 1.05)
+      .to(statItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.16 }, 1.05)
+      .call(function () { if (heroCounters) heroCounters.start(); }, null, 1.2);
+  }
+
+  (function () {
+    var video = document.querySelector('.upo-stage__plate');
+    if (!video || video.tagName !== 'VIDEO') { playContentReveal(); return; }
+
+    var onTimeUpdate = function () {
+      if (video.currentTime >= CAR_STOPPED_AT) {
+        playContentReveal();
+        video.removeEventListener('timeupdate', onTimeUpdate);
+      }
+    };
+    video.addEventListener('timeupdate', onTimeUpdate);
+
+    /* failsafe only — never leave the hero copy permanently hidden if the
+       video is blocked from playing/loading; not used for normal detection */
+    setTimeout(playContentReveal, 12000);
+  })();
 
   var introTl = null;
   var playing = false;
@@ -312,7 +356,7 @@
     gsap.set(platformBits, { clearProps: 'opacity' });
     gsap.set(['.upo-product', '.upo-hero__lede', '.upo-hero__actions'], { opacity: 1, y: 0 });
     gsap.set(headlineSpans, { opacity: 1, yPercent: 0 });
-    gsap.set(['.upo-rail__logo', '.upo-rail__menu', '.upo-rail__note'], { opacity: 1, y: 0 });
+    gsap.set(['.upo-rail__menu', '.upo-rail__note'], { opacity: 1, y: 0 });
     gsap.set(railNavLinks, { opacity: 1, x: 0 });
     gsap.set('.upo-watermark', { opacity: 1 });
     gsap.set(['.upo-stats'].concat(statItems), { opacity: 1, y: 0 });
@@ -332,7 +376,10 @@
 
   function resetIntro() {
     if (introTl) { introTl.kill(); introTl = null; }
-    if (heroCounters) heroCounters.reset();
+    /* the counters are part of the one-time content reveal, not the
+       repeatable chrome intro — once revealed, leave them at their
+       final values instead of snapping back to 0% with no way to replay */
+    if (heroCounters && !contentRevealed) heroCounters.reset();
     playing = false;
     setHeroStart();
   }
@@ -389,19 +436,33 @@
     });
   });
 
-  /* ---------- performance count-ups + bars ---------- */
-  ScrollTrigger.create({
-    trigger: '.upo-perf',
-    start: 'top 78%',
-    once: true,
-    onEnter: function () {
-      var perfEls = document.querySelectorAll('.upo-perf__num');
-      if (perfEls.length) makeCounterGroup(perfEls, COUNTER_MS).start();
-      gsap.from('.upo-perf__bar i', {
-        scaleX: 0, transformOrigin: 'left', duration: 1.3, ease: 'power2.out', stagger: .12
-      });
+  function revealPerfSequence() {
+    var perf = document.querySelector('.upo-perf');
+    var perfItems = gsap.utils.toArray('.upo-perf__item');
+    if (!perf || !perfItems.length) return;
+
+    gsap.set(perf, { autoAlpha: 1, visibility: 'visible' });
+    gsap.set(perfItems, { opacity: 0, y: 18 });
+
+    gsap.to(perfItems, {
+      opacity: 1,
+      y: 0,
+      duration: 0.55,
+      ease: PREMIUM,
+      stagger: 0.14,
+      delay: 0.1
+    });
+
+    var perfEls = document.querySelectorAll('.upo-perf__num');
+    if (perfEls.length) {
+      gsap.delayedCall(0.15, function () { makeCounterGroup(perfEls, COUNTER_MS).start(); });
     }
-  });
+
+    gsap.fromTo('.upo-perf__bar i',
+      { scaleX: 0 },
+      { scaleX: 1, transformOrigin: 'left', duration: 1.1, ease: 'power2.out', stagger: 0.14, delay: 0.18 }
+    );
+  }
 
   /* ---------- technology spec list — same entrance as the hero stats:
      container reveal (its own [data-reveal]) + per-item stagger, then the
@@ -422,6 +483,48 @@
           gsap.delayedCall(0.1, function () { makeCounterGroup(specNums, COUNTER_MS).start(); });
         }
       }
+    });
+  })();
+
+  /* ---------- glazing diagram — image fades in, then the numbered
+     layer callouts stagger in as the section scrolls into place ---------- */
+  (function () {
+    var layers = document.querySelector('.upo-layers');
+    var img = document.querySelector('.upo-layers__img');
+    if (!layers) return;
+    var callouts = gsap.utils.toArray('.upo-layer-callout');
+    /* opacity only — the continuous CSS float keyframes own `transform` on
+       this element, and a CSS animation's transform overrides any inline
+       transform GSAP would set, so a scale-in tween here would be silently
+       clobbered every frame */
+    if (img) gsap.set(img, { opacity: 0 });
+    if (callouts.length) gsap.set(callouts, { opacity: 0, x: -10 });
+    ScrollTrigger.create({
+      trigger: layers,
+      start: 'top 78%',
+      once: true,
+      onEnter: function () {
+        if (img) gsap.to(img, { opacity: 1, duration: 1, ease: PREMIUM });
+        if (callouts.length) {
+          gsap.to(callouts, Object.assign(
+            { opacity: 1, x: 0 },
+            { duration: 0.55, ease: PREMIUM, stagger: 0.12, delay: 0.35, clearProps: 'opacity,transform' }
+          ));
+        }
+      }
+    });
+  })();
+
+  /* ---------- footer top divider — purple line sweeps across once,
+     matching the shared site footer's treatment (styles.css) ---------- */
+  (function () {
+    var footer = document.querySelector('.site-footer');
+    if (!footer) return;
+    ScrollTrigger.create({
+      trigger: footer,
+      start: 'top 90%',
+      once: true,
+      onEnter: function () { footer.classList.add('is-swept'); }
     });
   })();
 
