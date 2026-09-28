@@ -5,8 +5,8 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.uv99.in" }],
-      "destination": "https://uv99.in/:path*",
+      "has": [{ "type": "host", "value": "uv99.in" }],
+      "destination": "https://www.uv99.in/:path*",
       "statusCode": 301
     },
     { "source": "/index.html", "destination": "/", "statusCode": 301 }

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://uv99.in/sitemap.xml
+Sitemap: https://www.uv99.in/sitemap.xml
