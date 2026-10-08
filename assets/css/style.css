@@ -232,7 +232,7 @@ main { position: relative; z-index: 1; overflow-x: hidden; }
   position: absolute;
   z-index: 6;
   right: var(--edge);
-  top: 9%;
+  top: 13%;                      /* clears the sticky header with more headroom */
   bottom: 5%;                    /* pulls the block slightly up from full-down */
   height: max-content;
   margin-block: auto;            /* vertical centering without transform (GSAP-safe) */
@@ -400,8 +400,12 @@ body.upo .upo-hero__lede {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: clamp(12px, 3vw, 32px);
-  margin: 0;
+  margin: 14px 0 0;
 }
+/* homepage hero (#overview) has only 3 stats, not 4 — the shared 4-column
+   grid above (sized for the UV99+1 page's 4 stats) leaves an empty 4th
+   column here, cramming the 3 real items into the left 3/4 of the row. */
+#overview .upo-stats { grid-template-columns: repeat(3, 1fr); }
 .upo-stat {
   min-width: 0;
   padding: 0 clamp(12px, 1.5vw, 22px);
@@ -437,6 +441,11 @@ body.upo .upo-hero__lede {
 @media (max-width: 640px) {
   .upo-stats { grid-template-columns: repeat(2, 1fr); row-gap: clamp(20px, 5vw, 28px); }
   .upo-stat:nth-child(3) { padding-left: 0; border-left: 0; }
+  /* homepage hero (#overview) has only 3 short stats, not 4 — one row reads
+     better than stranding the 3rd item alone under a 2x2 grid (column count
+     already set to 3 by the base #overview rule above) */
+  #overview .upo-stats { gap: 10px; }
+  #overview .upo-stat { padding: 0; border-left: 0; text-align: center; }
 }
 
 /* ============================================================
@@ -626,8 +635,7 @@ body.upo .upo-stage__turntable { display: none; }
   --slot-w: min(29vw, 408px); /* single size source — breakpoints override this var */
   width: var(--slot-w);
   transform: translateX(-50%);
-}
-/* .upo-product        — perspective host + GSAP intro target (opacity / yPercent)
+}/* .upo-product        — perspective host + GSAP intro target (opacity / yPercent)
    .upo-product__par   — pointer-parallax tilt (JS sets transform; nothing else touches it)
    .upo-product__lift  — vertical float + fixed downward tilt so the lid reads
    .upo-product__box   — continuous Y-axis spin; real 3D cuboid (front/back/left/right/top) */
@@ -1776,6 +1784,12 @@ body.upo.menu-open { overflow: hidden; }
    RESPONSIVE
    ============================================================ */
 @media (max-width: 1180px) {
+  /* 901-1180px sits between the hamburger-nav breakpoint (900px, where
+     .upo-hero already gets proper top clearance below) and desktop — without
+     this, the hero's absolute-positioned content and background sit flush
+     under the sticky header with no gap. Overridden below 900px by the
+     mobile stacked-layout padding. */
+  .upo-hero { padding-top: 92px; }
   .upo-hero__content { width: min(360px, 33vw); }
   .upo-stage__frame { --sx: -52%; top: 43%; width: min(1280px, 134%); }
   .upo-product-slot { --slot-w: min(31vw, 364px); }

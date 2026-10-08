@@ -21,14 +21,15 @@
     main { position: static; z-index: auto; }
     .upo-hero { --amber: #ff7a34; --violet: #8b5cf6; margin-top: -78px; min-height: max(86vh, 720px); }
     section.upo-hero { background: radial-gradient(760px 620px at 34% 40%, rgba(120,70,210,.22), transparent 60%), #050308 !important; }
-    .upo-hero__content { top: clamp(76px, 9vh, 130px); bottom: auto; margin-block: 0; }
+    .upo-hero__content { top: clamp(130px, 16vh, 190px); bottom: auto; margin-block: 0; }
+    @media (min-width: 901px) { .upo-product-slot { bottom: 15%; } }
     /* stay right-aligned, but stop drifting into the corner past ~1600px:
        the column then holds the right edge of a 1600px-centred band */
     .upo-hero__content { right: max(var(--edge), calc((100vw - 1600px) / 2)); }
     /* short-viewport safety: keep the stats row clear of the guard bar */
     @media (min-width: 901px) and (max-height: 820px) {
       .upo-hero { min-height: 760px; }
-      .upo-hero__content { top: 72px; }
+      .upo-hero__content { top: 120px; }
       .upo-hero__headline { font-size: clamp(2.4rem, 6vw, 3.4rem); }
       .upo-stat__value { font-size: clamp(1.35rem, 2vw, 1.8rem); }
     }

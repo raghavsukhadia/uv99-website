@@ -1,4 +1,4 @@
-/* UV99 Glazing is a static site — there is no bundler step.
+  /* UV99 Glazing is a static site — there is no bundler step.
    This "build" verifies every page and its referenced local CSS/JS
    assets are present and non-empty, so `npm run build` fails loudly
    if a file goes missing before a deploy. */
