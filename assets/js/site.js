@@ -28,6 +28,31 @@
     });
   }
 
+  // "Updates" nav button: there's nothing behind it yet, so a click just shows
+  // a short "Coming soon" note under the header. It's a live region so screen
+  // readers announce it; it fades on its own, on Escape, or on any outside click.
+  const updateBtn = document.querySelector('.nav-update');
+  if (updateBtn) {
+    const toast = document.createElement('div');
+    toast.className = 'soon-toast';
+    toast.setAttribute('role', 'status');
+    document.body.appendChild(toast);
+
+    let hideTimer;
+    const hideSoon = () => {
+      clearTimeout(hideTimer);
+      toast.classList.remove('is-visible');
+    };
+    updateBtn.addEventListener('click', () => {
+      toast.textContent = 'Updates — Coming soon';
+      toast.classList.add('is-visible');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hideSoon, 2800);
+    });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') hideSoon(); });
+    document.addEventListener('click', (event) => { if (!updateBtn.contains(event.target)) hideSoon(); });
+  }
+
   // UV99 wordmark: when it already points at the page you're on (the landing
   // page), glide back to the top / hero instead of firing a full reload.
   // On every other page it stays an ordinary link to the landing page.

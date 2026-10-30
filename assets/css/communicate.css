@@ -18,10 +18,13 @@
 .commsec__bg {
   position: absolute;
   inset: 0;
-  background: #000 url("/assets/images/sections/CAR 10.png") no-repeat 82% center;
+  background: #000 url("/assets/images/sections/car-10-1672.webp") no-repeat 82% center;
   background-size: cover;
   transform: scale(1.04);
   animation: comm-pan 24s ease-in-out infinite alternate;
+}
+@media (max-width: 900px) {
+  .commsec__bg { background-image: url("/assets/images/sections/car-10-1100.webp"); }
 }
 @keyframes comm-pan {
   from { transform: scale(1.04) translateX(0); }

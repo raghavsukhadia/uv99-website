@@ -12,9 +12,9 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#8f4a9e">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap">
+  <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/montserrat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/fonts.css">
   <link rel="stylesheet" href="/assets/css/style.css">
   <script>
     // Add the animation gate as early as possible so nothing flashes before GSAP runs.
@@ -31,7 +31,7 @@
   <!-- ============ LEFT NAV RAIL ============ -->
   <header class="upo-rail">
     <a class="upo-rail__logo" href="/" aria-label="UV99+1 home">
-      <img src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing" width="210" height="96">
+      <img src="/assets/images/logos/uv99-logo-360.webp" alt="UV99 Glazing" width="210" height="96">
     </a>
   </header>
 
@@ -46,7 +46,7 @@
     <div class="upo-stage" aria-hidden="true">
       <div class="upo-stage__scene" data-animate>
         <div class="upo-stage__frame">
-          <video class="upo-stage__plate" src="/assets/video/uv99+1video.mp4"
+          <video class="upo-stage__plate" src="/assets/video/uv99-plus-one-hero.mp4"
                  autoplay muted playsinline aria-hidden="true"></video>
           <span class="upo-stage__turntable" aria-hidden="true"><span class="upo-stage__turntable-spin"></span></span>
           <span class="upo-stage__spark"></span>
@@ -186,7 +186,7 @@
       <div class="upo-layers" data-reveal>
         <div class="upo-layers__frame">
           <span class="upo-layers__glow" aria-hidden="true"></span>
-          <img class="upo-layers__img" src="/assets/images/hero/layers.png" alt="Exploded view of the five UV99+1 glazing film layers, stacked from the protective hardcoat down to the precision bonding layer" width="1672" height="941" loading="lazy">
+          <img class="upo-layers__img" src="/assets/images/hero/layers-1280.webp" srcset="/assets/images/hero/layers-800.webp 800w, /assets/images/hero/layers-1280.webp 1280w, /assets/images/hero/layers-1672.webp 1672w" sizes="(min-width: 901px) 757px, 100vw" alt="Exploded view of the five UV99+1 glazing film layers, stacked from the protective hardcoat down to the precision bonding layer" width="1672" height="941" loading="lazy">
         </div>
         <ol class="upo-layer-callouts">
           <li class="upo-layer-callout" data-layer="1">
@@ -296,7 +296,7 @@
     </div>
 
     <figure class="upo-uva__banner" data-reveal>
-      <img src="/assets/images/hero/bottom.png" alt="UV rays striking a car windshield and being deflected away by the UVA400 Protective Shield" width="1672" height="941" loading="lazy">
+      <img src="/assets/images/hero/bottom-1280.webp" srcset="/assets/images/hero/bottom-800.webp 800w, /assets/images/hero/bottom-1280.webp 1280w, /assets/images/hero/bottom-1672.webp 1672w" sizes="(min-width: 901px) 75vw, 100vw" alt="UV rays striking a car windshield and being deflected away by the UVA400 Protective Shield" width="1672" height="941" loading="lazy">
     </figure>
   </section>
 
@@ -305,7 +305,7 @@
       <div class="footer-cols">
         <div class="footer-brand" data-reveal>
           <a class="brand" href="/" aria-label="UV99 Glazing home">
-            <img class="brand__logo" src="/assets/images/logos/uv99-logo.png" alt="UV99 Glazing">
+            <img class="brand__logo" src="/assets/images/logos/uv99-logo-360.webp" width="360" height="172" alt="UV99 Glazing">
           </a>
           <p class="footer-about">Harmful rays out, protection in. Automotive glazing engineered on advanced UV rejection and nano-ceramic film technology.</p>
           <ul class="footer-contact">

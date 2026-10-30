@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap');
-
 :root {
   --ink: #f3eef6;
   --muted: #a79fb0;
@@ -47,6 +45,17 @@ button, input, select, textarea { font: inherit; }
 .site-header:not(.is-stuck) .nav-links a[aria-current="page"] { color: white; background: rgba(255,255,255,.12); }
 .site-header:not(.is-stuck) .nav-links .nav-cta { color: var(--plum); background: white; }
 .site-header:not(.is-stuck) .nav-toggle span { background: white; }
+
+/* "Updates" nav button — no page behind it yet, so it just flashes a
+   "Coming soon" note under the header (see site.js). */
+.nav-links .nav-update { padding: 10px 14px; color: rgba(255,255,255,.72); font-size: 14px; font-weight: 700; line-height: inherit; background: transparent; border: 0; border-radius: 999px; cursor: pointer; }
+.nav-links .nav-update:hover { color: white; background: rgba(255,255,255,.12); }
+.site-header:not(.is-stuck) .nav-links .nav-update { color: rgba(255,255,255,.78); }
+.site-header:not(.is-stuck) .nav-links .nav-update:hover { color: white; background: rgba(255,255,255,.12); }
+.soon-toast { position: fixed; z-index: 60; top: 86px; right: clamp(20px, 4vw, 64px); display: flex; align-items: center; gap: 10px; padding: 12px 18px; color: white; font-size: 14px; font-weight: 600; background: rgba(12, 9, 16, .92); border: 1px solid rgba(143, 74, 158, .55); border-radius: 14px; box-shadow: 0 18px 50px rgba(0, 0, 0, .5); backdrop-filter: blur(14px); opacity: 0; visibility: hidden; transform: translateY(-6px); pointer-events: none; transition: opacity .2s, transform .2s, visibility .2s; }
+.soon-toast::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 10px var(--pink); }
+.soon-toast.is-visible { opacity: 1; visibility: visible; transform: none; }
+@media (prefers-reduced-motion: reduce) { .soon-toast { transition: none; } }
 
 .hero, .page-hero { position: relative; overflow: hidden; color: white; background: radial-gradient(circle at 84% 16%, rgba(226,116,196,.40), transparent 46%), linear-gradient(135deg, #4a1f57 0%, #8f3b9e 54%, #a94fb8 100%); }
 .hero::before, .page-hero::before, .dark-cta::before { content: ""; position: absolute; inset: 0; opacity: .55; background-image: url("data:image/svg+xml,%3Csvg width='28' height='49' viewBox='0 0 28 49' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z' fill='%23ffffff' fill-opacity='0.10' fill-rule='evenodd'/%3E%3C/svg%3E"); background-size: 56px 98px; }
@@ -918,10 +927,13 @@ td:first-child { color: var(--plum); font-weight: 800; }
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: #000 url("/assets/images/sections/layers.png") no-repeat 60% 50%;
+  background: #000 url("/assets/images/sections/layers-1983.webp") no-repeat 60% 50%;
   background-size: cover;
   /* give the render some punch so the panes read sharp, not washed out */
   filter: contrast(1.09) saturate(1.16) brightness(1.06);
+}
+@media (max-width: 900px) {
+  .manifesto::before { background-image: url("/assets/images/sections/layers-1100.webp"); }
 }
 /* readability scrim — dense behind the quote, clears away to the right
    so the layered-glass artwork stays fully visible */
@@ -1524,6 +1536,10 @@ td:first-child { color: var(--plum); font-weight: 800; }
   .nav-links.is-open { display: flex; }
   .nav-links a { padding: 13px 16px; }
   .nav-links .nav-cta { margin: 5px 0 0; text-align: center; }
+  .nav-links .nav-update { padding: 13px 16px; text-align: left; }
+  .site-header:not(.is-stuck) .nav-links .nav-update { color: #5d5662; }
+  .site-header:not(.is-stuck) .nav-links .nav-update:hover { color: var(--plum); background: rgba(143,74,158,.09); }
+  .soon-toast { left: 20px; right: 20px; justify-content: center; }
   .site-header:not(.is-stuck) .nav-links a { color: #5d5662; }
   .site-header:not(.is-stuck) .nav-links a:hover,
   .site-header:not(.is-stuck) .nav-links a[aria-current="page"] { color: var(--plum); background: rgba(143,74,158,.09); }
@@ -1571,6 +1587,7 @@ td:first-child { color: var(--plum); font-weight: 800; }
   :root { --wrap: min(100% - 28px, 1180px); }
   .site-header { height: 70px; }
   .nav-links { inset-block-start: 70px; }
+  .soon-toast { top: 78px; }
   .brand__name { display: none; }
   .brand__logo { height: 42px; margin-left: -8px; }
   .hero { min-height: auto; margin-top: -70px; padding: 120px clamp(16px, 5vw, 24px) 0; }

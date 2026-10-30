@@ -1717,7 +1717,7 @@ body.upo .upo-stage__turntable { display: none; }
 .footer-cols { display: grid; grid-template-columns: 1.5fr .7fr .7fr .7fr .7fr; gap: 48px; }
 
 .footer-brand .brand { display: inline-flex; }
-.footer-brand .brand__logo { height: 30px; margin-left: 0; filter: brightness(0) invert(1); }
+.footer-brand .brand__logo { height: 30px; width: auto; margin-left: 0; filter: brightness(0) invert(1); }
 .footer-about { margin: 22px 0 0; max-width: 330px; line-height: 1.7; color: rgba(255, 255, 255, .5); }
 
 .footer-contact { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 8px; }

@@ -17,6 +17,24 @@
     },
     { "source": "/index.html", "destination": "/", "statusCode": 301 }
   ],
+  "headers": [
+    {
+      "source": "/assets/images/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" }]
+    },
+    {
+      "source": "/assets/video/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" }]
+    },
+    {
+      "source": "/assets/icons/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=604800" }]
+    },
+    {
+      "source": "/assets/fonts/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    }
+  ],
   "rewrites": [
     { "source": "/uv99-plus-one-qr.html", "destination": "/pages/uv99-plus-one-qr.html" },
     { "source": "/:seg(uv99\\+1|uv99%2B1|uv99-plus-one|uv99plus1)/:qr([Qq][Rr])/", "destination": "/pages/uv99-plus-one-qr.html" },

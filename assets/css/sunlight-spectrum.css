@@ -559,9 +559,9 @@
 
 /* =====================================================================
  * SPECTRUM LIGHTBOX — a card click opens its wavelength reference image
- *   uv       → /assets/images/sections/UV.png
- *   visible  → /assets/images/sections/RAINBOW.png
- *   infrared → /assets/images/sections/HEAT.png
+ *   uv       → /assets/images/sections/uv-1400.webp
+ *   visible  → /assets/images/sections/rainbow-1400.webp
+ *   infrared → /assets/images/sections/heat-1400.webp
  * Built and controlled from sunlight-spectrum.js.
  * ===================================================================== */
 .sss__lightbox {

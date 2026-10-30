@@ -101,9 +101,9 @@
 
   /* Reference image opened when a card is clicked. */
   var CARD_IMAGES = {
-    uv:       { src: '/assets/images/sections/UV.png',      alt: 'Ultraviolet wavelengths (280–400 nm)' },
-    visible:  { src: '/assets/images/sections/RAINBOW.png', alt: 'Visible light spectrum (400–780 nm)' },
-    infrared: { src: '/assets/images/sections/HEAT.png',    alt: 'Infrared heat wavelengths (beyond 780 nm)' }
+    uv:       { src: '/assets/images/sections/uv-1400.webp',      alt: 'Ultraviolet wavelengths (280–400 nm)' },
+    visible:  { src: '/assets/images/sections/rainbow-1400.webp', alt: 'Visible light spectrum (400–780 nm)' },
+    infrared: { src: '/assets/images/sections/heat-1400.webp',    alt: 'Infrared heat wavelengths (beyond 780 nm)' }
   };
 
   /* ================================================================= *
